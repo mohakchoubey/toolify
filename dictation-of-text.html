@@ -1,0 +1,1174 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Toolify — Dictation Teacher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root {
+  --bg: #0a0a12;
+  --bg2: #0f0f1a;
+  --bg3: #13131f;
+  --glass: rgba(255,255,255,0.045);
+  --glass-border: rgba(255,255,255,0.09);
+  --glass-hover: rgba(255,255,255,0.07);
+  --purple: #7c5cfc;
+  --purple-dim: rgba(124,92,252,0.18);
+  --purple-glow: rgba(124,92,252,0.35);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.15);
+  --green: #34d399;
+  --green-dim: rgba(52,211,153,0.15);
+  --red: #f87171;
+  --ink: #f0f0fa;
+  --ink2: #a0a0c0;
+  --ink3: #606080;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Space Grotesk', system-ui, sans-serif;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 24px 60px rgba(0,0,0,0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient bg glow */
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px; left: 50%;
+  transform: translateX(-50%);
+  width: 900px; height: 600px;
+  background: radial-gradient(ellipse, rgba(124,92,252,0.12) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky; top: 0; z-index: 50;
+  height: 64px;
+  background: rgba(10,10,18,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+}
+.logo {
+  font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-icon {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--purple), #a78bfa);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 900; color: #fff;
+  box-shadow: 0 0 18px var(--purple-glow);
+}
+.logo-sub { color: var(--ink2); font-weight: 500; font-size: 14px; }
+
+.header-btns { display: flex; gap: 8px; align-items: center; }
+
+/* ── BUTTONS ── */
+button { font-family: var(--sans); cursor: pointer; border: none; outline: none; }
+
+.btn {
+  padding: 9px 16px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  color: var(--ink2);
+  transition: all .18s ease;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { background: var(--glass-hover); color: var(--ink); border-color: rgba(255,255,255,0.16); }
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--purple), #a78bfa);
+  color: #fff; border-color: transparent;
+  box-shadow: 0 0 20px var(--purple-glow);
+  padding: 11px 22px; font-size: 14px;
+}
+.btn-primary:hover { box-shadow: 0 0 30px var(--purple-glow); filter: brightness(1.1); }
+
+.btn-amber { border-color: var(--amber-dim); color: var(--amber); }
+.btn-amber:hover { background: var(--amber-dim); }
+
+.btn-green { border-color: var(--green-dim); color: var(--green); }
+.btn-green:hover { background: var(--green-dim); }
+
+.btn-red { border-color: rgba(248,113,113,0.2); color: var(--red); }
+.btn-red:hover { background: rgba(248,113,113,0.1); }
+
+.btn-icon {
+  width: 36px; height: 36px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 15px; border-radius: 9px;
+}
+
+/* ── LAYOUT ── */
+.app {
+  max-width: 1380px; margin: 0 auto;
+  padding: 24px 24px 40px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  grid-template-rows: auto auto auto;
+  gap: 18px;
+  position: relative; z-index: 1;
+}
+
+/* ── GLASS CARD ── */
+.card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+.card-pad { padding: 22px; }
+
+.card-title {
+  font-size: 16px; font-weight: 700; letter-spacing: -0.3px;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+}
+.card-title .dot-label {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--purple);
+  box-shadow: 0 0 8px var(--purple);
+}
+
+/* ── TEXT AREA ── */
+.source-wrap { position: relative; }
+textarea#source {
+  width: 100%; min-height: 200px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 16px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px; line-height: 1.7;
+  resize: vertical; outline: none;
+  transition: border-color .2s;
+}
+textarea#source:focus { border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-dim); }
+textarea#source::placeholder { color: var(--ink3); }
+
+.word-count {
+  position: absolute; bottom: 10px; right: 12px;
+  font-size: 11px; color: var(--ink3); font-family: var(--mono);
+  pointer-events: none;
+}
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 14px;
+}
+
+/* ── STATUS BAR ── */
+.status-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-top: 12px;
+}
+.status-left { display: flex; align-items: center; gap: 10px; }
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--ink3);
+  transition: all .3s;
+}
+.live-dot.active {
+  background: var(--green);
+  box-shadow: 0 0 0 4px var(--green-dim);
+  animation: pulse 1.4s infinite;
+}
+.live-dot.paused { background: var(--amber); box-shadow: 0 0 0 4px var(--amber-dim); }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 3px var(--green-dim)} 50%{box-shadow:0 0 0 7px transparent} }
+#statusText { font-size: 13px; font-weight: 600; }
+#positionText { font-family: var(--mono); font-size: 12px; color: var(--ink3); }
+
+/* ── PROGRESS ── */
+.progress-wrap { margin-top: 10px; }
+.progress-track {
+  height: 5px; background: rgba(255,255,255,0.06);
+  border-radius: 9px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--purple), #a78bfa);
+  border-radius: 9px;
+  transition: width .4s ease;
+  box-shadow: 0 0 8px var(--purple-glow);
+}
+
+/* ── SENTENCE DISPLAY ── */
+.sentence-display {
+  margin-top: 14px;
+  min-height: 90px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 16px;
+  line-height: 1.8;
+  font-size: 15px;
+  color: var(--ink2);
+  position: relative;
+  overflow: hidden;
+}
+.sentence-display .word {
+  display: inline;
+  border-radius: 4px;
+  padding: 1px 3px;
+  margin: 0 1px;
+  transition: all .2s;
+}
+.sentence-display .word.spoken {
+  color: var(--ink);
+  background: rgba(124,92,252,0.18);
+}
+.sentence-display .word.current {
+  color: #fff;
+  background: var(--purple);
+  box-shadow: 0 0 12px var(--purple-glow);
+  border-radius: 5px;
+}
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  margin-top: 14px;
+}
+.stat-card {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.stat-card .val {
+  font-size: 22px; font-weight: 800;
+  font-family: var(--mono);
+  color: var(--ink);
+  line-height: 1;
+}
+.stat-card .lbl { font-size: 11px; color: var(--ink3); margin-top: 4px; font-weight: 500; }
+
+/* ── LIVE CAPTION OVERLAY ── */
+#captionOverlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(5,5,12,0.96);
+  backdrop-filter: blur(30px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn .25s ease;
+}
+#captionOverlay.open { display: flex; }
+@keyframes fadeIn { from{opacity:0;transform:scale(0.97)} to{opacity:1;transform:scale(1)} }
+
+.caption-inner {
+  width: 90%; max-width: 860px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 28px;
+}
+
+.caption-label {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--purple); font-weight: 700; font-family: var(--mono);
+}
+
+.caption-text {
+  font-size: clamp(28px, 5vw, 56px);
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.3;
+  letter-spacing: -1px;
+  min-height: 2.6em;
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+  gap: 6px 10px;
+}
+.caption-text .cw {
+  opacity: 0.18;
+  color: var(--ink2);
+  transition: all .3s ease;
+  display: inline-block;
+}
+.caption-text .cw.lit {
+  opacity: 0.55;
+  color: var(--ink);
+}
+.caption-text .cw.active {
+  opacity: 1;
+  color: #fff;
+  text-shadow: 0 0 30px var(--purple), 0 0 60px var(--purple-glow);
+  transform: scale(1.06);
+}
+
+/* phrase underline bar */
+.caption-phrase-bar {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border-radius: 99px; height: 4px;
+  overflow: hidden;
+}
+.caption-phrase-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--purple), var(--amber));
+  border-radius: 99px;
+  transition: width .15s linear;
+  box-shadow: 0 0 10px var(--purple);
+}
+
+.caption-pos {
+  font-family: var(--mono); font-size: 13px; color: var(--ink3);
+}
+
+.caption-controls {
+  display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+}
+
+.caption-close {
+  position: absolute; top: 24px; right: 24px;
+  background: var(--glass); border: 1px solid var(--glass-border);
+  color: var(--ink2); border-radius: 9px;
+  padding: 8px 14px; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--sans);
+  transition: all .15s;
+}
+.caption-close:hover { color: var(--ink); background: var(--glass-hover); }
+
+/* mode badge */
+.mode-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-family: var(--mono); font-weight: 600;
+  padding: 3px 9px; border-radius: 99px;
+  background: var(--purple-dim); color: var(--purple);
+  border: 1px solid rgba(124,92,252,0.3);
+}
+
+/* ── SIDE PANEL ── */
+.side-panel {
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+/* ── CONTROLS CARD ── */
+.ctrl-group { display: flex; flex-direction: column; gap: 12px; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-size: 11px; color: var(--ink3); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.8px;
+}
+.field select, .field input[type=text] {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--glass-border);
+  border-radius: 9px;
+  color: var(--ink);
+  font-family: var(--sans); font-size: 13px;
+  padding: 9px 11px;
+  outline: none;
+  transition: border-color .2s;
+  -webkit-appearance: none;
+}
+.field select:focus, .field input[type=text]:focus {
+  border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-dim);
+}
+.field select option { background: #1a1a2e; }
+
+/* Range slider */
+.range-wrap { display: flex; gap: 10px; align-items: center; }
+.range-wrap input[type=range] {
+  flex: 1; -webkit-appearance: none;
+  height: 4px; border-radius: 9px;
+  background: rgba(255,255,255,0.08);
+  outline: none; cursor: pointer;
+}
+.range-wrap input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--purple);
+  box-shadow: 0 0 8px var(--purple-glow);
+  cursor: pointer;
+}
+.range-val {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--purple); min-width: 42px; text-align: right; font-weight: 600;
+}
+
+/* Toggle switch */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.toggle-row:last-child { border: 0; }
+.toggle-label { font-size: 13px; color: var(--ink2); }
+.toggle-label small { font-size: 11px; color: var(--ink3); display: block; margin-top: 2px; }
+
+.switch { position: relative; display: inline-block; width: 38px; height: 22px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider-sw {
+  position: absolute; inset: 0; cursor: pointer;
+  background: rgba(255,255,255,0.1);
+  border-radius: 99px; border: 1px solid var(--glass-border);
+  transition: .25s;
+}
+.slider-sw::before {
+  content: ''; position: absolute;
+  width: 14px; height: 14px; border-radius: 50%;
+  left: 3px; top: 50%; transform: translateY(-50%);
+  background: var(--ink3); transition: .25s;
+}
+.switch input:checked + .slider-sw { background: var(--purple-dim); border-color: var(--purple); }
+.switch input:checked + .slider-sw::before { transform: translate(16px,-50%); background: var(--purple); box-shadow: 0 0 6px var(--purple-glow); }
+
+/* Section divider */
+.divider { height: 1px; background: var(--glass-border); margin: 4px 0; }
+
+/* History */
+.history-list { display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto; }
+.history-list::-webkit-scrollbar { width: 4px; }
+.history-list::-webkit-scrollbar-track { background: transparent; }
+.history-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 9px; }
+.hist-item {
+  background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border);
+  border-radius: 9px; padding: 10px 12px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; gap: 8px;
+}
+.hist-item .hi-date { color: var(--ink3); font-family: var(--mono); font-size: 11px; }
+.hist-item .hi-info { color: var(--ink2); font-weight: 600; }
+
+/* Full-width row */
+.full-row { grid-column: 1 / -1; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(124,92,252,0.3); border-radius: 9px; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; padding: 14px 14px 40px; }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  header { padding: 0 16px; }
+  .header-btns .btn:not(.btn-primary) { display: none; }
+}
+
+footer {
+  text-align: center; padding: 20px;
+  font-size: 12px; color: var(--ink3);
+  font-family: var(--mono);
+  position: relative; z-index: 1;
+}
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">T</div>
+    Toolify
+    <span class="logo-sub">• Dictation Teacher</span>
+  </div>
+  <div class="header-btns">
+    <button class="btn" id="sampleBtn">⚡ Sample</button>
+    <button class="btn btn-red" id="clearBtn">✕ Clear</button>
+    <button class="btn btn-green" id="captionModeBtn">⬛ Caption Mode</button>
+  </div>
+</header>
+
+<!-- ─── CAPTION OVERLAY ─── -->
+<div id="captionOverlay">
+  <button class="caption-close" id="closeCaption">✕ Exit Caption Mode</button>
+  <div class="caption-inner">
+    <div class="caption-label">🎙 Live Dictation</div>
+
+    <div class="mode-badge" id="capModeBadge">— ready —</div>
+
+    <div class="caption-text" id="captionWords"></div>
+
+    <div class="caption-phrase-bar"><div class="caption-phrase-fill" id="captionPhraseBar"></div></div>
+
+    <div class="caption-pos" id="captionPos">Sentence 0 / 0</div>
+
+    <div class="caption-controls">
+      <button class="btn btn-primary" id="capStart">▶ Start</button>
+      <button class="btn btn-amber" id="capPause">⏸ Pause</button>
+      <button class="btn" id="capNext">⏭ Next</button>
+      <button class="btn" id="capRepeat">↻ Repeat</button>
+      <button class="btn btn-red" id="capStop">■ Stop</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MAIN APP ─── -->
+<main class="app">
+
+  <!-- LEFT: Main editor -->
+  <section class="card card-pad" style="grid-row: span 2;">
+    <div class="card-title">
+      <div class="dot-label"></div>
+      Paste your answers
+      <span style="margin-left:auto; font-size:12px; color:var(--ink3); font-weight:500;" id="wordCount">0 words</span>
+    </div>
+
+    <div class="source-wrap">
+      <textarea id="source" placeholder="Paste your answers here…&#10;&#10;Example:&#10;Photosynthesis is the process by which green plants prepare their food.&#10;Plants use sunlight, carbon dioxide, and water to produce glucose and oxygen."></textarea>
+      <span class="word-count" id="wordCountInner">0w</span>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn btn-primary" id="startBtn">▶ Start Dictation</button>
+      <button class="btn btn-amber" id="pauseBtn">⏸ Pause</button>
+      <button class="btn" id="nextBtn">⏭ Next</button>
+      <button class="btn" id="repeatBtn">↻ Repeat</button>
+      <button class="btn btn-red" id="stopBtn">■ Stop</button>
+      <button class="btn btn-green" style="margin-left:auto" id="captionModeBtn2">⬛ Caption Mode</button>
+    </div>
+
+    <div class="status-bar" style="margin-top:14px">
+      <div class="status-left">
+        <div class="live-dot" id="liveDot"></div>
+        <span id="statusText" style="font-size:13px;font-weight:600;">Ready</span>
+      </div>
+      <span id="positionText" style="font-family:var(--mono);font-size:12px;color:var(--ink3);">0 / 0</span>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <!-- Live sentence display with word highlighting -->
+    <div class="sentence-display" id="sentenceDisplay">
+      Sentence will appear here during dictation.
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="val" id="statSentences">0</div><div class="lbl">Total sentences</div></div>
+      <div class="stat-card"><div class="val" id="statSpoken">0</div><div class="lbl">Spoken</div></div>
+      <div class="stat-card"><div class="val" id="statTime">0:00</div><div class="lbl">Session time</div></div>
+      <div class="stat-card"><div class="val" id="statWPM">—</div><div class="lbl">Avg. words/sent.</div></div>
+    </div>
+  </section>
+
+  <!-- RIGHT: Controls -->
+  <aside class="side-panel">
+
+    <!-- Voice settings -->
+    <div class="card card-pad">
+      <div class="card-title"><div class="dot-label"></div> Voice &amp; Speed</div>
+      <div class="ctrl-group">
+        <div class="field"><label>Voice</label><select id="voiceSel"></select></div>
+        <div class="field">
+          <label>Language</label>
+          <select id="langSel">
+            <option value="en-IN">English (India)</option>
+            <option value="en-US">English (US)</option>
+            <option value="en-GB">English (UK)</option>
+            <option value="hi-IN">Hindi</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Speed</label>
+          <div class="range-wrap">
+            <input type="range" id="rateSlider" min=".35" max="1.6" step=".05" value=".8">
+            <span class="range-val" id="rateVal">0.80×</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Pitch</label>
+          <div class="range-wrap">
+            <input type="range" id="pitchSlider" min=".5" max="1.5" step=".05" value="1">
+            <span class="range-val" id="pitchVal">1.00</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Pause between sentences (sec)</label>
+          <div class="range-wrap">
+            <input type="range" id="pauseSlider" min="0" max="6" step=".25" value="1.5">
+            <span class="range-val" id="pauseVal">1.50s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode & Order -->
+    <div class="card card-pad">
+      <div class="card-title"><div class="dot-label"></div> Mode &amp; Behavior</div>
+      <div class="ctrl-group">
+        <div class="field">
+          <label>Dictation Mode</label>
+          <select id="modeSel">
+            <option value="teacher">🎓 Teacher — natural pacing</option>
+            <option value="progressive" selected>🐢 Progressive — slow buildup</option>
+            <option value="slow">🔊 Slow &amp; clear</option>
+            <option value="exam">📝 Exam — minimal help</option>
+            <option value="practice">🔁 Practice — repeat twice</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Session order</label>
+          <select id="orderSel">
+            <option value="normal">Original order</option>
+            <option value="shuffle">Shuffle</option>
+            <option value="reverse">Reverse</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toggles -->
+    <div class="card card-pad">
+      <div class="card-title"><div class="dot-label"></div> Options</div>
+      <div class="toggle-row">
+        <div class="toggle-label">Teacher announcements<small>Say "Sentence 1", "Listen carefully…"</small></div>
+        <label class="switch"><input type="checkbox" id="togAnnounce" checked><span class="slider-sw"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Number sentences<small>Prefix each with its number</small></div>
+        <label class="switch"><input type="checkbox" id="togNumber" checked><span class="slider-sw"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Spell out words<small>After short sentences (&lt;12 words)</small></div>
+        <label class="switch"><input type="checkbox" id="togSpell"><span class="slider-sw"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Auto-repeat long sentences<small>Sentences with 15+ words</small></div>
+        <label class="switch"><input type="checkbox" id="togAutoRepeat" checked><span class="slider-sw"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Word highlighting<small>Highlight words as spoken</small></div>
+        <label class="switch"><input type="checkbox" id="togHighlight" checked><span class="slider-sw"></span></label>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="card card-pad">
+      <div class="card-title"><div class="dot-label"></div> Export</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn" id="copyBtn" style="flex:1">📋 Copy text</button>
+        <button class="btn btn-amber" id="downloadBtn" style="flex:1">⬇ Download</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- HISTORY: full-width -->
+  <section class="card card-pad full-row">
+    <div class="card-title" style="margin-bottom:12px;">
+      <div class="dot-label"></div>
+      Session history
+      <button class="btn btn-red btn-icon" id="clearHistory" style="margin-left:auto;font-size:11px;width:auto;padding:5px 10px;">Clear</button>
+    </div>
+    <div class="history-list" id="historyList">
+      <div style="color:var(--ink3);font-size:13px;padding:10px 0;">No sessions yet.</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Toolify • Dictation Teacher — Browser speech synthesis only. No text uploaded.</footer>
+
+<script>
+// ─── CORE STATE ───
+const synth = window.speechSynthesis;
+let voices = [], utterances = [], index = 0;
+let playing = false, paused = false;
+let spokenCount = 0, timerRef = null, startedAt = 0;
+let captionOpen = false;
+
+// ─── $ HELPER ───
+const $ = id => document.getElementById(id);
+
+// ─── SPLIT SENTENCES ───
+function splitSentences(text) {
+  return text.replace(/\r/g, '')
+    .split(/(?<=[.!?।…])\s+|\n{1,}/)
+    .map(s => s.trim()).filter(Boolean);
+}
+
+// ─── WORD COUNT ───
+function updateWordCount() {
+  const t = ($('source').value || '').trim();
+  const w = t ? t.split(/\s+/).length : 0;
+  $('wordCountInner').textContent = w + 'w';
+}
+
+// ─── LOAD VOICES ───
+function loadVoices() {
+  voices = synth.getVoices();
+  const lang = $('langSel').value;
+  const key = lang.split('-')[0].toLowerCase();
+  const filtered = voices.filter(v => v.lang.toLowerCase().startsWith(key));
+  $('voiceSel').innerHTML = '';
+  (filtered.length ? filtered : voices).forEach(v => {
+    const o = document.createElement('option');
+    o.value = voices.indexOf(v);
+    o.textContent = v.name + ' (' + v.lang + ')';
+    $('voiceSel').appendChild(o);
+  });
+}
+
+// ─── PREPARE ───
+function prepare() {
+  let arr = splitSentences($('source').value);
+  const order = $('orderSel').value;
+  if (order === 'shuffle') arr = arr.sort(() => Math.random() - 0.5);
+  if (order === 'reverse') arr = arr.reverse();
+  utterances = arr;
+  $('statSentences').textContent = arr.length;
+  $('positionText').textContent = (arr.length ? '1' : '0') + ' / ' + arr.length;
+  $('progressFill').style.width = '0%';
+  updateSentenceDisplay(arr[0] || 'Paste some answers first.', -1);
+  if (captionOpen) updateCaptionDisplay(arr[0] || '', -1);
+  $('captionPos').textContent = 'Sentence 0 / ' + arr.length;
+  const avgW = arr.length ? Math.round(arr.reduce((a,s)=>a+s.split(/\s+/).length,0)/arr.length) : 0;
+  $('statWPM').textContent = avgW || '—';
+}
+
+// ─── SENTENCE DISPLAY with word spans ───
+function updateSentenceDisplay(sentence, highlightIdx) {
+  const el = $('sentenceDisplay');
+  if (!$('togHighlight').checked || highlightIdx < 0) {
+    el.textContent = sentence;
+    return;
+  }
+  const words = sentence.split(/(\s+)/);
+  let wordIdx = 0;
+  el.innerHTML = words.map(token => {
+    if (/^\s+$/.test(token)) return token;
+    const i = wordIdx++;
+    const cls = i < highlightIdx ? 'word spoken' : i === highlightIdx ? 'word current' : 'word';
+    const safe = token.replace(/[<>&]/g, m => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[m]));
+    return `<span class="${cls}">${safe}</span>`;
+  }).join('');
+}
+
+// ─── CAPTION DISPLAY ───
+function updateCaptionDisplay(sentence, highlightIdx) {
+  const el = $('captionWords');
+  if (!sentence) { el.innerHTML = ''; return; }
+  const words = sentence.replace(/[<>&]/g, m=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[m])).split(/\s+/);
+  el.innerHTML = words.map((w, i) => {
+    const cls = i < highlightIdx ? 'cw lit' : i === highlightIdx ? 'cw active' : 'cw';
+    return `<span class="${cls}">${w}</span>`;
+  }).join(' ');
+}
+
+function updateCaptionBar(progress) {
+  $('captionPhraseBar').style.width = (progress * 100) + '%';
+}
+
+// ─── CORE SPEAK ───
+function speakRaw(text, cb) {
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = +$('rateSlider').value;
+  u.pitch = +$('pitchSlider').value;
+  u.lang = $('langSel').value;
+  const v = voices[$('voiceSel').value];
+  if (v) u.voice = v;
+  u.onend = () => cb && cb();
+  synth.speak(u);
+  return u;
+}
+
+// ─── PROGRESSIVE DICTATION (the special mode) ───
+// "dog is pet, loved by human"
+// → "dog is pet" ... "dog... is... pet..." ... "dog is pet loved by... loved by... humans"
+function progressiveDictate(sentence, done) {
+  const cleanSentence = sentence.replace(/[.,!?;:]/g, s => s);
+  const words = sentence.trim().split(/\s+/);
+  const rate = +$('rateSlider').value;
+
+  // Step 1: Read full sentence at normal speed first
+  function step1() {
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(sentence);
+    u.rate = rate;
+    u.pitch = +$('pitchSlider').value;
+    u.lang = $('langSel').value;
+    const v = voices[$('voiceSel').value];
+    if (v) u.voice = v;
+
+    // word boundary highlighting
+    let wordIdx = 0;
+    u.onboundary = (e) => {
+      if (e.name === 'word') {
+        updateSentenceDisplay(sentence, wordIdx);
+        if (captionOpen) {
+          updateCaptionDisplay(sentence, wordIdx);
+          updateCaptionBar(wordIdx / words.length);
+        }
+        wordIdx++;
+      }
+    };
+    u.onend = () => {
+      updateSentenceDisplay(sentence, words.length);
+      if (captionOpen) { updateCaptionDisplay(sentence, words.length); updateCaptionBar(1); }
+      setTimeout(step2, 800);
+    };
+    synth.speak(u);
+  }
+
+  // Step 2: Chunk-by-chunk with slow pauses between each chunk
+  let chunkIdx = 0;
+  const chunks = buildChunks(words);
+
+  function step2() {
+    if (!playing) { done && done(); return; }
+    if (chunkIdx >= chunks.length) { setTimeout(step3, 600); return; }
+
+    const chunk = chunks[chunkIdx];
+    const chunkText = chunk.words.join(' ');
+
+    // highlight this chunk in the display
+    updateSentenceDisplay(sentence, chunk.start);
+    if (captionOpen) {
+      updateCaptionDisplay(sentence, chunk.start);
+      updateCaptionBar(chunk.start / words.length);
+    }
+
+    const u = new SpeechSynthesisUtterance(chunkText);
+    u.rate = Math.max(0.35, rate * 0.65); // slower
+    u.pitch = +$('pitchSlider').value;
+    u.lang = $('langSel').value;
+    const v = voices[$('voiceSel').value];
+    if (v) u.voice = v;
+
+    let wIdx = chunk.start;
+    u.onboundary = (e) => {
+      if (e.name === 'word') {
+        updateSentenceDisplay(sentence, wIdx);
+        if (captionOpen) { updateCaptionDisplay(sentence, wIdx); updateCaptionBar(wIdx / words.length); }
+        wIdx++;
+      }
+    };
+    u.onend = () => {
+      chunkIdx++;
+      // pause between chunks (the "..." effect)
+      setTimeout(step2, 650);
+    };
+    synth.speak(u);
+  }
+
+  // Step 3: Read the whole sentence again, full speed
+  function step3() {
+    if (!playing) { done && done(); return; }
+    updateSentenceDisplay(sentence, -1);
+    if (captionOpen) { updateCaptionDisplay(sentence, -1); updateCaptionBar(0); }
+
+    const u = new SpeechSynthesisUtterance(sentence);
+    u.rate = rate;
+    u.pitch = +$('pitchSlider').value;
+    u.lang = $('langSel').value;
+    const v = voices[$('voiceSel').value];
+    if (v) u.voice = v;
+
+    let wordIdx = 0;
+    u.onboundary = (e) => {
+      if (e.name === 'word') {
+        updateSentenceDisplay(sentence, wordIdx);
+        if (captionOpen) { updateCaptionDisplay(sentence, wordIdx); updateCaptionBar(wordIdx / words.length); }
+        wordIdx++;
+      }
+    };
+    u.onend = () => {
+      updateCaptionBar(1);
+      done && done();
+    };
+    synth.speak(u);
+  }
+
+  step1();
+}
+
+// Build chunks: groups of 2-3 words with overlap
+function buildChunks(words) {
+  const chunks = [];
+  let i = 0;
+  while (i < words.length) {
+    const size = Math.min(3, words.length - i);
+    chunks.push({ words: words.slice(i, i + size), start: i });
+    i += size;
+  }
+  return chunks;
+}
+
+// ─── PLAY CURRENT ───
+function playCurrent() {
+  if (!utterances.length) prepare();
+  if (!utterances.length) return;
+
+  playing = true; paused = false;
+  setStatus('active');
+
+  const sentence = utterances[index];
+  const numbered = $('togNumber').checked;
+  const mode = $('modeSel').value;
+  const announce = $('togAnnounce').checked;
+
+  // update UI
+  $('positionText').textContent = (index + 1) + ' / ' + utterances.length;
+  $('progressFill').style.width = ((index / utterances.length) * 100) + '%';
+  updateSentenceDisplay(sentence, -1);
+  if (captionOpen) {
+    updateCaptionDisplay(sentence, -1);
+    $('captionPos').textContent = 'Sentence ' + (index + 1) + ' / ' + utterances.length;
+    $('capModeBadge').textContent = modeLabel(mode);
+    updateCaptionBar(0);
+  }
+
+  const prefix = numbered ? `Sentence ${index + 1}. ` : '';
+  const modePrefix = mode === 'slow' ? 'Listen carefully. ' : mode === 'exam' ? '' : '';
+  const announceText = announce ? prefix + modePrefix : '';
+
+  function afterAnnounce() {
+    if (!playing) return;
+    if (mode === 'progressive') {
+      progressiveDictate(sentence, afterSentence);
+    } else {
+      dictateNormal(sentence, mode, afterSentence);
+    }
+  }
+
+  if (announceText) {
+    speakRaw(announceText, afterAnnounce);
+  } else {
+    afterAnnounce();
+  }
+}
+
+function modeLabel(mode) {
+  const labels = { teacher:'🎓 Teacher', progressive:'🐢 Progressive', slow:'🔊 Slow & Clear', exam:'📝 Exam', practice:'🔁 Practice' };
+  return labels[mode] || mode;
+}
+
+// Normal (non-progressive) dictate
+function dictateNormal(sentence, mode, done) {
+  const u = new SpeechSynthesisUtterance(sentence);
+  let rateMulti = mode === 'slow' ? 0.6 : mode === 'exam' ? 0.95 : 0.8;
+  u.rate = Math.min(1.6, Math.max(0.35, +$('rateSlider').value * (rateMulti / 0.8)));
+  u.pitch = +$('pitchSlider').value;
+  u.lang = $('langSel').value;
+  const v = voices[$('voiceSel').value];
+  if (v) u.voice = v;
+
+  const words = sentence.trim().split(/\s+/);
+  let wordIdx = 0;
+  u.onboundary = (e) => {
+    if (e.name === 'word') {
+      updateSentenceDisplay(sentence, wordIdx);
+      if (captionOpen) { updateCaptionDisplay(sentence, wordIdx); updateCaptionBar(wordIdx / words.length); }
+      wordIdx++;
+    }
+  };
+  u.onend = () => {
+    updateCaptionBar(1);
+    if ($('togSpell').checked && words.length <= 12) {
+      const clean = sentence.replace(/[.,!?;:]/g, '').split(/\s+/);
+      speakRaw('Words: ' + clean.join(', ') + '.', done);
+    } else {
+      done && done();
+    }
+  };
+  synth.speak(u);
+}
+
+// ─── AFTER SENTENCE ───
+function afterSentence() {
+  if (!playing) return;
+  spokenCount++;
+  $('statSpoken').textContent = spokenCount;
+
+  const mode = $('modeSel').value;
+  const waitMs = +$('pauseSlider').value * 1000;
+  const words = utterances[index] ? utterances[index].split(/\s+/).length : 0;
+  const autoRepeat = $('togAutoRepeat').checked && words >= 15;
+
+  function next() {
+    if (!playing) return;
+    if (index < utterances.length - 1) { index++; playCurrent(); }
+    else finish();
+  }
+
+  if (autoRepeat) {
+    setTimeout(() => {
+      if (!playing) return;
+      dictateNormal(utterances[index], mode, () => setTimeout(next, waitMs));
+    }, waitMs);
+  } else {
+    setTimeout(next, waitMs);
+  }
+}
+
+// ─── FINISH ───
+function finish() {
+  playing = false;
+  setStatus('idle');
+  $('progressFill').style.width = '100%';
+  saveSession();
+  if ($('togAnnounce').checked) speakRaw('Dictation complete. Well done.');
+  if (captionOpen) { $('capModeBadge').textContent = '✅ Done!'; updateCaptionBar(1); }
+}
+
+// ─── STOP ───
+function stopAll() {
+  playing = false; paused = false;
+  synth.cancel();
+  setStatus('idle');
+  if (captionOpen) $('capModeBadge').textContent = '— stopped —';
+}
+
+// ─── PAUSE / RESUME ───
+function togglePause() {
+  if (!playing) return;
+  if (!paused) { synth.pause(); paused = true; setStatus('paused'); }
+  else { synth.resume(); paused = false; setStatus('active'); }
+}
+
+// ─── NEXT / REPEAT ───
+function nextSentence() {
+  if (!utterances.length) prepare();
+  synth.cancel();
+  if (index < utterances.length - 1) { index++; if (playing) playCurrent(); else { updateSentenceDisplay(utterances[index], -1); if(captionOpen) updateCaptionDisplay(utterances[index], -1); $('positionText').textContent=(index+1)+' / '+utterances.length; } }
+}
+function repeatSentence() { if (utterances.length && index < utterances.length) { synth.cancel(); playCurrent(); } }
+
+// ─── STATUS ───
+function setStatus(state) {
+  const dot = $('liveDot');
+  const txt = $('statusText');
+  dot.className = 'live-dot';
+  if (state === 'active') { dot.classList.add('active'); txt.textContent = 'Dictating'; txt.style.color = 'var(--green)'; }
+  else if (state === 'paused') { dot.classList.add('paused'); txt.textContent = 'Paused'; txt.style.color = 'var(--amber)'; }
+  else { txt.textContent = 'Ready'; txt.style.color = 'var(--ink2)'; }
+}
+
+// ─── TIMER ───
+function startTimer() {
+  if (timerRef) clearInterval(timerRef);
+  startedAt = Date.now();
+  timerRef = setInterval(() => {
+    const s = Math.floor((Date.now() - startedAt) / 1000);
+    $('statTime').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  }, 500);
+}
+
+// ─── SESSION HISTORY ───
+function saveSession() {
+  const h = JSON.parse(localStorage.getItem('toolifyDictHist') || '[]');
+  h.unshift({ date: new Date().toLocaleString(), count: utterances.length, spoken: spokenCount, mode: $('modeSel').value });
+  localStorage.setItem('toolifyDictHist', JSON.stringify(h.slice(0, 12)));
+  renderHistory();
+}
+function renderHistory() {
+  const h = JSON.parse(localStorage.getItem('toolifyDictHist') || '[]');
+  $('historyList').innerHTML = h.length
+    ? h.map(x => `<div class="hist-item"><span class="hi-date">${x.date}</span><span class="hi-info">${x.count} sentences · ${x.spoken} spoken · ${x.mode||'—'}</span></div>`).join('')
+    : '<div style="color:var(--ink3);font-size:13px;padding:8px 0;">No sessions yet.</div>';
+}
+
+// ─── CAPTION OVERLAY OPEN/CLOSE ───
+function openCaption() {
+  captionOpen = true;
+  $('captionOverlay').classList.add('open');
+  prepare();
+  if (utterances[index]) updateCaptionDisplay(utterances[index], -1);
+  $('captionPos').textContent = 'Sentence ' + (utterances.length ? index + 1 : 0) + ' / ' + utterances.length;
+}
+function closeCaption() {
+  captionOpen = false;
+  $('captionOverlay').classList.remove('open');
+}
+
+// ─── WIRING ───
+$('source').addEventListener('input', () => { updateWordCount(); localStorage.setItem('toolifyDictText', $('source').value); });
+
+$('startBtn').onclick = $('capStart').onclick = () => {
+  prepare(); index = 0; spokenCount = 0; $('statSpoken').textContent = 0;
+  startTimer(); playCurrent();
+};
+$('pauseBtn').onclick = $('capPause').onclick = togglePause;
+$('nextBtn').onclick = $('capNext').onclick = nextSentence;
+$('repeatBtn').onclick = $('capRepeat').onclick = repeatSentence;
+$('stopBtn').onclick = $('capStop').onclick = stopAll;
+
+$('captionModeBtn').onclick = $('captionModeBtn2').onclick = openCaption;
+$('closeCaption').onclick = closeCaption;
+
+$('clearBtn').onclick = () => { $('source').value = ''; updateWordCount(); prepare(); stopAll(); localStorage.removeItem('toolifyDictText'); };
+
+$('sampleBtn').onclick = () => {
+  $('source').value = `Photosynthesis is the process by which green plants prepare their food using sunlight.\nPlants use carbon dioxide and water to produce glucose and oxygen.\nChlorophyll is the green pigment found in the leaves of plants.\nThe sunlight is absorbed by chlorophyll and used to convert raw materials into food.\nPhotosynthesis is important because it provides food for all living organisms.`;
+  updateWordCount(); prepare();
+};
+
+$('copyBtn').onclick = async () => {
+  await navigator.clipboard.writeText($('source').value.trim());
+  $('copyBtn').textContent = '✅ Copied!';
+  setTimeout(() => $('copyBtn').textContent = '📋 Copy text', 1400);
+};
+$('downloadBtn').onclick = () => {
+  const blob = new Blob([$('source').value.trim()], { type: 'text/plain' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'toolify-dictation.txt'; a.click(); URL.revokeObjectURL(a.href);
+};
+$('clearHistory').onclick = () => { localStorage.removeItem('toolifyDictHist'); renderHistory(); };
+
+// Range sliders
+[['rateSlider','rateVal','×'], ['pitchSlider','pitchVal',''], ['pauseSlider','pauseVal','s']].forEach(([sid, vid, suf]) => {
+  $(sid).oninput = () => $(vid).textContent = (+$(sid).value).toFixed(2) + suf;
+});
+
+// Mode change → auto-set rate
+$('modeSel').onchange = () => {
+  const presets = { teacher: .8, progressive: .75, slow: .55, exam: .9, practice: .75 };
+  const v = presets[$('modeSel').value] || .8;
+  $('rateSlider').value = v;
+  $('rateVal').textContent = v.toFixed(2) + '×';
+};
+
+$('langSel').onchange = loadVoices;
+$('orderSel').onchange = prepare;
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  if (e.code === 'Space') { e.preventDefault(); playing ? togglePause() : ($('startBtn').click()); }
+  if (e.code === 'ArrowRight') nextSentence();
+  if (e.code === 'KeyR') repeatSentence();
+  if (e.code === 'Escape') { if (captionOpen) closeCaption(); else stopAll(); }
+  if (e.code === 'KeyC') { if (!captionOpen) openCaption(); }
+});
+
+// ─── INIT ───
+$('source').value = localStorage.getItem('toolifyDictText') || '';
+updateWordCount();
+renderHistory();
+loadVoices();
+if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadVoices;
+prepare();
+
+window.onbeforeunload = () => { synth.cancel(); if (timerRef) clearInterval(timerRef); };
+</script>
+</body>
+</html>
