@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -354,6 +353,23 @@
     white-space: nowrap;
 }
 
+    
+        /* ===== Hero illustration (inline SVG, theme aware) ===== */
+        :root { --hero-l: rgba(37,99,235,0.05); --hero-d: rgba(37,99,235,0.16); }
+        [data-theme="dark"] { --hero-l: rgba(59,130,246,0.07); --hero-d: rgba(59,130,246,0.22); }
+        .hero-figure { margin: 0 0 36px; border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; background: var(--card-bg); box-shadow: 0 8px 30px var(--accent-glow); }
+        .hero-svg { display: block; width: 100%; height: auto; }
+        .hero-svg text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        .hero-svg .hs-glyph, .hero-svg .hs-accent { font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "Apple Symbols", "DejaVu Sans", serif; }
+        .hs-sq-l { fill: var(--hero-l); } .hs-sq-d { fill: var(--hero-d); }
+        .hs-kicker { fill: var(--primary-color); font-weight: 800; letter-spacing: .14em; font-size: 20px; }
+        .hs-title { fill: var(--text-color); font-weight: 800; font-size: 44px; letter-spacing: -.02em; }
+        .hs-glyph { fill: var(--text-color); }
+        .hs-accent { fill: var(--primary-color); }
+        .hs-stroke { stroke: var(--primary-color); fill: none; }
+        .hs-dot { fill: var(--primary-color); }
+        .hs-cell-l { fill: var(--card-bg); } .hs-cell-d { fill: var(--hero-d); }
+        .hero-figure figcaption { padding: 10px 18px; font-size: .85rem; color: var(--muted-text); border-top: 1px solid var(--border-color); }
     </style>
 </head>
 <body>
@@ -385,25 +401,47 @@
                 <span>✨ 100% Ad-Free Experience</span>
             </div>
 
-            <div class="quick-links">
+            <figure class="hero-figure">
+                <svg class="hero-svg" viewBox="0 0 860 300" role="img" aria-label="Illustration of a timeline from Chaturanga to modern chess with rook, bishop, and queen" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="chk" width="80" height="80" patternUnits="userSpaceOnUse">
+                            <rect width="40" height="40" class="hs-sq-l"/><rect x="40" y="40" width="40" height="40" class="hs-sq-l"/>
+                            <rect x="40" width="40" height="40" class="hs-sq-d"/><rect y="40" width="40" height="40" class="hs-sq-d"/>
+                        </pattern>
+                        <linearGradient id="fade" x1="0" x2="1" y1="0" y2="0">
+                            <stop offset="0" style="stop-color:var(--card-bg);stop-opacity:.96"/>
+                            <stop offset=".5" style="stop-color:var(--card-bg);stop-opacity:.86"/>
+                            <stop offset=".78" style="stop-color:var(--card-bg);stop-opacity:.2"/>
+                            <stop offset="1" style="stop-color:var(--card-bg);stop-opacity:0"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="860" height="300" fill="url(#chk)"/>
+                    <rect width="860" height="300" fill="url(#fade)"/>
+                    <text x="48" y="92" class="hs-kicker">6TH CENTURY &#8594; TODAY</text><text x="48" y="148" class="hs-title">From Chaturanga</text><text x="48" y="200" class="hs-title">to CheckMate</text><line x1="48" y1="230" x2="440" y2="230" class="hs-stroke" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round"/><circle cx="48" cy="230" r="7" class="hs-dot"/><circle cx="180" cy="230" r="7" class="hs-dot"/><circle cx="310" cy="230" r="7" class="hs-dot"/><circle cx="440" cy="230" r="7" class="hs-dot"/><text x="560" y="245" font-size="130" text-anchor="middle" class="hs-glyph">&#9820;&#xFE0E;</text><text x="680" y="245" font-size="130" text-anchor="middle" class="hs-accent">&#9821;&#xFE0E;</text><text x="800" y="245" font-size="130" text-anchor="middle" class="hs-glyph">&#9819;&#xFE0E;</text>
+                </svg>
+                <figcaption>A game more than a thousand years old, still played on the same 64 squares.</figcaption>
+            </figure>
 
-                
-               <a href="https://mohakchoubey.github.io/toolify/games/chess/articles/ health-and-brain-benefits-of-playing-chess">
-     ♟ Benefits of Playing Chess 
-      
+            <div class="quick-links">
+    <a href="https://mohakchoubey.github.io/toolify/games/chess/articles/">
+        📚 All Chess Articles
     </a>
 
-     <a href="https://mohakchoubey.github.io/toolify/games/chess/articles/what-is-chess">
+    <a href="https://mohakchoubey.github.io/toolify/games/chess/articles/what-is-chess">
         📖 What is Chess? A Beginner's Guide
-       </a>
-    
+    </a>
+
     <a href="https://mohakchoubey.github.io/toolify/games/chess/articles/history-of-chess">
         ⚔️ History of Chess
          <span class="current-page-tag">Current Page</span>
     </a>
 
     <a href="https://mohakchoubey.github.io/toolify/games/chess/articles/basic-rules-and-movements-in-chess">
-        📜 Basic Rules & Movements Explained
+        📜 Basic Rules &amp; Movements Explained
+    </a>
+
+    <a href="https://mohakchoubey.github.io/toolify/games/chess/articles/health-and-brain-benefits-of-playing-chess">
+        ♟ Benefits of Playing Chess
     </a>
 
     <a href="https://mohakchoubey.github.io/toolify/games/chess/articles/top-bhess-bpenings-for-beginners">
@@ -413,7 +451,7 @@
     <a href="https://mohakchoubey.github.io/toolify/games/chess/articles/famous-chess-matches">
         🏆 Famous Grandmaster Matches
     </a>
-            </div>
+</div>
 
             <p>Chess has been played for more than a thousand years, evolving from an ancient strategy game into one of the world's most recognized board games. Its history crosses continents, languages, cultures, and empires, while the basic idea remains the same: two players use carefully planned moves to outthink each other.</p>
 
