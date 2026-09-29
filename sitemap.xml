@@ -1,355 +1,185 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="2.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <!-- Main Website -->
+  <!-- Home -->
   <url>
     <loc>https://mohakchoubey.github.io/toolify/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
-  <!-- Essentials -->
+  <!-- Essentials & productivity tools -->
   <url>
     <loc>https://mohakchoubey.github.io/toolify/workspace-assistant-rulebased-ai-chatbot</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/AI-Chatbot-learning-based-model</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/maps-by-toolify</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/weather</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/Word-On-Toolify/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
-  <!-- Productivity -->
   <url>
     <loc>https://mohakchoubey.github.io/toolify/Language-translation</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/calculator</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
-  <url>
-    <loc>https://mohakdev1220.github.io/finance/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/trip-planner-tool-by-toolify</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
-  <url>
-    <loc>https://mohakdev1220.github.io/gatividhiya/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/calendar</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/grammar</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/WebRTC-messaging-site-E2EE</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
-  <url>
-    <loc>https://mohakdev1220.github.io/dailyecho/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakdev1220.github.io/youtube-search/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
   <!-- Utilities -->
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/qr</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://mohakchoubey.github.io/toolify/dictation-of-textr</loc>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/binary-to-text-converter-by-mohak</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/unit-converter</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/speech</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/pdf</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/password</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/games.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/website-previewer</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Chess -->
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Website Information -->
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/privacy</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/terms</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/feedback</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-</urlset><?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <!-- Main Website -->
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-
-  <!-- Essentials -->
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/workspace-assistant-rulebased-ai-chatbot</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/AI-Chatbot-learning-based-model</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/maps-by-toolify</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/weather</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/Word-On-Toolify/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Productivity -->
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/Language-translation</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/calculator</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakdev1220.github.io/finance/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/trip-planner-tool-by-toolify</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakdev1220.github.io/gatividhiya/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/calendar</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/grammar</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/WebRTC-messaging-site-E2EE</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakdev1220.github.io/dailyecho/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://mohakdev1220.github.io/youtube-search/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <!-- Utilities -->
   <url>
     <loc>https://mohakchoubey.github.io/toolify/qr</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/binary-to-text-converter-by-mohak</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/unit-converter</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/speech</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/pdf</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/password</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/games.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/website-previewer</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
-  <!-- Chess -->
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/time</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <!-- Games -->
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/1712.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/Neon_flap.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/flightsimulator</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/neon_district/main</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <!-- CheckMate chess -->
   <url>
     <loc>https://mohakchoubey.github.io/toolify/games/chess/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
-  <!-- Website Information -->
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/play.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/computer.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/online.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/puzzles.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/analysis.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/leaderboard.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/games.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/players.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/articles/</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/about.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/faq.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/contact.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/privacy.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://mohakchoubey.github.io/toolify/games/chess/terms.html</loc>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <!-- Legal & info -->
   <url>
     <loc>https://mohakchoubey.github.io/toolify/privacy</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/terms</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
   <url>
     <loc>https://mohakchoubey.github.io/toolify/feedback</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-09-29</lastmod>
   </url>
-
 </urlset>
