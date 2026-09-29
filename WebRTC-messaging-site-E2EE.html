@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 
 <title>PAGER — P2P Device Messaging</title>
 
@@ -77,8 +77,10 @@ textarea {
 
 .app {
     height: 100vh;
+    height: 100dvh;
     display: flex;
     overflow: hidden;
+    position: relative;
 }
 
 /* =========================================================
@@ -403,6 +405,15 @@ textarea {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
+}
+
+.back-btn {
+    display: none;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
 }
 
 .chat-device-icon {
@@ -418,9 +429,17 @@ textarea {
     border-radius: 12px;
 }
 
+.chat-title-text {
+    min-width: 0;
+}
+
 .chat-name {
     font-size: 15px;
     font-weight: 800;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .chat-status {
@@ -776,77 +795,96 @@ textarea {
 }
 
 /* =========================================================
-   MOBILE
+   MOBILE — WhatsApp-style single-pane navigation
+
+   Below the breakpoint, the sidebar (chat list) and the
+   main chat panel are each full-width, full-height screens.
+   Only one is visible at a time. Selecting a device slides
+   the chat screen in; the header back button (or the
+   device's own back gesture/button, wired via history)
+   slides the list back in.
 ========================================================= */
 
-@media (max-width: 720px) {
+@media (max-width: 760px) {
 
-    .sidebar {
-        width: 82px;
-        min-width: 82px;
+    .sidebar,
+    .main {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .main {
+        display: none;
+    }
+
+    .app.chat-open .sidebar {
+        display: none;
+    }
+
+    .app.chat-open .main {
+        display: flex;
+    }
+
+    .back-btn {
+        display: inline-flex;
+    }
+
+    .icon-btn {
+        width: 40px;
+        height: 40px;
     }
 
     .brand {
-        padding: 15px 8px;
-        text-align: center;
-    }
-
-    .brand-row {
-        justify-content: center;
-    }
-
-    .brand h1 {
-        font-size: 15px;
-    }
-
-    .brand p,
-    .my-device,
-    .pair-section,
-    .section-title,
-    .device-info {
-        display: none;
-    }
-
-    .devices {
-        padding: 10px 7px;
-    }
-
-    .device-item {
-        justify-content: center;
-        padding: 8px;
-    }
-
-    .header-actions {
-        display: none;
-    }
-
-    .messages {
-        padding: 15px;
-    }
-
-    .message {
-        max-width: 88%;
-    }
-}
-
-@media (max-width: 460px) {
-
-    .sidebar {
-        width: 64px;
-        min-width: 64px;
-    }
-
-    .device-icon {
-        width: 39px;
-        height: 39px;
+        padding-top: calc(18px + env(safe-area-inset-top));
     }
 
     .chat-header {
-        padding: 0 12px;
+        padding-top: env(safe-area-inset-top);
+        min-height: calc(72px + env(safe-area-inset-top));
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .messages {
+        padding: 16px;
+    }
+
+    .message {
+        max-width: 84%;
     }
 
     .composer {
-        padding: 9px;
+        padding: 10px 12px calc(14px + env(safe-area-inset-bottom));
+    }
+
+    .send-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    /* Prevent iOS Safari from auto-zooming on focus */
+    #messageInput,
+    .text-input {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 380px) {
+
+    .device-icon,
+    .chat-device-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .chat-header {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .my-id code {
+        font-size: 13px;
+        letter-spacing: 1px;
     }
 }
 </style>
@@ -961,6 +999,15 @@ textarea {
 
             <div class="chat-title">
 
+                <button
+                    class="icon-btn back-btn"
+                    id="backBtn"
+                    title="Back to chats"
+                    aria-label="Back to chats"
+                >
+                    ←
+                </button>
+
                 <div
                     class="chat-device-icon"
                     id="chatDeviceIcon"
@@ -968,7 +1015,7 @@ textarea {
                     ◉
                 </div>
 
-                <div>
+                <div class="chat-title-text">
 
                     <div
                         class="chat-name"
@@ -1272,6 +1319,12 @@ const STORAGE_KEYS = {
 /* ============================================================
    DOM
 ============================================================ */
+
+const appElement =
+    document.querySelector(".app");
+
+const backBtn =
+    document.getElementById("backBtn");
 
 const myIdElement =
     document.getElementById("myId");
@@ -2363,6 +2416,87 @@ function scrollMessages() {
 
 
 /* ============================================================
+   MOBILE NAVIGATION
+   ============================================================
+
+   On narrow screens the sidebar (chat list) and the chat
+   panel are each full-width screens, WhatsApp-style. Only
+   one is shown at a time, switched via the ".chat-open"
+   class on .app. Opening a chat also pushes a history
+   entry, so the phone's back button/gesture closes the
+   chat and returns to the list instead of leaving the app.
+============================================================ */
+
+function isMobileView() {
+
+    return window.matchMedia(
+        "(max-width: 760px)"
+    ).matches;
+}
+
+
+function openChatView() {
+
+    appElement.classList.add(
+        "chat-open"
+    );
+
+
+    if (
+        isMobileView() &&
+        (
+            !history.state ||
+            !history.state.pagerChatOpen
+        )
+    ) {
+
+        history.pushState(
+            { pagerChatOpen: true },
+            ""
+        );
+
+    }
+}
+
+
+function closeChatView() {
+
+    appElement.classList.remove(
+        "chat-open"
+    );
+
+}
+
+
+backBtn.onclick =
+    () => {
+
+        closeChatView();
+
+
+        if (
+            history.state &&
+            history.state.pagerChatOpen
+        ) {
+
+            history.back();
+
+        }
+
+    };
+
+
+window.addEventListener(
+    "popstate",
+    () => {
+
+        closeChatView();
+
+    }
+);
+
+
+/* ============================================================
    SELECT DEVICE
 ============================================================ */
 
@@ -2383,6 +2517,9 @@ async function selectDevice(
 
     selectedPeerId =
         peerId;
+
+
+    openChatView();
 
 
     chatName.textContent =
