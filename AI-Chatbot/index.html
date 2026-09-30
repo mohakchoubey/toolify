@@ -160,9 +160,9 @@ input[type=color]{width:30px;height:30px;border:none;background:none;padding:0;b
 <script>
 /* ============ CONFIG: edit these ============ */
 const CONFIG = {
-  WORKER_URL: 'https://toolify.mohakchoubey.workers.dev/',                  // e.g. 'https://toolify-ai.YOURNAME.workers.dev' once Cloudflare is ready
+  WORKER_URL: 'https://toolify.mohakchoubey.workers.dev/',
   LOGIN_URL: 'login.html',
-  FEEDBACK_EMAIL: 'mohakchoubey@gmail.com', // where feedback should go
+  FORMSPREE_URL: 'https://formspree.io/f/YOUR_FORM_ID',
 };
 const ACCENTS = ['#6c63ff','#ec4899','#3b82f6','#10b981','#f59e0b','#ef4444','#06b6d4','#a855f7'];
 const MEMORY_CAP = 30;
@@ -171,15 +171,49 @@ const MEMORY_CAP = 30;
    Reads the same 'toolify_user' record the old page used. If your dashboard stores the
    signed-in user differently (e.g. Firebase), only change this one function. */
 function getAuthUser(){
-  try{
-    const u = JSON.parse(localStorage.getItem('toolify_user') || 'null');
-    if(!u || u.mode === 'local' || u.mode === 'guest') return null;
-    const name = u.name || u.displayName || (u.email ? u.email.split('@')[0] : '');
-    if(!name) return null;
-    return { name, id: u.uid || u.email || name };
-  }catch{ return null; }
-}
+  const keys = [
+    'toolify_user',
+    'toolifyUser',
+    'currentUser',
+    'loggedInUser',
+    'user'
+  ];
 
+  for(const key of keys){
+    try{
+      const raw = localStorage.getItem(key);
+      if(!raw) continue;
+
+      const u = JSON.parse(raw);
+      if(!u || typeof u !== 'object') continue;
+
+      if(u.mode === 'local' || u.mode === 'guest') continue;
+
+      const name =
+        u.name ||
+        u.displayName ||
+        u.username ||
+        (u.email ? u.email.split('@')[0] : '');
+
+      const id =
+        u.uid ||
+        u.id ||
+        u.email ||
+        u.username ||
+        name;
+
+      if(name && id){
+        return {
+          name,
+          id,
+          email: u.email || ''
+        };
+      }
+    }catch{}
+  }
+
+  return null;
+}
 /* ============ STATE ============ */
 const user = getAuthUser();
 const key = k => `tai:${user ? user.id : 'guest'}:${k}`;
@@ -193,7 +227,19 @@ let busy = false;
 
 const $ = id => document.getElementById(id);
 const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('show'),2600); }
+function toast(t){
+  const el = $('toast');
+
+  el.textContent = t;
+  el.classList.add('show');
+
+  clearTimeout(toast.t);
+
+  toast.t = setTimeout(
+    () => el.classList.remove('show'),
+    1800
+  );
+}
 
 /* ============ THEME ============ */
 function applyPrefs(){
@@ -345,12 +391,54 @@ function closeAll(){ $('drawer').classList.remove('open'); $('fbmodal').classLis
 
 /* ============ FEEDBACK ============ */
 function openFb(){ $('fbmodal').classList.add('open'); $('scrim').classList.add('open'); $('fbtext').focus(); }
-function sendFb(){
+async function sendFb(){
   const t = $('fbtext').value.trim();
-  if(!t){ toast('Write your feedback first'); return; }
-  const who = user ? ` from ${user.name}` : '';
-  location.href = `mailto:${CONFIG.FEEDBACK_EMAIL}?subject=${encodeURIComponent('Toolify AI feedback'+who)}&body=${encodeURIComponent(t)}`;
-  $('fbtext').value=''; closeAll(); toast('Thanks for your feedback');
+
+  if(!t){
+    toast('Write your feedback first');
+    return;
+  }
+
+  const button = $('fbsend');
+  const originalText = button.textContent;
+
+  button.disabled = true;
+  button.textContent = 'Sending...';
+
+  try{
+    const data = new FormData();
+
+    data.append('message', t);
+    data.append('page', location.href);
+    data.append('user', user ? user.name : 'Guest');
+
+    if(user?.email){
+      data.append('email', user.email);
+    }
+
+    const response = await fetch(CONFIG.FORMSPREE_URL, {
+      method: 'POST',
+      body: data,
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    if(!response.ok){
+      throw new Error('Feedback submission failed');
+    }
+
+    $('fbtext').value = '';
+    closeAll();
+
+    toast('Thanks for your feedback!');
+
+  }catch(error){
+    toast('Could not send feedback. Please try again.');
+  }finally{
+    button.disabled = false;
+    button.textContent = originalText;
+  }
 }
 
 /* ============ INIT ============ */
