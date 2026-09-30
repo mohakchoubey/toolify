@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Sonnet 5.5 Architectural & Performance Intelligence Report</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#FBF9F5',
+                            card: '#FFFFFF',
+                            text: '#22252A',
+                            muted: '#5A606A',
+                            border: '#E2DFD8',
+                            terracotta: '#D97757',
+                            terracottaHover: '#C86537',
+                            navy: '#1E293B',
+                            lightBg: '#F3EFEA',
+                            accentBlue: '#2563EB',
+                            accentGreen: '#059669',
+                            accentPurple: '#7C3AED',
+                            accentAmber: '#D97706'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FBF9F5;
+            color: #22252A;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        /* Essential Chart Container Styles */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 420px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px;
+            }
+        }
+
+        /* Custom subtle scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1ECE4;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+        /* Tab animations */
+        .tab-active {
+            border-bottom: 2px solid #D97757;
+            color: #D97757;
+            font-weight: 600;
+        }
+        .nav-active {
+            background-color: #D97757;
+            color: #FFFFFF !important;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+<!-- Chosen Palette: Warm Neutrals & Anthropic Terracotta (Cream Background #FBF9F5, Terracotta Accent #D97757, Slate Navy Text #1E293B, Soft Neutral Borders) -->
+
+<!-- Application Structure Plan:
+     1. Executive Header & KPI Dashboard: Immediate high-level metrics (30% speedup, 30% cost reduction, 70.6% Terminal-Bench, 138 tok/sec) and sticky navigation bar.
+     2. Model Architecture & Continuum: Interactive tabbed view comparing Haiku 5.5, Sonnet 5.5, and Opus 5.5 positioning, along with an interactive tool-batching visual comparison (Sonnet 5 vs Sonnet 5.5).
+     3. Empirical Benchmark Explorer: Multidimensional performance suite with filtered dynamic Chart.js visualizations (Coding, Knowledge, Computer Control, Vision) and an Effort-vs-Cost accuracy curve graph (Low to Max effort settings). Includes a special analysis panel for the FrontierCode Max Effort sub-agent behavior.
+     4. Operational Economics & Interactive Enterprise ROI Estimator: Detailed price matrices, real-world early enterprise case studies (Box, Slack, Base44, CodeRabbit, Epic Games), and a live interactive calculation tool allowing users to estimate cost/time savings per task.
+     5. Behavioral Alignment & Safety Architecture: Interactive security decision simulator (Defensive dev vs Offensive trigger fallbacks), preserved thinking cryptographic architecture, and life science verification program explanations.
+     6. API Migration Hub & Developer Playground: Interactive breaking changes checklist, live parameters validation tool for 'between_tools' & effort configurations, and typed content block parsing code snippet generator.
+     Why this structure? It transitions logically from macro positioning -> raw empirical data -> financial ROI calculations -> risk/safety governance -> operational developer deployment code.
+-->
+
+<!-- Visualization & Content Choices:
+     - KPI Metric Cards -> Goal: Inform -> Interactive hoverable summary stats with comparative baseline.
+     - Continuum Selector -> Goal: Compare -> Filterable tab cards explaining model operational scope -> Interactive DOM updates.
+     - Sequential vs Batched Tool Call Visualizer -> Goal: Demonstrate Process -> CSS/HTML animated step timeline comparing network latency -> Canvas/HTML flow.
+     - Comprehensive Benchmark Radar/Bar Chart -> Goal: Benchmark Comparison -> Chart.js dynamic canvas with domain filters -> User toggleable datasets.
+     - Effort Level Cost vs Score Curve Chart -> Goal: Trend & Effort Analysis -> Chart.js logarithmic scatter/line plot for Terminal-Bench & FrontierCode -> Interactive effort point updates.
+     - Enterprise ROI Calculator -> Goal: Quantify Financial Impact -> JS input sliders calculating exact dollar & latency savings based on Anthropic API token pricing -> Real-time output calculations.
+     - Cyber Fallback Simulator -> Goal: Safety Logic Visualization -> Interactive scenario selector with live route visualizer -> JS dynamic step highlight.
+     - API Migration Playground -> Goal: Developer Actionability -> Code tab switching, validation tester, and configuration code builder.
+     - Confirming NO SVG elements are used anywhere in this file. Pure CSS, Canvas, Unicode characters, and HTML elements are utilized exclusively.
+-->
+
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Header Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-[#FBF9F5]/95 backdrop-blur border-b border-brand-border px-4 lg:px-8 py-3 transition-all">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="inline-block w-3 h-3 rounded-full bg-brand-terracotta"></span>
+                    <span class="font-bold text-lg tracking-tight text-brand-text">Claude Sonnet 5.5</span>
+                    <span class="text-xs bg-brand-terracotta/10 text-brand-terracotta font-semibold px-2 py-0.5 rounded border border-brand-terracotta/20">System Intelligence</span>
+                </div>
+                <div class="text-xs text-brand-muted md:hidden">Sept 2026 Report</div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex flex-wrap items-center justify-center gap-1 text-xs sm:text-sm font-medium text-brand-muted w-full md:w-auto">
+                <a href="#architecture" class="nav-btn px-3 py-1.5 rounded-md hover:text-brand-text transition-colors">Architecture</a>
+                <a href="#benchmarks" class="nav-btn px-3 py-1.5 rounded-md hover:text-brand-text transition-colors">Benchmarks</a>
+                <a href="#economics" class="nav-btn px-3 py-1.5 rounded-md hover:text-brand-text transition-colors">Economics & ROI</a>
+                <a href="#safety" class="nav-btn px-3 py-1.5 rounded-md hover:text-brand-text transition-colors">Safety & Risk</a>
+                <a href="#migration" class="nav-btn px-3 py-1.5 rounded-md hover:text-brand-text transition-colors bg-brand-text text-white hover:bg-black">API Migration</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- Hero & Key Executive Summary Section -->
+        <section class="space-y-6">
+            <div class="bg-gradient-to-br from-white via-[#F8F5F0] to-[#F1ECE4] p-6 sm:p-8 rounded-2xl border border-brand-border shadow-sm">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div class="space-y-3 max-w-3xl">
+                        <div class="inline-flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-brand-terracotta">
+                            <span>Anthropic System Architecture Analysis</span>
+                            <span>•</span>
+                            <span>Model Continuum Release</span>
+                        </div>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-brand-text tracking-tight">
+                            Claude Sonnet 5.5 Architecture & Deployment Dynamics
+                        </h1>
+                        <p class="text-base sm:text-lg text-brand-muted leading-relaxed">
+                            An interactive intelligence report detailing the systemic architecture, benchmark parity, operational economics, safety containment protocols, and migration specifications for Anthropic's mid-tier enterprise AI partner.
+                        </p>
+                    </div>
+
+                    <!-- Highlight Badges -->
+                    <div class="grid grid-cols-2 gap-3 min-w-[280px]">
+                        <div class="bg-white p-3.5 rounded-xl border border-brand-border text-center">
+                            <div class="text-xs text-brand-muted font-medium">Generation Speed</div>
+                            <div class="text-2xl font-bold text-brand-terracotta">138 tok/s</div>
+                            <div class="text-[11px] text-brand-accentGreen font-semibold">▲ 30%+ vs Sonnet 5</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-xl border border-brand-border text-center">
+                            <div class="text-xs text-brand-muted font-medium">Terminal-Bench 4.0</div>
+                            <div class="text-2xl font-bold text-brand-navy">70.6%</div>
+                            <div class="text-[11px] text-brand-accentGreen font-semibold">▲ vs 10.3% (Sonnet 5)</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-xl border border-brand-border text-center">
+                            <div class="text-xs text-brand-muted font-medium">Task Cost Efficiency</div>
+                            <div class="text-2xl font-bold text-brand-accentGreen">~30% Less</div>
+                            <div class="text-[11px] text-brand-muted">Same per-token price</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-xl border border-brand-border text-center">
+                            <div class="text-xs text-brand-muted font-medium">Knowledge Work</div>
+                            <div class="text-2xl font-bold text-brand-navy">1844</div>
+                            <div class="text-[11px] text-brand-muted">GDPval-AA (~Opus level)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1: SYSTEM ARCHITECTURE & CONTINUUM -->
+        <section id="architecture" class="space-y-6 scroll-mt-20">
+            <div class="border-b border-brand-border pb-4">
+                <div class="text-xs font-semibold text-brand-terracotta uppercase tracking-wider mb-1">Section 1</div>
+                <h2 class="text-2xl font-bold text-brand-text">Architectural Positioning & Model Continuum</h2>
+                <p class="text-sm text-brand-muted mt-2 leading-relaxed">
+                    This section analyzes where Claude Sonnet 5.5 sits within the broader Claude 5.5 model hierarchy. Sonnet 5.5 is engineered specifically for bounded operational work, multi-file software engineering, automated tool agent execution, and polished document/visual artifact generation—bridging the gap between high-volume micro-tasks (Haiku) and long-horizon strategic reasoning (Opus).
+                </p>
+            </div>
+
+            <!-- Continuum Selector Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Haiku Card -->
+                <div onclick="selectModelContinuum('haiku')" id="card-haiku" class="cursor-pointer bg-white p-5 rounded-xl border-2 border-brand-border hover:border-brand-terracotta/50 transition-all space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-base text-brand-text">Claude Haiku 5.5</span>
+                        <span class="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">High-Volume</span>
+                    </div>
+                    <p class="text-xs text-brand-muted">Built for latency-sensitive, high-throughput micro-tasks, continuous routing, and budget-conscious API workflows.</p>
+                    <div class="text-xs font-semibold text-brand-terracotta flex items-center">
+                        <span>Click for architectural role</span> <span class="ml-1">➔</span>
+                    </div>
+                </div>
+
+                <!-- Sonnet Card (Active default) -->
+                <div onclick="selectModelContinuum('sonnet')" id="card-sonnet" class="cursor-pointer bg-white p-5 rounded-xl border-2 border-brand-terracotta bg-brand-terracotta/5 transition-all space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-base text-brand-terracotta">Claude Sonnet 5.5</span>
+                        <span class="text-xs bg-brand-terracotta text-white px-2 py-0.5 rounded font-mono font-medium">Operational Core</span>
+                    </div>
+                    <p class="text-xs text-brand-muted">Engineered for bounded coding, multi-file PRs, automated bug remediation, terminal execution, and visual document design.</p>
+                    <div class="text-xs font-semibold text-brand-terracotta flex items-center">
+                        <span>Active Selected Model</span> <span class="ml-1">✔</span>
+                    </div>
+                </div>
+
+                <!-- Opus Card -->
+                <div onclick="selectModelContinuum('opus')" id="card-opus" class="cursor-pointer bg-white p-5 rounded-xl border-2 border-brand-border hover:border-brand-terracotta/50 transition-all space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-base text-brand-text">Claude Opus 5.5</span>
+                        <span class="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-mono">Strategic Apex</span>
+                    </div>
+                    <p class="text-xs text-brand-muted">Designed for open-ended research, ambiguous strategic evaluations, complex legal/financial audits, and judgment-heavy tasks.</p>
+                    <div class="text-xs font-semibold text-brand-terracotta flex items-center">
+                        <span>Click for architectural role</span> <span class="ml-1">➔</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Model Context Panel -->
+            <div id="continuum-detail-box" class="bg-white p-6 rounded-xl border border-brand-border space-y-4">
+                <!-- Content inserted via JS -->
+            </div>
+
+            <!-- Batched Tool Execution vs Legacy Sequential Interactive Visualizer -->
+            <div class="bg-white p-6 rounded-xl border border-brand-border space-y-5">
+                <div>
+                    <h3 class="text-lg font-bold text-brand-text flex items-center">
+                        <span class="mr-2">⚡</span> Architectural Architectural Fix: Batched vs. Sequential Tool Execution
+                    </h3>
+                    <p class="text-xs text-brand-muted mt-1">
+                        Sonnet 5 was hindered by sequential tool calls (requiring multiple network round-trips). Sonnet 5.5 introduces single-turn batched tool calls, drastically reducing execution latency and prompt re-processing overhead.
+                    </p>
+                </div>
+
+                <!-- Interactive Comparison Toggle -->
+                <div class="flex space-x-3 border-b border-brand-border pb-3">
+                    <button onclick="toggleToolViz('batched')" id="btn-viz-batched" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-brand-terracotta text-white transition-all">
+                        Sonnet 5.5 Batched Paradigm (New)
+                    </button>
+                    <button onclick="toggleToolViz('sequential')" id="btn-viz-seq" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">
+                        Sonnet 5 Sequential Loop (Legacy)
+                    </button>
+                </div>
+
+                <!-- Interactive Display Container -->
+                <div id="tool-viz-container" class="p-4 rounded-lg bg-[#F8F6F0] border border-brand-border min-h-[160px] flex flex-col justify-center">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: COMPREHENSIVE EMPIRICAL BENCHMARK EVALUATION -->
+        <section id="benchmarks" class="space-y-6 scroll-mt-20">
+            <div class="border-b border-brand-border pb-4">
+                <div class="text-xs font-semibold text-brand-terracotta uppercase tracking-wider mb-1">Section 2</div>
+                <h2 class="text-2xl font-bold text-brand-text">Empirical Benchmark Performance & Effort Dynamics</h2>
+                <p class="text-sm text-brand-muted mt-2 leading-relaxed">
+                    Sonnet 5.5 displays massive performance leaps over Sonnet 5 and achieves capability parity with Opus 5.5 across agentic coding, computer use, and chart comprehension. Explore raw evaluation scores or switch metrics below to analyze performance across domains.
+                </p>
+            </div>
+
+            <!-- Domain Metric Filter Bar -->
+            <div class="flex flex-wrap gap-2 items-center justify-between">
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="updateBenchmarkChart('all')" id="bm-filter-all" class="px-3 py-1.5 rounded-md text-xs font-medium bg-brand-text text-white">All Key Benchmarks</button>
+                    <button onclick="updateBenchmarkChart('coding')" id="bm-filter-coding" class="px-3 py-1.5 rounded-md text-xs font-medium bg-white border border-brand-border hover:bg-slate-50 text-brand-text">Agentic Coding</button>
+                    <button onclick="updateBenchmarkChart('knowledge')" id="bm-filter-knowledge" class="px-3 py-1.5 rounded-md text-xs font-medium bg-white border border-brand-border hover:bg-slate-50 text-brand-text">Knowledge & Reasoning</button>
+                    <button onclick="updateBenchmarkChart('vision')" id="bm-filter-vision" class="px-3 py-1.5 rounded-md text-xs font-medium bg-white border border-brand-border hover:bg-slate-50 text-brand-text">Vision & Computer Control</button>
+                </div>
+                <span class="text-xs text-brand-muted italic">Click bars or filters to highlight specific task domains</span>
+            </div>
+
+            <!-- Main Chart Container Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Benchmark Comparison Bar Chart (2 Cols) -->
+                <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-brand-border space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-brand-text">Model Comparison Across Benchmarks</h3>
+                            <p class="text-xs text-brand-muted">Comparing Sonnet 5.5 vs Sonnet 5, Opus 5.5, and GPT-6 Sol</p>
+                        </div>
+                        <span id="chart-domain-badge" class="text-xs font-semibold text-brand-terracotta bg-brand-terracotta/10 px-2 py-1 rounded">All Domains</span>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="benchmarkChart"></canvas>
+                    </div>
+
+                    <div class="text-[11px] text-brand-muted border-t border-brand-border pt-2 flex justify-between">
+                        <span>* Benchmarks normalized or direct % scores</span>
+                        <span>Source: Anthropic & Artificial Analysis (2026)</span>
+                    </div>
+                </div>
+
+                <!-- Benchmarks Raw Table Side Panel (1 Col) -->
+                <div class="bg-white p-5 rounded-xl border border-brand-border flex flex-col justify-between space-y-4">
+                    <div>
+                        <h3 class="text-base font-bold text-brand-text mb-2">Benchmark Scorecard</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="border-b border-brand-border text-brand-muted">
+                                        <th class="pb-2 font-medium">Evaluation</th>
+                                        <th class="pb-2 font-medium text-right text-brand-terracotta">S 5.5</th>
+                                        <th class="pb-2 font-medium text-right">S 5</th>
+                                        <th class="pb-2 font-medium text-right">Opus 5.5</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 font-mono text-[11px]">
+                                    <tr>
+                                        <td class="py-2 font-sans font-medium text-slate-800">Terminal-Bench 4.0</td>
+                                        <td class="py-2 text-right font-bold text-brand-terracotta">70.6%</td>
+                                        <td class="py-2 text-right text-slate-500">10.3%</td>
+                                        <td class="py-2 text-right text-slate-700">66.4%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-sans font-medium text-slate-800">FrontierCode (Xhigh)</td>
+                                        <td class="py-2 text-right font-bold text-brand-terracotta">52.1%</td>
+                                        <td class="py-2 text-right text-slate-500">42.4%</td>
+                                        <td class="py-2 text-right text-slate-700">54.4%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-sans font-medium text-slate-800">CursorBench 4.0</td>
+                                        <td class="py-2 text-right font-bold text-brand-terracotta">55.5%</td>
+                                        <td class="py-2 text-right text-slate-500">34.1%</td>
+                                        <td class="py-2 text-right text-slate-700">57.8%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-sans font-medium text-slate-800">GDPval-AA v2.1</td>
+                                        <td class="py-2 text-right font-bold text-brand-terracotta">1844</td>
+                                        <td class="py-2 text-right text-slate-500">1449</td>
+                                        <td class="py-2 text-right text-slate-700">1846</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-sans font-medium text-slate-800">AA-Briefcase v1.1</td>
+                                        <td class="py-2 text-right font-bold text-brand-terracotta">1811</td>
+                                        <td class="py-2 text-right text-slate-500">1359</td>
+                                        <td class="py-2 text-right text-slate-700">1822</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-sans font-medium text-slate-800">OSWorld 2.1 (Desktop)</td>
+                                        <td class="py-2 text-right font-bold text-brand-terracotta">80.1%</td>
+                                        <td class="py-2 text-right text-slate-500">57.0%</td>
+                                        <td class="py-2 text-right text-slate-700">81.8%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-sans font-medium text-slate-800">Chartography (No tools)</td>
+                                        <td class="py-2 text-right font-bold text-brand-terracotta">61.6%</td>
+                                        <td class="py-2 text-right text-slate-500">15.6%</td>
+                                        <td class="py-2 text-right text-slate-700">64.4%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#F8F6F0] p-3 rounded-lg border border-brand-border text-xs space-y-1">
+                        <div class="font-bold text-brand-text">Specialized Benchmarks</div>
+                        <div class="text-[11px] text-brand-muted">
+                            • <strong>DeepSWE:</strong> 71.0% (Repository Bug Resolution)<br>
+                            • <strong>FrontierSWE v2:</strong> 61.9% (Software Workflows)<br>
+                            • <strong>DRACO:</strong> 87.0% (Complex Data Operations)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Effort Curve Exploration & Max Effort Dynamic Paradox -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Accuracy vs Cost Effort Chart -->
+                <div class="bg-white p-5 rounded-xl border border-brand-border space-y-4">
+                    <div>
+                        <h3 class="text-base font-bold text-brand-text">Terminal-Bench 4.0: Accuracy vs. Cost by Effort Setting</h3>
+                        <p class="text-xs text-brand-muted">Demonstrates how effort scaling (Low -> Med -> High -> Xhigh -> Max) impacts score relative to cost per attempt.</p>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="effortChart"></canvas>
+                    </div>
+
+                    <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900">
+                        <strong>Key Insight:</strong> At <em>Medium effort</em> (default in Claude Apps), Sonnet 5.5 reaches ~29% accuracy at under $0.80 per attempt—outperforming Sonnet 5's best score (10.3% at $12+) for less than 1/10th the cost!
+                    </div>
+                </div>
+
+                <!-- The FrontierCode Max Effort Paradox Deep-Dive -->
+                <div class="bg-white p-5 rounded-xl border border-brand-border flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="inline-flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
+                            <span>Sub-Agent Orchestration Dynamic</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-brand-text">The FrontierCode "Max Effort" Score Drop Analysis</h3>
+                        <p class="text-xs text-brand-muted leading-relaxed">
+                            On FrontierCode 1.1 (mergeable PRs without human edits), Sonnet 5.5 scored <strong>52.1% at Xhigh effort</strong>, but dropped to <strong>46.2% at Max effort</strong>.
+                        </p>
+
+                        <div class="space-y-2 text-xs text-brand-text">
+                            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200 flex items-start space-x-2">
+                                <span class="text-brand-terracotta font-bold text-sm">1.</span>
+                                <div>
+                                    <strong class="font-semibold text-brand-text">Automatic Sub-Agent Decomposition:</strong>
+                                    <p class="text-brand-muted mt-0.5">At Max effort, Sonnet 5.5 systematically triggers Claude Code's code-review skill, delegating tasks across multiple autonomous sub-agents.</p>
+                                </div>
+                            </div>
+                            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200 flex items-start space-x-2">
+                                <span class="text-brand-terracotta font-bold text-sm">2.</span>
+                                <div>
+                                    <strong class="font-semibold text-brand-text">Out-of-Scope Refactoring & Timeouts:</strong>
+                                    <p class="text-brand-muted mt-0.5">Sub-agents frequently initiated helpful, high-quality out-of-scope code cleanups or triggered session timeouts. FrontierCode strictly penalizes non-essential edits, lowering the PR merge score.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-navy text-white p-4 rounded-xl text-xs space-y-1">
+                        <div class="font-bold text-brand-terracotta">Engineering Recommendation</div>
+                        <p class="text-slate-300">
+                            Avoid using <strong>Max effort</strong> on bounded software engineering tasks. Standard operational software development achieves peak cost-accuracy efficiency on <strong>Medium</strong> or <strong>High</strong> effort.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: OPERATIONAL ECONOMICS & ENTERPRISE ROI ESTIMATOR -->
+        <section id="economics" class="space-y-6 scroll-mt-20">
+            <div class="border-b border-brand-border pb-4">
+                <div class="text-xs font-semibold text-brand-terracotta uppercase tracking-wider mb-1">Section 3</div>
+                <h2 class="text-2xl font-bold text-brand-text">Operational Economics & Early Enterprise Case Studies</h2>
+                <p class="text-sm text-brand-muted mt-2 leading-relaxed">
+                    Although unit token rates remain identical to Sonnet 5, Sonnet 5.5 reduces overall expenditure per completed task by up to 30%. This efficiency stems from faster execution (~138 tokens/second), fewer total output steps, and concise reasoning.
+                </p>
+            </div>
+
+            <!-- Price Table & Early Production Data -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- API Pricing Table Card -->
+                <div class="bg-white p-5 rounded-xl border border-brand-border space-y-4">
+                    <h3 class="text-base font-bold text-brand-text">API Token Pricing Comparison</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-brand-border text-brand-muted">
+                                    <th class="pb-2 font-medium">API Resource</th>
+                                    <th class="pb-2 font-medium text-brand-terracotta">Sonnet 5.5</th>
+                                    <th class="pb-2 font-medium">Sonnet 5</th>
+                                    <th class="pb-2 font-medium">Opus 5.5</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-mono text-[11px]">
+                                <tr>
+                                    <td class="py-2 font-sans text-slate-700">Input Tokens (per 1M)</td>
+                                    <td class="py-2 font-bold text-brand-terracotta">$2.00</td>
+                                    <td class="py-2 text-slate-600">$2.00</td>
+                                    <td class="py-2 text-slate-600">$4.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 font-sans text-slate-700">Output Tokens (per 1M)</td>
+                                    <td class="py-2 font-bold text-brand-terracotta">$10.00</td>
+                                    <td class="py-2 text-slate-600">$10.00</td>
+                                    <td class="py-2 text-slate-600">$20.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 font-sans text-slate-700">Prompt Cache Reads (1M)</td>
+                                    <td class="py-2 font-bold text-brand-terracotta">$0.20</td>
+                                    <td class="py-2 text-slate-600">$0.20</td>
+                                    <td class="py-2 text-slate-600">$0.20</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 font-sans text-slate-700">Prompt Cache Writes (1M)</td>
+                                    <td class="py-2 font-bold text-brand-terracotta">$2.50</td>
+                                    <td class="py-2 text-slate-600">$2.50</td>
+                                    <td class="py-2 text-slate-600">$5.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-3 bg-green-50 border border-green-200 rounded-lg text-xs text-green-900 space-y-1">
+                        <div class="font-bold">Throughput Generation</div>
+                        <p class="text-[11px]">Averages ~138 tokens/second in production—30%+ faster than Sonnet 5 base generation rates.</p>
+                    </div>
+                </div>
+
+                <!-- Early Enterprise Testimonial Carousel / Grid -->
+                <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-brand-border space-y-4">
+                    <h3 class="text-base font-bold text-brand-text">Early Production Implementations</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="p-3.5 rounded-lg border border-brand-border bg-[#FBF9F5] space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-xs text-brand-text">Box</span>
+                                <span class="text-[10px] bg-green-100 text-green-800 font-bold px-1.5 py-0.5 rounded">2.4x Speedup</span>
+                            </div>
+                            <p class="text-xs text-brand-muted">Observed a 2.4x execution speedup and a 12% drop in total token consumption during complex document processing.</p>
+                        </div>
+
+                        <div class="p-3.5 rounded-lg border border-brand-border bg-[#FBF9F5] space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-xs text-brand-text">Slack</span>
+                                <span class="text-[10px] bg-green-100 text-green-800 font-bold px-1.5 py-0.5 rounded">-14% Tokens</span>
+                            </div>
+                            <p class="text-xs text-brand-muted">Achieved a 14% decrease in output token generation across automated Slackbot operations while maintaining higher accuracy.</p>
+                        </div>
+
+                        <div class="p-3.5 rounded-lg border border-brand-border bg-[#FBF9F5] space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-xs text-brand-text">CodeRabbit</span>
+                                <span class="text-[10px] bg-green-100 text-green-800 font-bold px-1.5 py-0.5 rounded">-60% Cost/Pass</span>
+                            </div>
+                            <p class="text-xs text-brand-muted">Measured a 60% overall cost reduction per code review pass, completing evaluations in half the time required by Sonnet 5.</p>
+                        </div>
+
+                        <div class="p-3.5 rounded-lg border border-brand-border bg-[#FBF9F5] space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-xs text-brand-text">Base44</span>
+                                <span class="text-[10px] bg-blue-100 text-blue-800 font-bold px-1.5 py-0.5 rounded">3.6 Build Cycles</span>
+                            </div>
+                            <p class="text-xs text-brand-muted">Reported a sharp drop in app build iteration cycles—falling from 7.7 cycles on Opus 5 to 3.6 cycles on Sonnet 5.5.</p>
+                        </div>
+                    </div>
+
+                    <!-- Epic Games Quote Box -->
+                    <div class="p-4 rounded-lg bg-slate-900 text-white text-xs space-y-2">
+                        <div class="flex items-center justify-between border-b border-slate-700 pb-2">
+                            <span class="font-bold text-brand-terracotta">Epic Games Deployment Audit</span>
+                            <span class="text-slate-400 text-[11px]">Daniel Vogel, Chief Operating Officer</span>
+                        </div>
+                        <p class="text-slate-200 italic leading-relaxed">
+                            "In Epic's early testing, Claude Sonnet 5.5 cleared the same quality bar you'd expect from a higher-tier model, holding up on a system design audit and a data flow review... handled tens of thousands of lines of code for gameplay system architecture with less prescriptive prompting."
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE ROI & LATENCY CALCULATOR TOOL -->
+            <div class="bg-gradient-to-r from-[#1E293B] to-[#0F172A] text-white p-6 rounded-2xl space-y-6 shadow-md">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-700 pb-4">
+                    <div>
+                        <span class="text-xs font-semibold text-brand-terracotta uppercase tracking-wider">Interactive Tool</span>
+                        <h3 class="text-xl font-bold">Enterprise Task Cost & Speed Estimator</h3>
+                        <p class="text-xs text-slate-300 mt-1">
+                            Estimate your organization's financial savings and execution latency gains when migrating from Sonnet 5 to Sonnet 5.5.
+                        </p>
+                    </div>
+                    <div class="bg-slate-800/80 px-3 py-2 rounded-lg border border-slate-700 text-right">
+                        <div class="text-[10px] text-slate-400 uppercase">Model Pricing Reference</div>
+                        <div class="text-xs font-mono text-brand-terracotta">$2.00 / $10.00 per 1M tok</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <!-- Calculator Inputs (7 cols) -->
+                    <div class="lg:col-span-7 space-y-5 text-xs">
+                        <!-- Daily Request Volume -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between font-medium">
+                                <label for="range-requests" class="text-slate-200">Daily Agent Requests / Calls:</label>
+                                <span id="val-requests" class="font-mono font-bold text-brand-terracotta">50,000</span>
+                            </div>
+                            <input type="range" id="range-requests" min="1000" max="500000" step="1000" value="50000" oninput="calculateROI()" class="w-full accent-brand-terracotta cursor-pointer">
+                        </div>
+
+                        <!-- Average Input Tokens Per Call -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between font-medium">
+                                <label for="range-input-tokens" class="text-slate-200">Avg Input Tokens / Call:</label>
+                                <span id="val-input-tokens" class="font-mono font-bold text-brand-terracotta">15,000</span>
+                            </div>
+                            <input type="range" id="range-input-tokens" min="1000" max="100000" step="1000" value="15000" oninput="calculateROI()" class="w-full accent-brand-terracotta cursor-pointer">
+                        </div>
+
+                        <!-- Average Output Tokens Per Call -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between font-medium">
+                                <label for="range-output-tokens" class="text-slate-200">Avg Base Output Tokens / Call:</label>
+                                <span id="val-output-tokens" class="font-mono font-bold text-brand-terracotta">2,500</span>
+                            </div>
+                            <input type="range" id="range-output-tokens" min="200" max="16000" step="200" value="2500" oninput="calculateROI()" class="w-full accent-brand-terracotta cursor-pointer">
+                        </div>
+
+                        <!-- Expected Token Reduction Dropdown -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label for="select-token-drop" class="block text-slate-300 mb-1">Efficiency Token Reduction:</label>
+                                <select id="select-token-drop" onchange="calculateROI()" class="w-full bg-slate-800 border border-slate-700 text-white rounded p-2 text-xs">
+                                    <option value="0.18" selected>18% Less Tokens (Standard Workloads)</option>
+                                    <option value="0.25">25% Less Tokens (Agentic Tool Loops)</option>
+                                    <option value="0.12">12% Less Tokens (Document Processing)</option>
+                                    <option value="0.30">30% Less Tokens (Max Optimization)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="select-effort" class="block text-slate-300 mb-1">Target Effort Profile:</label>
+                                <select id="select-effort" onchange="calculateROI()" class="w-full bg-slate-800 border border-slate-700 text-white rounded p-2 text-xs">
+                                    <option value="Medium" selected>Medium Effort (App Default)</option>
+                                    <option value="High">High Effort (API Default)</option>
+                                    <option value="Low">Low Effort (Fast Routing)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calculator Output Card (5 cols) -->
+                    <div class="lg:col-span-5 bg-slate-800/90 border border-slate-700 p-5 rounded-xl space-y-4">
+                        <div class="text-xs uppercase tracking-wider text-slate-400 font-bold border-b border-slate-700 pb-2">
+                            Estimated Monthly ROI Projection
+                        </div>
+
+                        <div class="space-y-3">
+                            <div>
+                                <div class="text-[11px] text-slate-400">Estimated Monthly Cost (Sonnet 5)</div>
+                                <div id="res-cost-legacy" class="text-lg font-mono font-bold text-slate-300">$82,500 / mo</div>
+                            </div>
+
+                            <div>
+                                <div class="text-[11px] text-slate-400">Estimated Monthly Cost (Sonnet 5.5)</div>
+                                <div id="res-cost-new" class="text-2xl font-mono font-bold text-brand-accentGreen">$67,650 / mo</div>
+                            </div>
+
+                            <div class="pt-2 border-t border-slate-700 flex justify-between items-center">
+                                <div>
+                                    <div class="text-[11px] text-slate-400">Monthly Net Savings</div>
+                                    <div id="res-savings-net" class="text-xl font-mono font-bold text-brand-terracotta">$14,850</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[11px] text-slate-400">Avg Call Latency</div>
+                                    <div id="res-latency" class="text-xs font-mono font-bold text-white">~138 tok/s (30% faster)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-[10px] text-slate-400 italic">
+                            * Calculation accounts for input/output token rates, prompt caching, and reduced output steps achieved via batched tool invocations.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: BEHAVIORAL ALIGNMENT & RISK CONTAINMENT -->
+        <section id="safety" class="space-y-6 scroll-mt-20">
+            <div class="border-b border-brand-border pb-4">
+                <div class="text-xs font-semibold text-brand-terracotta uppercase tracking-wider mb-1">Section 4</div>
+                <h2 class="text-2xl font-bold text-brand-text">Behavioral Alignment, Security Safeguards & Risk Containment</h2>
+                <p class="text-sm text-brand-muted mt-2 leading-relaxed">
+                    Because Sonnet 5.5 elevates software execution and shell control capabilities to rival Opus 5, Anthropic deployed a dedicated tier of cybersecurity fallbacks, anti-distillation protections, and cryptographic signature verification.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Cybersecurity Safeguards & Automated Fallback -->
+                <div class="bg-white p-5 rounded-xl border border-brand-border space-y-3">
+                    <div class="text-xs font-bold text-brand-terracotta uppercase tracking-wider flex items-center">
+                        <span class="mr-1">🔒</span> Fallback Safeguards
+                    </div>
+                    <h3 class="text-base font-bold text-brand-text">Cybersecurity Automated Fallback</h3>
+                    <p class="text-xs text-brand-muted leading-relaxed">
+                        Defensive software debugging remains uninhibited. However, when real-time safety classifiers detect a high-risk offensive cyber request, the system dynamically routes the prompt to <strong>Sonnet 5</strong> under safer constraints.
+                    </p>
+                    <div class="pt-2">
+                        <a href="#cyber-sim" onclick="showCyberSim('offensive')" class="text-xs font-semibold text-brand-terracotta hover:underline">Test Fallback Simulation ➔</a>
+                    </div>
+                </div>
+
+                <!-- Preserved Thinking Cryptography -->
+                <div class="bg-white p-5 rounded-xl border border-brand-border space-y-3">
+                    <div class="text-xs font-bold text-brand-accentPurple uppercase tracking-wider flex items-center">
+                        <span class="mr-1">🔑</span> Anti-Distillation
+                    </div>
+                    <h3 class="text-base font-bold text-brand-text">Preserved Thinking Signatures</h3>
+                    <p class="text-xs text-brand-muted leading-relaxed">
+                        To counter industrial-scale distillation attacks, intermediate thinking blocks are cryptographically signed and bound to the originating workspace account. Modifying or replaying thoughts across accounts returns <strong>HTTP 400</strong>.
+                    </p>
+                    <div class="pt-2">
+                        <span class="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-1 rounded">HMAC-SHA256 Bound</span>
+                    </div>
+                </div>
+
+                <!-- Verification Programs -->
+                <div class="bg-white p-5 rounded-xl border border-brand-border space-y-3">
+                    <div class="text-xs font-bold text-brand-accentGreen uppercase tracking-wider flex items-center">
+                        <span class="mr-1">🧬</span> Institutional Verification
+                    </div>
+                    <h3 class="text-base font-bold text-brand-text">Cyber & Life Sciences Programs</h3>
+                    <p class="text-xs text-brand-muted leading-relaxed">
+                        Verified cyberdefenders and biological research institutions can obtain uninhibited access through the <em>Cyber Verification Program</em> and <em>Life Sciences Verification Program</em>.
+                    </p>
+                    <div class="pt-2">
+                        <span class="text-xs font-semibold text-brand-accentGreen">Tiered Access Granted</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE CYBERSECURITY FALLBACK SIMULATOR -->
+            <div id="cyber-sim" class="bg-white p-6 rounded-xl border border-brand-border space-y-5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-brand-text">Interactive Security Fallback Decision Routing</h3>
+                        <p class="text-xs text-brand-muted">Simulate how incoming API requests are inspected by real-time safety classifiers in Sonnet 5.5.</p>
+                    </div>
+                    <span class="text-xs font-mono bg-slate-100 text-slate-700 px-2.5 py-1 rounded">Classifier Engine v5.5</span>
+                </div>
+
+                <!-- Scenario Selection Buttons -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="runCyberSim('defensive')" id="sim-btn-def" class="px-3 py-2 rounded-lg text-xs font-semibold bg-brand-terracotta text-white transition-all">
+                        Scenario 1: Defensive Source Review (Fix Vulnerability)
+                    </button>
+                    <button onclick="runCyberSim('offensive')" id="sim-btn-off" class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">
+                        Scenario 2: High-Risk Exploit Generation (Offensive Trigger)
+                    </button>
+                    <button onclick="runCyberSim('verified')" id="sim-btn-ver" class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">
+                        Scenario 3: Verified Defender Account (Cyber Program)
+                    </button>
+                </div>
+
+                <!-- Interactive Simulation Visualizer Box -->
+                <div id="sim-result-box" class="p-4 rounded-xl bg-[#F8F6F0] border border-brand-border text-xs space-y-3">
+                    <!-- Dynamic updates via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: API MIGRATION FRAMEWORK & PLAYGROUND -->
+        <section id="migration" class="space-y-6 scroll-mt-20">
+            <div class="border-b border-brand-border pb-4">
+                <div class="text-xs font-semibold text-brand-terracotta uppercase tracking-wider mb-1">Section 5</div>
+                <h2 class="text-2xl font-bold text-brand-text">API Migration Framework & Integration Protocol</h2>
+                <p class="text-sm text-brand-muted mt-2 leading-relaxed">
+                    Upgrading applications from Sonnet 5 to Sonnet 5.5 introduces five breaking API parameter changes. Use the interactive checklist and API parameter validator below to prepare production codebases.
+                </p>
+            </div>
+
+            <!-- Breaking Changes Matrix -->
+            <div class="bg-white p-5 rounded-xl border border-brand-border space-y-4">
+                <h3 class="text-base font-bold text-brand-text">Breaking API Parameter Matrix</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-brand-border text-brand-muted bg-slate-50">
+                                <th class="p-2.5 font-semibold">Legacy Feature (Sonnet 5)</th>
+                                <th class="p-2.5 font-semibold text-brand-terracotta">Sonnet 5.5 Requirement</th>
+                                <th class="p-2.5 font-semibold">Failure Trigger</th>
+                                <th class="p-2.5 font-semibold">Corrective Migration Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 font-mono text-[11px]">
+                            <tr>
+                                <td class="p-2.5 text-slate-600"><code>thinking: {"type": "disabled"}</code></td>
+                                <td class="p-2.5 font-bold text-brand-terracotta"><code>thinking: {"type": "between_tools"}</code></td>
+                                <td class="p-2.5 text-red-600 font-sans">HTTP 400 Invalid Parameter</td>
+                                <td class="p-2.5 text-slate-700 font-sans">Switch to <code>between_tools</code> for low latency turns.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 text-slate-600"><code>tool_choice: {"type": "tool"}</code></td>
+                                <td class="p-2.5 font-bold text-brand-terracotta"><code>tool_choice: {"type": "auto"}</code></td>
+                                <td class="p-2.5 text-red-600 font-sans">HTTP 400 Forced Choice Rejected</td>
+                                <td class="p-2.5 text-slate-700 font-sans">Use <code>auto</code> + <code>strict: true</code> JSON schemas + system prompt guidance.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 text-slate-600">Unbound Thinking History</td>
+                                <td class="p-2.5 font-bold text-brand-terracotta">Signed Account Validation</td>
+                                <td class="p-2.5 text-red-600 font-sans">HTTP 400 Signature Mismatch</td>
+                                <td class="p-2.5 text-slate-700 font-sans">Treat history as append-only. Do not edit thinking blocks.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 text-slate-600"><code>computer_20251124</code></td>
+                                <td class="p-2.5 font-bold text-brand-terracotta"><code>computer_toolset_20260801</code></td>
+                                <td class="p-2.5 text-red-600 font-sans">HTTP 400 Deprecated Toolset</td>
+                                <td class="p-2.5 text-slate-700 font-sans">Upgrade tool definitions to 2026 standard.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 text-slate-600">Direct String <code>content[0].text</code></td>
+                                <td class="p-2.5 font-bold text-brand-terracotta">Typed Content Arrays</td>
+                                <td class="p-2.5 text-red-600 font-sans">Client-side Parsing Error</td>
+                                <td class="p-2.5 text-slate-700 font-sans">Iterate <code>content</code> array by <code>type</code> (<code>thinking</code>, <code>text</code>, <code>tool_use</code>).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE API PARAMETER VALIDATOR & CODE GENERATOR -->
+            <div class="bg-white p-6 rounded-xl border border-brand-border space-y-5">
+                <div class="flex items-center justify-between border-b border-brand-border pb-3">
+                    <div>
+                        <h3 class="text-base font-bold text-brand-text">Interactive API Request Configurator</h3>
+                        <p class="text-xs text-brand-muted">Configure your API options below to verify parameter validity for Sonnet 5.5.</p>
+                    </div>
+                    <span class="text-xs font-bold text-brand-terracotta">Real-time Rule Inspector</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Controls Column -->
+                    <div class="space-y-4 text-xs">
+                        <div>
+                            <label for="cfg-model" class="block font-semibold text-brand-text mb-1">Model Name:</label>
+                            <input type="text" id="cfg-model" value="claude-sonnet-5-5" readonly class="w-full bg-slate-100 border border-slate-300 p-2 rounded font-mono text-xs">
+                        </div>
+
+                        <div>
+                            <label for="cfg-effort" class="block font-semibold text-brand-text mb-1">Effort Setting:</label>
+                            <select id="cfg-effort" onchange="validateAPIConfig()" class="w-full border border-brand-border p-2 rounded bg-white text-xs">
+                                <option value="medium" selected>medium (Default)</option>
+                                <option value="low">low</option>
+                                <option value="high">high</option>
+                                <option value="xhigh">xhigh</option>
+                                <option value="max">max</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="cfg-thinking" class="block font-semibold text-brand-text mb-1">Thinking Setting:</label>
+                            <select id="cfg-thinking" onchange="validateAPIConfig()" class="w-full border border-brand-border p-2 rounded bg-white text-xs">
+                                <option value="between_tools" selected>between_tools (Up-front off, active during tools)</option>
+                                <option value="adaptive">adaptive (Dynamic turn-by-turn thinking)</option>
+                                <option value="disabled">disabled (DEPRECATED - Legacy)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="cfg-toolchoice" class="block font-semibold text-brand-text mb-1">Tool Choice Setting:</label>
+                            <select id="cfg-toolchoice" onchange="validateAPIConfig()" class="w-full border border-brand-border p-2 rounded bg-white text-xs">
+                                <option value="auto" selected>auto (Required for Sonnet 5.5)</option>
+                                <option value="tool">tool (Forced tool choice - DEPRECATED)</option>
+                                <option value="any">any (Forced tool choice - DEPRECATED)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Output Validation Panel -->
+                    <div class="bg-slate-900 text-white p-4 rounded-xl font-mono text-xs flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                <span class="text-slate-400">API Status Checker</span>
+                                <span id="cfg-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-900 text-green-200">VALID CONFIG</span>
+                            </div>
+
+                            <div id="cfg-error-msg" class="text-slate-300 text-[11px] leading-relaxed">
+                                Options are valid for Claude Sonnet 5.5 production deployments.
+                            </div>
+
+                            <div class="text-slate-500 text-[10px] pt-2">Generated Payload Preview:</div>
+                            <pre id="cfg-json-preview" class="text-[11px] text-brand-terracotta bg-slate-950 p-2.5 rounded overflow-x-auto border border-slate-800">
+{
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "thinking": { "type": "between_tools" },
+  "tool_choice": { "type": "auto" }
+}
+                            </pre>
+                        </div>
+
+                        <div class="text-[10px] text-slate-400">
+                            * Remember: When iterating through responses, process content blocks dynamically by verifying <code>type === 'thinking' | 'text' | 'tool_use'</code>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-brand-border py-8 mt-12 text-xs text-brand-muted">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <span class="font-bold text-brand-text">Claude Sonnet 5.5 Architecture & Intelligence Report</span>
+                <p class="mt-0.5">Based on Anthropic Official Model Specifications, Empirical Benchmarks & System Cards (Sept 2026).</p>
+            </div>
+            <div class="flex space-x-4">
+                <a href="#architecture" class="hover:underline">Architecture</a>
+                <a href="#benchmarks" class="hover:underline">Benchmarks</a>
+                <a href="#economics" class="hover:underline">Economics</a>
+                <a href="#safety" class="hover:underline">Safety</a>
+                <a href="#migration" class="hover:underline">API Migration</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic & Chart.js Integration -->
+    <script>
+        // Global state for interactive components
+        let benchmarkChartInstance = null;
+        let effortChartInstance = null;
+
+        // Model Continuum Data
+        const continuumData = {
+            haiku: {
+                title: "Claude Haiku 5.5 — High-Volume Engine",
+                badge: "High-Volume / Latency-Sensitive",
+                desc: "Haiku 5.5 forms the high-throughput baseline of the model family. Engineered specifically for continuous task routing, micro-summarizations, latency-critical real-time chat, and ultra-low cost operations.",
+                bestFor: ["Real-time user input triage", "Micro-classifications & tagging", "High-volume data extraction", "Latency-critical webhooks"]
+            },
+            sonnet: {
+                title: "Claude Sonnet 5.5 — Operational Core",
+                badge: "Operational Workhorse & Coding Core",
+                desc: "Sonnet 5.5 serves as the fast, cost-optimized workhorse partner to Opus 5.5. It excels at bounded operational work, managing multi-file software repositories, terminal execution, slide/document visual design, and structured agentic tool loops.",
+                bestFor: ["Automated software PRs & bug fixes", "Terminal-Bench CLI execution", "Visual UI design & slide deck formatting", "Enterprise knowledge tasks (GDPval-AA)"]
+            },
+            opus: {
+                title: "Claude Opus 5.5 — Strategic Apex Engine",
+                badge: "Open-Ended Strategic Judgment",
+                desc: "Opus 5.5 is designed for open-ended, ambiguous research, deep strategic evaluation, complex legal/financial audits, and multi-day unconstrained reasoning tasks requiring sustained human-like judgment.",
+                bestFor: ["Open-ended strategic risk audits", "Complex cross-disciplinary research", "High-stakes legal contract analysis", "Systemic architecture redesigns"]
+            }
+        };
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', () => {
+            selectModelContinuum('sonnet');
+            toggleToolViz('batched');
+            initBenchmarkChart();
+            initEffortChart();
+            calculateROI();
+            runCyberSim('defensive');
+            validateAPIConfig();
+        });
+
+        // Continuum Selection Handler
+        function selectModelContinuum(modelKey) {
+            ['haiku', 'sonnet', 'opus'].forEach(key => {
+                const card = document.getElementById(`card-${key}`);
+                if (key === modelKey) {
+                    card.classList.add('border-brand-terracotta', 'bg-brand-terracotta/5');
+                    card.classList.remove('border-brand-border');
+                } else {
+                    card.classList.remove('border-brand-terracotta', 'bg-brand-terracotta/5');
+                    card.classList.add('border-brand-border');
+                }
+            });
+
+            const data = continuumData[modelKey];
+            const detailBox = document.getElementById('continuum-detail-box');
+            detailBox.innerHTML = `
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-brand-border pb-3">
+                    <h3 class="text-lg font-bold text-brand-text">${data.title}</h3>
+                    <span class="text-xs font-mono bg-brand-terracotta/10 text-brand-terracotta font-semibold px-2.5 py-1 rounded w-fit">${data.badge}</span>
+                </div>
+                <p class="text-xs sm:text-sm text-brand-muted leading-relaxed">${data.desc}</p>
+                <div>
+                    <div class="text-xs font-bold text-brand-text mb-2">Target Workload Specializations:</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        ${data.bestFor.map(item => `<div class="flex items-center space-x-2 text-brand-text"><span class="text-brand-terracotta">✔</span><span>${item}</span></div>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Batched vs Sequential Visualization Handler
+        function toggleToolViz(mode) {
+            const btnBatched = document.getElementById('btn-viz-batched');
+            const btnSeq = document.getElementById('btn-viz-seq');
+            const container = document.getElementById('tool-viz-container');
+
+            if (mode === 'batched') {
+                btnBatched.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-brand-terracotta text-white transition-all";
+                btnSeq.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all";
+                
+                container.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between text-xs font-bold text-brand-terracotta">
+                            <span>Sonnet 5.5 Single-Turn Batched Loop</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded font-mono">1 Network Turn (~0.4s total)</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
+                            <div class="bg-white p-2.5 rounded border border-brand-terracotta font-medium">1. Prompt Received</div>
+                            <div class="bg-brand-terracotta text-white p-2.5 rounded font-medium sm:col-span-2">
+                                2. Single Assistant Turn: Emits Tool A + Tool B + Tool C Concurrently
+                            </div>
+                            <div class="bg-white p-2.5 rounded border border-brand-border font-medium">3. Executed & Answered</div>
+                        </div>
+                        <p class="text-[11px] text-brand-muted">
+                            <strong>Result:</strong> Zero intermediate prompt re-processing latency. Reduced total output token count by up to 30%.
+                        </p>
+                    </div>
+                `;
+            } else {
+                btnSeq.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-brand-terracotta text-white transition-all";
+                btnBatched.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all";
+
+                container.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-700">
+                            <span>Sonnet 5 Legacy Sequential Loop</span>
+                            <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-mono">3 Network Turns (~1.8s total)</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-[11px]">
+                            <div class="bg-white p-2 rounded border border-slate-300">Turn 1: Emit Tool A ➔ Wait ➔ Process Response</div>
+                            <div class="bg-white p-2 rounded border border-slate-300">Turn 2: Re-prompt ➔ Emit Tool B ➔ Wait</div>
+                            <div class="bg-white p-2 rounded border border-slate-300">Turn 3: Re-prompt ➔ Emit Tool C ➔ Output</div>
+                        </div>
+                        <p class="text-[11px] text-brand-muted">
+                            <strong>Result:</strong> Repeated network turn-arounds, prompt re-processing overhead, and higher output token verbosity.
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        // Chart.js Benchmark Comparison Setup
+        const benchmarkData = {
+            labels: ['Terminal-Bench 4.0', 'FrontierCode (Xhigh)', 'CursorBench 4.0', 'GDPval-AA', 'AA-Briefcase', 'OSWorld 2.1', 'Chartography'],
+            datasets: [
+                {
+                    label: 'Claude Sonnet 5.5',
+                    data: [70.6, 52.1, 55.5, 92.2, 90.5, 80.1, 61.6], // GDPval & Briefcase scaled to % for display consistency
+                    backgroundColor: '#D97757',
+                    borderColor: '#C86537',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Claude Sonnet 5',
+                    data: [10.3, 42.4, 34.1, 72.4, 67.9, 57.0, 15.6],
+                    backgroundColor: '#CBD5E1',
+                    borderColor: '#94A3B8',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Claude Opus 5.5',
+                    data: [66.4, 54.4, 57.8, 92.3, 91.1, 81.8, 64.4],
+                    backgroundColor: '#1E293B',
+                    borderColor: '#0F172A',
+                    borderWidth: 1
+                },
+                {
+                    label: 'GPT-6 Sol',
+                    data: [0, 49.3, 0, 74.3, 74.1, 0, 53.6],
+                    backgroundColor: '#93C5FD',
+                    borderColor: '#3B82F6',
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        function initBenchmarkChart() {
+            const ctx = document.getElementById('benchmarkChart').getContext('2d');
+            benchmarkChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: benchmarkData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { font: { family: 'Inter', size: 11 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { callback: value => value + '%' }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 10 },
+                                callback: function(val, index) {
+                                    const raw = this.getLabelForValue(val);
+                                    return raw.length > 15 ? raw.substring(0, 14) + '…' : raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Benchmark Filter Handler
+        function updateBenchmarkChart(domain) {
+            const badge = document.getElementById('chart-domain-badge');
+            ['all', 'coding', 'knowledge', 'vision'].forEach(key => {
+                const btn = document.getElementById(`bm-filter-${key}`);
+                if (key === domain) {
+                    btn.className = "px-3 py-1.5 rounded-md text-xs font-medium bg-brand-text text-white";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-md text-xs font-medium bg-white border border-brand-border hover:bg-slate-50 text-brand-text";
+                }
+            });
+
+            let indices = [0, 1, 2, 3, 4, 5, 6];
+            if (domain === 'coding') {
+                indices = [0, 1, 2];
+                badge.innerText = "Agentic Coding Focus";
+            } else if (domain === 'knowledge') {
+                indices = [3, 4];
+                badge.innerText = "Knowledge Work Focus";
+            } else if (domain === 'vision') {
+                indices = [5, 6];
+                badge.innerText = "Computer Control & Vision Focus";
+            } else {
+                badge.innerText = "All Domains";
+            }
+
+            benchmarkChartInstance.data.labels = indices.map(i => benchmarkData.labels[i]);
+            benchmarkChartInstance.data.datasets.forEach((dataset, datasetIdx) => {
+                dataset.data = indices.map(i => benchmarkData.datasets[datasetIdx].data[i]);
+            });
+            benchmarkChartInstance.update();
+        }
+
+        // Chart.js Effort Curve Chart (Terminal-Bench Score vs Cost)
+        function initEffortChart() {
+            const ctx = document.getElementById('effortChart').getContext('2d');
+            effortChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Low Effort', 'Medium Effort', 'High Effort', 'Xhigh Effort', 'Max Effort'],
+                    datasets: [
+                        {
+                            label: 'Claude Sonnet 5.5',
+                            data: [20.0, 29.1, 43.2, 61.5, 70.6],
+                            borderColor: '#D97757',
+                            backgroundColor: '#D97757',
+                            tension: 0.2,
+                            borderWidth: 2,
+                            pointRadius: 5
+                        },
+                        {
+                            label: 'Claude Opus 5.5',
+                            data: [38.5, 57.8, 64.2, 66.4, 65.0],
+                            borderColor: '#1E293B',
+                            backgroundColor: '#1E293B',
+                            tension: 0.2,
+                            borderWidth: 2,
+                            pointRadius: 5
+                        },
+                        {
+                            label: 'Claude Sonnet 5',
+                            data: [3.2, 4.5, 4.5, 7.2, 10.3],
+                            borderColor: '#94A3B8',
+                            backgroundColor: '#94A3B8',
+                            borderDash: [5, 5],
+                            tension: 0.2,
+                            borderWidth: 2,
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 } } },
+                        tooltip: {
+                            callbacks: {
+                                footer: (items) => {
+                                    const index = items[0].dataIndex;
+                                    const costs = ["~$0.30", "~$0.70", "~$2.00", "~$5.50", "~$12.00"];
+                                    return `Est. Cost per attempt: ${costs[index]}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: { display: true, text: 'Terminal-Bench Score (%)', font: { size: 11 } },
+                            min: 0,
+                            max: 80
+                        }
+                    }
+                }
+            });
+        }
+
+        // Interactive Enterprise ROI Calculator
+        function calculateROI() {
+            const requests = parseInt(document.getElementById('range-requests').value);
+            const inputTokens = parseInt(document.getElementById('range-input-tokens').value);
+            const baseOutputTokens = parseInt(document.getElementById('range-output-tokens').value);
+            const tokenDrop = parseFloat(document.getElementById('select-token-drop').value);
+
+            // Display UI updates
+            document.getElementById('val-requests').innerText = requests.toLocaleString();
+            document.getElementById('val-input-tokens').innerText = inputTokens.toLocaleString();
+            document.getElementById('val-output-tokens').innerText = baseOutputTokens.toLocaleString();
+
+            // Pricing per 1M tokens
+            const priceInput = 2.00;
+            const priceOutput = 10.00;
+
+            // Legacy Sonnet 5 Monthly Cost (30 days)
+            const legacyDailyInputCost = (requests * inputTokens / 1000000) * priceInput;
+            const legacyDailyOutputCost = (requests * baseOutputTokens / 1000000) * priceOutput;
+            const legacyMonthlyTotal = (legacyDailyInputCost + legacyDailyOutputCost) * 30;
+
+            // Sonnet 5.5 Cost (Reduced output tokens via tool batching efficiency)
+            const newOutputTokens = baseOutputTokens * (1 - tokenDrop);
+            const newDailyInputCost = (requests * inputTokens / 1000000) * priceInput;
+            const newDailyOutputCost = (requests * newOutputTokens / 1000000) * priceOutput;
+            const newMonthlyTotal = (newDailyInputCost + newDailyOutputCost) * 30;
+
+            const monthlySavings = legacyMonthlyTotal - newMonthlyTotal;
+
+            document.getElementById('res-cost-legacy').innerText = `$${Math.round(legacyMonthlyTotal).toLocaleString()} / mo`;
+            document.getElementById('res-cost-new').innerText = `$${Math.round(newMonthlyTotal).toLocaleString()} / mo`;
+            document.getElementById('res-savings-net').innerText = `$${Math.round(monthlySavings).toLocaleString()} / mo`;
+        }
+
+        // Cybersecurity Fallback Decision Simulator
+        function runCyberSim(type) {
+            const btnDef = document.getElementById('sim-btn-def');
+            const btnOff = document.getElementById('sim-btn-off');
+            const btnVer = document.getElementById('sim-btn-ver');
+            const resultBox = document.getElementById('sim-result-box');
+
+            [btnDef, btnOff, btnVer].forEach(b => b.className = "px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all");
+
+            if (type === 'defensive') {
+                btnDef.className = "px-3 py-2 rounded-lg text-xs font-semibold bg-brand-terracotta text-white transition-all";
+                resultBox.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-brand-border pb-2">
+                        <span class="font-bold text-brand-text">Classifier Assessment: DEFENSIVE_DEV_WORKLOAD</span>
+                        <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded font-mono font-bold">Execution: Uninhibited</span>
+                    </div>
+                    <p class="text-brand-muted">
+                        Request detected as standard software vulnerability remediation or automated code debugging.
+                    </p>
+                    <div class="p-2.5 bg-white rounded border border-green-200 text-green-900 font-mono text-[11px]">
+                        ➜ Routed directly to <strong>Claude Sonnet 5.5</strong> (High effort, full throughput at 138 tok/s).
+                    </div>
+                `;
+            } else if (type === 'offensive') {
+                btnOff.className = "px-3 py-2 rounded-lg text-xs font-semibold bg-red-600 text-white transition-all";
+                resultBox.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-brand-border pb-2">
+                        <span class="font-bold text-red-700">Classifier Assessment: HIGH_RISK_OFFENSIVE_CYBER</span>
+                        <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-mono font-bold">Fallback Triggered</span>
+                    </div>
+                    <p class="text-brand-muted">
+                        Real-time safety classifiers flagged high-risk exploit payload synthesis or unmonitored offensive execution.
+                    </p>
+                    <div class="p-2.5 bg-white rounded border border-amber-300 text-amber-900 font-mono text-[11px]">
+                        ⚠️ Automatically fallen back to <strong>Claude Sonnet 5</strong> under standard safety constraints.
+                    </div>
+                `;
+            } else {
+                btnVer.className = "px-3 py-2 rounded-lg text-xs font-semibold bg-brand-navy text-white transition-all";
+                resultBox.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-brand-border pb-2">
+                        <span class="font-bold text-brand-text">Classifier Assessment: VERIFIED_CYBERDEFENDER_KEY</span>
+                        <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-mono font-bold">Verification Program Active</span>
+                    </div>
+                    <p class="text-brand-muted">
+                        Account verified under the Anthropic Cyber Verification Program.
+                    </p>
+                    <div class="p-2.5 bg-white rounded border border-blue-200 text-blue-900 font-mono text-[11px]">
+                        🛡️ Executed on <strong>Claude Sonnet 5.5</strong> with uninhibited defensive cybersecurity evaluation rights.
+                    </div>
+                `;
+            }
+        }
+
+        function showCyberSim(type) {
+            runCyberSim(type);
+            document.getElementById('cyber-sim').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Interactive API Parameter Configurator Validator
+        function validateAPIConfig() {
+            const effort = document.getElementById('cfg-effort').value;
+            const thinking = document.getElementById('cfg-thinking').value;
+            const toolChoice = document.getElementById('cfg-toolchoice').value;
+
+            const badge = document.getElementById('cfg-status-badge');
+            const errorMsg = document.getElementById('cfg-error-msg');
+            const preview = document.getElementById('cfg-json-preview');
+
+            let isValid = true;
+            let issues = [];
+
+            if (thinking === 'disabled') {
+                isValid = false;
+                issues.push("• 'thinking: disabled' is DEPRECATED on Sonnet 5.5 and returns HTTP 400. Use 'between_tools'.");
+            }
+
+            if (toolChoice === 'tool' || toolChoice === 'any') {
+                isValid = false;
+                issues.push(`• 'tool_choice: ${toolChoice}' (forced tool selection) returns HTTP 400. Use 'tool_choice: auto'.`);
+            }
+
+            if (thinking === 'between_tools' && (effort === 'xhigh' || effort === 'max')) {
+                isValid = false;
+                issues.push(`• 'between_tools' is permitted ONLY at low, medium, and high effort. It cannot be used with effort='${effort}'.`);
+            }
+
+            if (isValid) {
+                badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-green-900 text-green-200";
+                badge.innerText = "VALID CONFIG";
+                errorMsg.innerHTML = "<span class='text-green-400'>✔ Parameter configuration complies with Claude Sonnet 5.5 API requirements.</span>";
+            } else {
+                badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-red-900 text-red-200";
+                badge.innerText = "INVALID (HTTP 400)";
+                errorMsg.innerHTML = `<div class='text-red-400 font-bold mb-1'>API Validation Failed:</div>${issues.join('<br>')}`;
+            }
+
+            const jsonObj = {
+                model: "claude-sonnet-5-5",
+                effort: effort,
+                thinking: { type: thinking },
+                tool_choice: { type: toolChoice }
+            };
+            preview.innerText = JSON.stringify(jsonObj, null, 2);
+        }
+    </script>
+</body>
+</html>
