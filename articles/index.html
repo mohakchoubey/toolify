@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toolify — Latest Release, Weather & Web Apps</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#F8FAFC',
+                            card: '#FFFFFF',
+                            primary: '#4F46E5',
+                            primaryHover: '#4338CA',
+                            accent: '#D97757',
+                            dark: '#0F172A',
+                            text: '#1E293B',
+                            muted: '#64748B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F8FAFC;
+            color: #1E293B;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .pulse-badge {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col justify-between">
+
+<!-- Chosen Palette: Soft Slate Background (#F8FAFC), Deep Navy Headers (#0F172A), Indigo Primary (#4F46E5), Terracotta Highlight (#D97757) -->
+
+<!-- Application Structure Plan:
+     1. Sticky Navigation Header: Toolify logo, links to user's key projects in header dropdown/nav (Toolify Hub, Portfolio, Daily Echo, Chrome Portal, Weather Tool).
+     2. Live Weather & Local Clock Header Widget: Auto-detects user browser geolocation (with IP fallback), fetches temperature and weather state via Open-Meteo, and displays ticking real-time local clock.
+     3. Latest Release Banner (Latest Update): Prominently highlights "Claude Sonnet 5.5 Interactive Architecture & Performance Report" with direct button link to `articles/claude_sonnet_5_5_interactive_report.html`.
+     4. Site Directory Grid: Categorized cards pointing directly to user's provided sites and tools (Games, Productivity & Utilities, Personal Projects & Experiments).
+     5. Multi-Column Footer: Full list of user's provided links categorized cleanly.
+-->
+
+<!-- Visualization & Content Choices:
+     - Geolocation Weather & Time Widget -> Goal: Real-time user context -> Native Geolocation API + Open-Meteo free weather API + JS setInterval clock.
+     - Latest Release Card -> Goal: Immediate access to new article -> Bold gradient banner with CTA button pointing to `articles/claude_sonnet_5_5_interactive_report.html`.
+     - Sites & Tools Directory -> Goal: Organize user links -> Grouped HTML cards with hover states.
+     - Confirming NO SVG elements or Mermaid JS are used. Icons are text/emoji based.
+-->
+
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 px-4 sm:px-8 py-3.5 shadow-sm">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center justify-between w-full md:w-auto">
+                <a href="https://mohakchoubey.github.io/toolify/" class="flex items-center space-x-2">
+                    <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-black text-lg flex items-center justify-center shadow">T</span>
+                    <span class="font-bold text-xl tracking-tight text-slate-900">Toolify <span class="text-indigo-600 text-sm font-normal">Hub</span></span>
+                </a>
+                <span class="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-mono font-medium md:hidden">Latest Apps</span>
+            </div>
+
+            <!-- Quick Links in Header -->
+            <nav class="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-700">
+                <a href="https://mohakchoubey.github.io/" class="hover:text-indigo-600 transition-colors">Portfolio</a>
+                <a href="https://mohakchoubey.github.io/toolify/" class="hover:text-indigo-600 transition-colors">Toolify Main</a>
+                <a href="articles/claude_sonnet_5_5_interactive_report.html" class="text-brand-accent hover:underline">🚀 Sonnet 5.5 Report</a>
+                <a href="https://mohakdev1220.github.io/dailyecho/" class="hover:text-indigo-600 transition-colors">Daily Echo</a>
+                <a href="https://mohakdev1220.github.io/chromeportal/" class="hover:text-indigo-600 transition-colors">Chrome Portal</a>
+                <a href="https://mohakchoubey.github.io/toolify/games/chess/" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition-colors">Play Chess ♟️</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+        <!-- LOCATION, TIME & WEATHER WIDGET -->
+        <section class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-6 shadow-lg border border-slate-800">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                
+                <!-- Live Clock -->
+                <div class="space-y-1">
+                    <div class="text-xs font-mono text-indigo-300 uppercase tracking-wider flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-badge"></span>
+                        <span>Live Time & Date</span>
+                    </div>
+                    <div id="live-time" class="text-2xl sm:text-3xl font-extrabold font-mono text-white">
+                        --:--:--
+                    </div>
+                    <div id="live-date" class="text-xs text-slate-300 font-medium">
+                        Loading date...
+                    </div>
+                </div>
+
+                <!-- Live Location & Weather -->
+                <div class="md:col-span-2 bg-slate-800/80 border border-slate-700/80 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="text-xs text-slate-400 font-mono">📍 Your Detected Location:</div>
+                        <div id="location-name" class="text-base font-bold text-white flex items-center gap-1.5">
+                            <span>Detecting location...</span>
+                        </div>
+                        <button onclick="getUserLocation()" class="text-[11px] text-indigo-300 hover:underline flex items-center gap-1 font-mono">
+                            🔄 Refresh Location / Weather
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-3 bg-slate-900/90 px-4 py-2.5 rounded-lg border border-slate-700/60 w-full sm:w-auto">
+                        <span id="weather-icon" class="text-3xl">🌤️</span>
+                        <div>
+                            <div id="weather-temp" class="text-xl font-bold text-white font-mono">--°C</div>
+                            <div id="weather-desc" class="text-xs text-slate-300">Fetching weather...</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- LATEST RELEASE SECTION -->
+        <section class="space-y-4">
+            <div class="flex items-center space-x-2">
+                <span class="bg-brand-accent text-white font-bold text-[10px] px-2.5 py-1 rounded uppercase tracking-wider pulse-badge">Latest Release</span>
+                <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider">New Article & Research Interactive Report</h2>
+            </div>
+
+            <div class="bg-white rounded-2xl border-2 border-indigo-500/30 p-6 sm:p-8 shadow-md hover:shadow-lg transition-all space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl">📄</span>
+                        <span class="font-bold text-indigo-600 text-sm">Featured Intelligence Report</span>
+                    </div>
+                    <span class="text-xs text-slate-400 font-mono">September 2026</span>
+                </div>
+
+                <div class="space-y-3">
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+                        Claude Sonnet 5.5: Interactive Architecture, Benchmark & Migration Analysis
+                    </h1>
+                    <p class="text-sm text-slate-600 leading-relaxed max-w-4xl">
+                        Comprehensive interactive breakdown covering Anthropic's Claude Sonnet 5.5 model continuum, 70.6% Terminal-Bench 4.0 score leap, single-turn batched tool call latency optimization, sub-agent effort curves, cybersecurity safeguards, and developer API migration guidelines.
+                    </p>
+                </div>
+
+                <!-- Call to action button -->
+                <div class="flex flex-wrap items-center gap-4 pt-2">
+                    <a href="articles/claude_sonnet_5_5_interactive_report.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-md transition-all flex items-center space-x-2">
+                        <span>🚀 Read Latest Interactive Report</span>
+                        <span>➔</span>
+                    </a>
+                    <a href="https://mohakchoubey.github.io/toolify/articles/claude_sonnet_5_5_interactive_report.html" target="_blank" class="text-xs text-slate-500 hover:text-indigo-600 font-mono underline">
+                        Open Direct URL Link
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUICK DIRECTORY / MY SITES GRID -->
+        <section class="space-y-6">
+            <div class="border-b border-slate-200 pb-3">
+                <h2 class="text-xl font-bold text-slate-900">Explore Web Apps & Projects</h2>
+                <p class="text-xs text-slate-500 mt-1">Quick access links to custom web utilities, interactive tools, games, and experiment portals.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                <!-- Category 1: Toolify Tools -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all space-y-3">
+                    <div class="text-indigo-600 font-bold text-sm flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span>🛠️ Toolify Utilities</span>
+                        <span class="text-xs font-mono bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">6 Tools</span>
+                    </div>
+                    <ul class="space-y-2 text-xs">
+                        <li>
+                            <a href="https://mohakchoubey.github.io/toolify/trip-planner-tool-by-toolify?utm_source=dashboard" class="text-slate-700 hover:text-indigo-600 font-medium flex items-center justify-between">
+                                <span>✈️ Trip Planner Tool</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakchoubey.github.io/toolify/weather?utm_source=dashboard" class="text-slate-700 hover:text-indigo-600 font-medium flex items-center justify-between">
+                                <span>🌤️ Weather Forecast Tool</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakchoubey.github.io/toolify/Language-translation?utm_source=dashboard" class="text-slate-700 hover:text-indigo-600 font-medium flex items-center justify-between">
+                                <span>🌐 Language Translation</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakchoubey.github.io/toolify/website-previewer?utm_source=dashboard" class="text-slate-700 hover:text-indigo-600 font-medium flex items-center justify-between">
+                                <span>🖥️ Website Previewer</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakchoubey.github.io/toolify/pdf?utm_source=dashboard" class="text-slate-700 hover:text-indigo-600 font-medium flex items-center justify-between">
+                                <span>📄 PDF Tools Suite</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakchoubey.github.io/toolify/time?utm_source=dashboard" class="text-slate-700 hover:text-indigo-600 font-medium flex items-center justify-between">
+                                <span>⏱️ Time & World Clock</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Category 2: Interactive Games -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all space-y-3">
+                    <div class="text-emerald-600 font-bold text-sm flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span>🎮 Games & Simulations</span>
+                        <span class="text-xs font-mono bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">3 Games</span>
+                    </div>
+                    <ul class="space-y-2 text-xs">
+                        <li>
+                            <a href="https://mohakchoubey.github.io/toolify/games/flightsimulator" class="text-slate-700 hover:text-emerald-600 font-medium flex items-center justify-between">
+                                <span>✈️ Flight Simulator Game</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakchoubey.github.io/toolify/games/chess/" class="text-slate-700 hover:text-emerald-600 font-medium flex items-center justify-between">
+                                <span>♟️ Chess Game</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://japanese-eki-railway-station-model.github.io/" class="text-slate-700 hover:text-emerald-600 font-medium flex items-center justify-between">
+                                <span>🪧 Japanese Railway Station Model</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Category 3: Developer Portals & Portfolios -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all space-y-3">
+                    <div class="text-brand-accent font-bold text-sm flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span>🌟 Portfolios & Hubs</span>
+                        <span class="text-xs font-mono bg-orange-50 text-orange-700 px-2 py-0.5 rounded">5 Sites</span>
+                    </div>
+                    <ul class="space-y-2 text-xs">
+                        <li>
+                            <a href="https://mohakchoubey.github.io/" class="text-slate-700 hover:text-brand-accent font-medium flex items-center justify-between">
+                                <span>👤 Main Portfolio</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakchoubey.github.io/toolify/" class="text-slate-700 hover:text-brand-accent font-medium flex items-center justify-between">
+                                <span>🧰 Toolify Platform Main</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakdev1220.github.io/dailyecho/" class="text-slate-700 hover:text-brand-accent font-medium flex items-center justify-between">
+                                <span>📰 Daily Echo Portal</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakdev1220.github.io/chromeportal/" class="text-slate-700 hover:text-brand-accent font-medium flex items-center justify-between">
+                                <span>🌐 Chrome Portal</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakchoubey.github.io/toolify/Word-On-Toolify/?utm_source=dashboard" class="text-slate-700 hover:text-brand-accent font-medium flex items-center justify-between">
+                                <span>📝 Word On Toolify</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Category 4: Learning & Productivity -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all space-y-3">
+                    <div class="text-purple-600 font-bold text-sm flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span>📚 Learning & Finance</span>
+                        <span class="text-xs font-mono bg-purple-50 text-purple-700 px-2 py-0.5 rounded">3 Apps</span>
+                    </div>
+                    <ul class="space-y-2 text-xs">
+                        <li>
+                            <a href="https://mohakdev1220.github.io/formulas/" class="text-slate-700 hover:text-purple-600 font-medium flex items-center justify-between">
+                                <span>📐 Formulas Reference</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakdev1220.github.io/finance/" class="text-slate-700 hover:text-purple-600 font-medium flex items-center justify-between">
+                                <span>💰 Finance Tools</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakdev1220.github.io/facts/" class="text-slate-700 hover:text-purple-600 font-medium flex items-center justify-between">
+                                <span>💡 Interactive Facts Hub</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Category 5: Experiments & Productivity Alarms -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-all space-y-3">
+                    <div class="text-blue-600 font-bold text-sm flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span>🧪 Experiments & Activities</span>
+                        <span class="text-xs font-mono bg-blue-50 text-blue-700 px-2 py-0.5 rounded">3 Apps</span>
+                    </div>
+                    <ul class="space-y-2 text-xs">
+                        <li>
+                            <a href="https://mohakdev1220.github.io/gatividhiya/" class="text-slate-700 hover:text-blue-600 font-medium flex items-center justify-between">
+                                <span>🎯 Gatividhiya (Activities)</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakdev1220.github.io/experiments/" class="text-slate-700 hover:text-blue-600 font-medium flex items-center justify-between">
+                                <span>🔬 Lab Experiments</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://mohakdev1220.github.io/experiments/wake-up-and-study-alarm" class="text-slate-700 hover:text-blue-600 font-medium flex items-center justify-between">
+                                <span>⏰ Wake Up & Study Alarm</span>
+                                <span class="text-slate-400">➔</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-8 text-xs text-slate-500 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div>
+                    <h3 class="font-bold text-slate-800 mb-2">Featured Report</h3>
+                    <ul class="space-y-1.5">
+                        <li><a href="articles/claude_sonnet_5_5_interactive_report.html" class="text-brand-accent font-semibold hover:underline">Claude Sonnet 5.5 Report</a></li>
+                        <li><a href="https://mohakchoubey.github.io/toolify/" class="hover:text-indigo-600">Toolify Main</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800 mb-2">My Portfolios</h3>
+                    <ul class="space-y-1.5">
+                        <li><a href="https://mohakchoubey.github.io/" class="hover:text-indigo-600">Mohak Choubey Portfolio</a></li>
+                        <li><a href="https://mohakdev1220.github.io/dailyecho/" class="hover:text-indigo-600">Daily Echo</a></li>
+                        <li><a href="https://mohakdev1220.github.io/chromeportal/" class="hover:text-indigo-600">Chrome Portal</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800 mb-2">Games & Tools</h3>
+                    <ul class="space-y-1.5">
+                        <li><a href="https://mohakchoubey.github.io/toolify/games/chess/" class="hover:text-indigo-600">Chess Game</a></li>
+                        <li><a href="https://mohakchoubey.github.io/toolify/games/flightsimulator" class="hover:text-indigo-600">Flight Simulator</a></li>
+                        <li><a href="https://mohakchoubey.github.io/toolify/trip-planner-tool-by-toolify?utm_source=dashboard" class="hover:text-indigo-600">Trip Planner</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800 mb-2">Learning & Experiments</h3>
+                    <ul class="space-y-1.5">
+                        <li><a href="https://mohakdev1220.github.io/formulas/" class="hover:text-indigo-600">Formulas</a></li>
+                        <li><a href="https://mohakdev1220.github.io/finance/" class="hover:text-indigo-600">Finance</a></li>
+                        <li><a href="https://mohakdev1220.github.io/experiments/wake-up-and-study-alarm" class="hover:text-indigo-600">Study Alarm</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-100 pt-4 flex flex-col md:flex-row items-center justify-between gap-3">
+                <div class="flex items-center space-x-2">
+                    <span class="w-6 h-6 rounded bg-indigo-600 text-white font-black text-xs flex items-center justify-center">T</span>
+                    <span class="font-bold text-slate-800">Toolify Web Portal</span>
+                </div>
+                <div class="text-[11px] text-slate-400">
+                    © 2026 Mohak Choubey. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Live Clock & Geolocation Weather -->
+    <script>
+        // 1. Dynamic Clock Functionality
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString(undefined, options);
+
+            document.getElementById('live-time').textContent = timeString;
+            document.getElementById('live-date').textContent = dateString;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 2. Geolocation & Weather Fetching
+        function getUserLocation() {
+            const locationEl = document.getElementById('location-name');
+            const tempEl = document.getElementById('weather-temp');
+            const descEl = document.getElementById('weather-desc');
+            const iconEl = document.getElementById('weather-icon');
+
+            locationEl.innerHTML = '<span>Detecting location...</span>';
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        fetchCityName(lat, lon);
+                        fetchWeatherData(lat, lon);
+                    },
+                    (error) => {
+                        console.warn("Geolocation denied or unavailable, using IP fallback.");
+                        fetchIpLocation();
+                    },
+                    { timeout: 7000 }
+                );
+            } else {
+                fetchIpLocation();
+            }
+        }
+
+        // Fallback Location via IP
+        async function fetchIpLocation() {
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                if (data && data.latitude && data.longitude) {
+                    document.getElementById('location-name').textContent = `${data.city || 'Local Area'}, ${data.country_name || ''}`;
+                    fetchWeatherData(data.latitude, data.longitude);
+                } else {
+                    document.getElementById('location-name').textContent = 'Location unavailable';
+                }
+            } catch (err) {
+                document.getElementById('location-name').textContent = 'Indore, India (Default)';
+                fetchWeatherData(22.7196, 75.8577);
+            }
+        }
+
+        // Reverse Geocoding City Name
+        async function fetchCityName(lat, lon) {
+            try {
+                const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+                const data = await res.json();
+                const locality = data.locality || data.city || data.principalSubdivision || 'Detected Location';
+                const country = data.countryName || '';
+                document.getElementById('location-name').textContent = `${locality}${country ? ', ' + country : ''}`;
+            } catch (e) {
+                document.getElementById('location-name').textContent = `Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`;
+            }
+        }
+
+        // Open-Meteo Weather API
+        async function fetchWeatherData(lat, lon) {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data && data.current_weather) {
+                    const temp = Math.round(data.current_weather.temperature);
+                    const code = data.current_weather.weathercode;
+
+                    document.getElementById('weather-temp').textContent = `${temp}°C`;
+                    const weatherMeta = getWeatherInterpretation(code);
+                    document.getElementById('weather-desc').textContent = weatherMeta.desc;
+                    document.getElementById('weather-icon').textContent = weatherMeta.icon;
+                }
+            } catch (e) {
+                document.getElementById('weather-temp').textContent = '--°C';
+                document.getElementById('weather-desc').textContent = 'Weather sync failed';
+            }
+        }
+
+        // Map WMO Weather Codes to text & icon
+        function getWeatherInterpretation(code) {
+            if (code === 0) return { desc: 'Clear Sky', icon: '☀️' };
+            if (code >= 1 && code <= 3) return { desc: 'Partly Cloudy', icon: '🌤️' };
+            if (code >= 45 && code <= 48) return { desc: 'Foggy', icon: '🌫️' };
+            if (code >= 51 && code <= 67) return { desc: 'Light Rain', icon: '🌧️' };
+            if (code >= 71 && code <= 77) return { desc: 'Snowfall', icon: '❄️' };
+            if (code >= 80 && code <= 82) return { desc: 'Rain Showers', icon: '🌦️️' };
+            if (code >= 95) return { desc: 'Thunderstorm', icon: '🌩️' };
+            return { desc: 'Pleasant', icon: '🌡️' };
+        }
+
+        // Initial trigger on load
+        document.addEventListener('DOMContentLoaded', getUserLocation);
+    </script>
+</body>
+</html>
