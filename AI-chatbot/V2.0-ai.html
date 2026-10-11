@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>Toolify AI</title>
+<link rel="icon" href="https://mohakchoubey.github.io/toolify/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#212121;--side:#171717;--surf:#2f2f2f;--bd:#3a3a3a;--tx:#ececec;--tx2:#a1a1a1;--ac:#7c6cff;--ac2:#6a5af0}
+[data-theme=light]{--bg:#fff;--side:#f7f7f8;--surf:#f1f1f3;--bd:#e4e4e8;--tx:#1b1b1f;--tx2:#6b6b76}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{height:100%;overflow:hidden}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tx);display:flex;height:100dvh;transition:background .25s,color .25s}
+button,select{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
+a{color:inherit}
+#side{width:272px;background:var(--side);border-right:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0;z-index:50;transition:transform .25s,margin .25s}
+body.sc #side{margin-left:-272px}
+.sh{padding:14px 14px 8px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+.lg{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--ac),#c05cf2);display:grid;place-items:center;color:#fff;font-size:15px;overflow:hidden;flex-shrink:0}
+.lg img{width:100%;height:100%;object-fit:cover}
+.nc{margin:8px 12px;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;transition:background .15s}
+.nc:hover{background:var(--surf)}.nc kbd{margin-left:auto;font-size:11px;color:var(--tx2)}
+#list{flex:1;overflow-y:auto;padding:4px 8px}
+.ci{display:flex;align-items:center;gap:4px;padding:9px 10px;border-radius:10px;font-size:14px;cursor:pointer;color:var(--tx2)}
+.ci span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
+.ci:hover,.ci.on{background:var(--surf);color:var(--tx)}
+.ci b{font-weight:400;opacity:.6;padding:2px 5px;border-radius:6px;font-size:12px}.ci b:hover{opacity:1;background:var(--bd)}
+@media(hover:hover){.ci b{display:none}.ci:hover b{display:block}}
+#guestbox{margin:8px 12px;padding:14px;border:1px dashed var(--bd);border-radius:12px;font-size:13px;color:var(--tx2);line-height:1.5}
+.pbtn{background:var(--ac);color:#fff;border-radius:10px;padding:10px 16px;font-weight:600;font-size:14px;transition:background .15s}.pbtn:hover{background:var(--ac2)}
+#guestbox .pbtn{margin-top:10px;width:100%}
+.sf{padding:12px;border-top:1px solid var(--bd);display:flex;align-items:center;gap:10px}
+#uav{width:34px;height:34px;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px;overflow:hidden;flex-shrink:0}
+#uav img{width:100%;height:100%;object-fit:cover}
+.ui{flex:1;min-width:0}.ui div:first-child{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ui div:last-child{font-size:11px;color:var(--tx2)}
+#signout-btn{font-size:12px;color:var(--tx2);padding:6px 8px;border-radius:8px}#signout-btn:hover{background:var(--surf)}
+#ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40}
+main{flex:1;display:flex;flex-direction:column;min-width:0}
+header{height:56px;padding:0 12px;padding-top:env(safe-area-inset-top);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.ib{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:18px;color:var(--tx2);flex-shrink:0}.ib:hover{background:var(--surf);color:var(--tx)}
+.ttl{font-weight:600;font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:4px}
+.chip{display:flex;gap:6px;align-items:center;padding:6px 12px;border-radius:20px;background:var(--surf);font-size:12px;text-decoration:none;color:var(--tx2);white-space:nowrap}.chip:hover{color:var(--tx)}
+#signin-btn{padding:8px 14px;font-size:13px}
+#scroll{flex:1;overflow-y:auto;scroll-behavior:smooth;overscroll-behavior:contain}
+.wrap{max-width:780px;margin:0 auto;padding:12px 16px 20px}
+#welcome{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:24px 16px}
+#welcome .lg{width:60px;height:60px;border-radius:17px;font-size:28px}
+#hello{font-size:clamp(22px,5vw,32px);font-weight:700}
+.sub{color:var(--tx2);font-size:14px}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:560px;width:100%;margin-top:10px}
+.sc{padding:14px;border:1px solid var(--bd);border-radius:14px;text-align:left;font-size:13px;color:var(--tx2);transition:all .15s;line-height:1.4}
+.sc:hover{background:var(--surf);color:var(--tx)}.sc i{display:block;font-style:normal;font-size:18px;margin-bottom:6px}
+.m{display:flex;gap:12px;margin:18px 0;animation:up .25s ease}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.m.u{justify-content:flex-end}
+.bub{font-size:15px;line-height:1.7;word-break:break-word;min-width:0}
+.m.u .bub{background:var(--surf);padding:10px 16px;border-radius:20px;max-width:85%;white-space:pre-wrap}
+.m.a .av{width:30px;height:30px;border-radius:50%;margin-top:2px}
+.col{flex:1;min-width:0}
+.bub p{margin:0 0 10px}.bub p:last-child{margin:0}
+.bub h2,.bub h3,.bub h4,.bub h5{margin:14px 0 6px;line-height:1.3}.bub h2{font-size:19px}.bub h3{font-size:17px}.bub h4,.bub h5{font-size:15px}
+.bub ul,.bub ol{margin:6px 0 10px 22px}.bub li{margin:3px 0}
+.bub hr{border:none;border-top:1px solid var(--bd);margin:14px 0}
+.bub blockquote{border-left:3px solid var(--ac);padding:4px 12px;margin:8px 0;color:var(--tx2)}
+.bub code{background:var(--surf);padding:2px 6px;border-radius:6px;font-size:13px}
+.bub a{color:var(--ac)}.bub a.lk{display:inline-flex;align-items:center;gap:4px;background:var(--ac);color:#fff;padding:3px 12px;border-radius:999px;text-decoration:none;font-size:13px;font-weight:600;margin:2px 0}
+.cb,.tb{border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin:10px 0;background:var(--side)}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:6px 10px 6px 14px;background:var(--surf);font-size:12px;color:var(--tx2)}
+.ch button{font-size:12px;color:var(--tx2);padding:4px 8px;border-radius:6px}.ch button:hover{background:var(--bd);color:var(--tx)}
+.cb pre{padding:14px;overflow-x:auto;font-size:13px;line-height:1.55;color:#e8e8f0;background:#0d0d10}.cb pre code{background:none;padding:0;color:inherit}
+.ts{overflow-x:auto}.bub table{border-collapse:collapse;width:100%;font-size:14px}
+.bub th,.bub td{padding:9px 14px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+.bub th{background:var(--surf);font-weight:600}.bub tr:last-child td{border-bottom:none}
+.wc{background:linear-gradient(135deg,#3b5bdb,#7c6cff);color:#fff;border-radius:18px;padding:18px;max-width:340px}
+.wc .t{display:flex;align-items:center;gap:12px}.wc .t b{font-size:40px;font-weight:700}.wc .t span{font-size:44px}
+.wc small{display:block;opacity:.85;margin-top:2px}
+.wc .d{display:flex;gap:14px;font-size:12px;margin:12px 0;opacity:.95;flex-wrap:wrap}
+.wc .f{display:flex;gap:8px}.wc .f div{flex:1;background:rgba(255,255,255,.16);border-radius:12px;padding:8px;text-align:center;font-size:12px}
+.badge{display:inline-block;font-size:11px;color:var(--ac);background:rgba(124,108,255,.12);padding:2px 8px;border-radius:10px;margin-bottom:6px}
+.acts{display:flex;gap:2px;margin-top:6px}.acts button{width:30px;height:30px;border-radius:8px;font-size:14px;opacity:.6}.acts button:hover,.acts button.on{opacity:1;background:var(--surf)}
+.m.a:not(:last-child) [data-act=regen]{display:none}
+.dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--tx2);margin:8px 2px;animation:bl 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,100%{opacity:.25}50%{opacity:1}}
+#comp{padding:8px 16px;padding-bottom:max(10px,env(safe-area-inset-bottom));flex-shrink:0}
+.box{max-width:780px;margin:0 auto;background:var(--surf);border:1px solid var(--bd);border-radius:24px;padding:10px 10px 8px 18px;transition:border-color .2s}
+.box:focus-within{border-color:var(--ac)}
+#inp{width:100%;background:none;border:none;outline:none;resize:none;color:var(--tx);font:inherit;font-size:16px;line-height:1.5;max-height:160px;padding:4px 0;display:block}
+#inp::placeholder{color:var(--tx2)}
+.ctl{display:flex;align-items:center;gap:6px;margin-top:6px}.ctl .sp{flex:1}
+.pill{font-size:12px;color:var(--tx2);padding:5px 10px;border-radius:999px;border:1px solid var(--bd);white-space:nowrap;background:transparent}
+.pill:hover,.pill.on{color:var(--tx);border-color:var(--ac)}.pill.on{background:rgba(124,108,255,.14)}
+select.pill{appearance:none;-webkit-appearance:none;padding-right:10px}select.pill option{background:var(--bg);color:var(--tx)}
+#send{width:36px;height:36px;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;flex-shrink:0;font-size:15px}
+#send:disabled{background:var(--bd);cursor:not-allowed}
+.foot{text-align:center;font-size:11.5px;color:var(--tx2);margin-top:8px}.foot a{text-decoration:underline}
+.md{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.md.on{display:flex}
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:20px;padding:24px;width:100%;max-width:400px;text-align:center;animation:up .2s}
+.card h3{font-size:18px;margin-bottom:8px}.card p{font-size:14px;color:var(--tx2);margin-bottom:16px;line-height:1.5}
+.card .pbtn{width:100%}.card .gh{margin-top:8px;width:100%;padding:10px;color:var(--tx2);font-size:13px}
+.keys{text-align:left;font-size:14px}.keys div{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bd)}.keys kbd{background:var(--surf);padding:2px 8px;border-radius:6px;font-size:12px}
+#fs{padding:0;align-items:stretch}.fsb{background:var(--bg);width:100%;height:100%;display:flex;flex-direction:column}
+.fsb>div:first-child{display:flex;justify-content:flex-end;padding:10px 14px;border-bottom:1px solid var(--bd)}
+#fsc{flex:1;overflow:auto;padding:16px}#fsc pre{padding:16px;font-size:14px;background:#0d0d10;color:#e8e8f0;border-radius:12px}#fsc table{border-collapse:collapse;font-size:15px;min-width:60%}
+#fsc th,#fsc td{padding:10px 16px;text-align:left;border-bottom:1px solid var(--bd)}#fsc th{background:var(--surf)}
+@media(max-width:900px){#side{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);margin-left:0!important}#side.open{transform:none}#ov.on{display:block}.chip .wt,#kb{display:none}}
+@media(max-width:700px){.sg{display:none}.wrap{padding:8px 12px}}
+</style>
+</head>
+<body>
+<aside id="side">
+  <div class="sh"><div class="lg"></div>Toolify AI</div>
+  <button class="nc" onclick="newChat()">＋ New chat <kbd>Ctrl K</kbd></button>
+  <div id="list"></div>
+  <div id="guestbox">Sign in to save your chats and continue on any device.<button class="pbtn" onclick="signIn()">Sign in</button></div>
+  <div class="sf">
+    <div id="uav">G</div>
+    <div class="ui"><div id="uname">Guest</div><div id="ustat">Not signed in</div></div>
+    <button id="signout-btn" onclick="signOutUser()" hidden>Sign out</button>
+  </div>
+</aside>
+<div id="ov" onclick="toggleSide()"></div>
+
+<main>
+  <header>
+    <button class="ib" onclick="toggleSide()" aria-label="Toggle sidebar" title="Sidebar (Ctrl+B)">☰</button>
+    <div class="ttl" id="ttl">Toolify AI</div>
+    <a class="chip" href="https://mohakchoubey.github.io/toolify/weather?utm_source=dashboard"><span id="wi">🌤</span><span class="wt" id="wt">Weather</span></a>
+    <button class="ib" id="kb" onclick="openM('m-keys')" aria-label="Shortcuts" title="Shortcuts">⌨</button>
+    <button class="ib" id="tb" onclick="toggleTheme()" aria-label="Toggle theme" title="Theme (Ctrl+Shift+L)">☀️</button>
+    <button class="pbtn" id="signin-btn" onclick="signIn()">Sign in</button>
+  </header>
+  <div id="scroll">
+    <div id="welcome">
+      <div class="lg"></div>
+      <div id="hello">Hello</div>
+      <div class="sub">Welcome to Toolify AI. How can I help you today?</div>
+      <div class="sg">
+        <button class="sc" data-q="What tools does Toolify have? Show links"><i>🧰</i>What tools does Toolify have?</button>
+        <button class="sc" data-q="Weather in Indore"><i>🌦</i>Weather in Indore</button>
+        <button class="sc" data-q="Compare Python, JavaScript and Java in a table"><i>📊</i>Compare Python, JS &amp; Java</button>
+        <button class="sc" data-q="Latest AI news today"><i>🌐</i>Latest AI news</button>
+      </div>
+    </div>
+    <div class="wrap" id="msgs"></div>
+  </div>
+  <div id="comp">
+    <div class="box">
+      <textarea id="inp" rows="1" placeholder="Message Toolify AI"></textarea>
+      <div class="ctl">
+        <select class="pill" id="mode" title="Mode"><option value="fast">⚡ Fast</option><option value="smart">✨ Smart</option><option value="think">🧠 Think</option></select>
+        <button class="pill" id="sm" title="Web search (Ctrl+Shift+S)"></button>
+        <button class="pill" id="dt" title="Answer length"></button>
+        <span class="sp"></span>
+        <button id="send" onclick="send()" aria-label="Send">➤</button>
+      </div>
+    </div>
+    <div class="foot">Toolify AI can make mistakes, verify it · <a id="lt" target="_blank" rel="noopener">Terms</a> · <a id="lp" target="_blank" rel="noopener">Privacy Policy</a></div>
+  </div>
+</main>
+
+<div class="md" id="m-limit"><div class="card">
+  <div style="font-size:34px;margin-bottom:8px">🔐</div>
+  <h3>Sign in to continue</h3>
+  <p>You've used your free messages. Sign in to keep chatting and save your chat history.</p>
+  <button class="pbtn" onclick="signIn()">Sign in</button>
+  <button class="gh" onclick="closeM('m-limit')">Not now</button>
+</div></div>
+
+<div class="md" id="m-keys"><div class="card">
+  <h3>Keyboard shortcuts</h3><br>
+  <div class="keys">
+    <div>New chat<kbd>Ctrl + K</kbd></div><div>Toggle sidebar<kbd>Ctrl + B</kbd></div>
+    <div>Focus message box<kbd>Ctrl + /</kbd></div><div>Light / dark theme<kbd>Ctrl + Shift + L</kbd></div>
+    <div>Web search: Auto / On / Off<kbd>Ctrl + Shift + S</kbd></div><div>Send<kbd>Enter</kbd></div>
+    <div>New line<kbd>Shift + Enter</kbd></div><div>Close popup / fullscreen<kbd>Esc</kbd></div>
+  </div><br><button class="pbtn" onclick="closeM('m-keys')">Got it</button>
+</div></div>
+
+<div class="md" id="fs"><div class="fsb"><div><button class="pbtn" onclick="closeM('fs')">✕ Close</button></div><div id="fsc"></div></div></div>
+
+<script type="module">
+// ================= CONFIG =================
+const WORKER_URL='https://toolify.mohakchoubey.workers.dev';
+const FIREBASE_CONFIG={apiKey:"AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",authDomain:"toolbox-hub-98c03.firebaseapp.com",projectId:"toolbox-hub-98c03",storageBucket:"toolbox-hub-98c03.firebasestorage.app",messagingSenderId:"321020105472",appId:"1:321020105472:web:356e7c2903def7b9d859e5"};
+const ROOT='https://mohakchoubey.github.io/',SITE=ROOT+'toolify';
+const CHAT_URL=SITE+'/AI-chatbot/',LOGIN_URL=SITE+'/login.html',LOGO=SITE+'/favicon.png';
+const TERMS_URL=SITE+'/terms',PRIVACY_URL=SITE+'/privacy';
+const FREE_MSGS=3;
+
+// ================= HELPERS =================
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ls={get:k=>{try{return localStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch{}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const logo=()=>`<img src="${LOGO}" alt="" onerror="this.parentNode.textContent='✦'">`;
+document.querySelectorAll('.lg').forEach(e=>e.innerHTML=logo());
+let user=null,fb=null,chats=[],cur={id:null,name:'',messages:[]},busy=false,authDone;
+const authReady=Promise.race([new Promise(r=>authDone=r),sleep(4000)]);
+async function copyText(t){try{await navigator.clipboard.writeText(t)}catch{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch{}a.remove()}}
+const flash=(b,t)=>{const o=b.textContent;b.textContent=t;setTimeout(()=>b.textContent=o,1200)};
+
+// ================= THEME / SIDEBAR / MODALS =================
+function applyTheme(t){document.documentElement.dataset.theme=t;$('tb').textContent=t==='dark'?'☀️':'🌙'}
+window.toggleTheme=()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';ls.set('tg_theme',t);applyTheme(t)};
+applyTheme(ls.get('tg_theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'));
+$('lt').href=TERMS_URL;$('lp').href=PRIVACY_URL;
+window.toggleSide=()=>{if(innerWidth<=900){$('side').classList.toggle('open');$('ov').classList.toggle('on',$('side').classList.contains('open'))}else document.body.classList.toggle('sc')};
+const closeSide=()=>{$('side').classList.remove('open');$('ov').classList.remove('on')};
+window.openM=id=>$(id).classList.add('on');
+window.closeM=id=>$(id).classList.remove('on');
+document.querySelectorAll('.md').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on')}));
+
+// ================= PREFS (mode / search / length) =================
+const P={mode:ls.get('tg_mode')||'smart',sm:+ls.get('tg_sm')||0,dt:ls.get('tg_dt')==='1'};
+const SML=['🌐 Search: Auto','🌐 Search: On','🌐 Search: Off'];
+function paintPrefs(){$('mode').value=P.mode;$('sm').textContent=SML[P.sm];$('sm').classList.toggle('on',P.sm===1);$('dt').textContent=P.dt?'📝 Detailed':'⚡ Short';$('dt').classList.toggle('on',P.dt)}
+$('mode').onchange=e=>{P.mode=e.target.value;ls.set('tg_mode',P.mode)};
+const cycleSearch=()=>{P.sm=(P.sm+1)%3;ls.set('tg_sm',P.sm);paintPrefs()};
+$('sm').onclick=cycleSearch;
+$('dt').onclick=()=>{P.dt=!P.dt;ls.set('tg_dt',P.dt?'1':'0');paintPrefs()};
+paintPrefs();
+
+// ================= AUTH =================
+window.signIn=()=>{location.href=LOGIN_URL+'?redirect='+encodeURIComponent(CHAT_URL)};
+window.signOutUser=async()=>{try{await fb.Au.signOut(fb.auth)}catch{}chats=[];newChat()};
+const first=()=>user?(user.displayName||user.email||'').split(/[ @]/)[0]:'';
+function greet(){const h=new Date().getHours();return h<5?'Good night 🌙':h<12?'Good morning ☀️':h<17?'Good afternoon 🌤️':h<21?'Good evening 🌆':'Good night 🌙'}
+function paintUser(){
+  const n=first();
+  $('uname').textContent=user?(user.displayName||user.email):'Guest';
+  $('ustat').textContent=user?'Signed in':'Not signed in';
+  $('uav').innerHTML=user?.photoURL?`<img src="${esc(user.photoURL)}" alt="" referrerpolicy="no-referrer">`:esc((n||'G')[0].toUpperCase());
+  $('signin-btn').hidden=!!user;$('signout-btn').hidden=!user;$('guestbox').hidden=!!user;
+  $('hello').textContent=greet()+(n?', '+n:'')+'!';
+  renderList();
+}
+async function initFirebase(){
+  if(!FIREBASE_CONFIG.apiKey){authDone();return}
+  try{
+    const b='https://www.gstatic.com/firebasejs/10.12.2/';
+    const [A,Au,F]=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);
+    const app=A.getApps().length?A.getApp():A.initializeApp(FIREBASE_CONFIG);
+    fb={auth:Au.getAuth(app),db:F.getFirestore(app),Au,F};
+    Au.onAuthStateChanged(fb.auth,async u=>{
+      user=u;
+      if(u)await loadChats().catch(e=>console.warn('load chats',e));
+      paintUser();authDone();
+      if(u){let p=null;try{p=sessionStorage.getItem('tg_pending');sessionStorage.removeItem('tg_pending')}catch{}if(p){$('inp').value=p;$('inp').focus()}}
+    });
+  }catch(e){console.warn('firebase',e);authDone()}
+}
+
+// ================= CHATS (Firestore, sirf signed-in) =================
+async function loadChats(){
+  const {F,db}=fb;
+  chats=(await F.getDocs(F.query(F.collection(db,'users',user.uid,'chats'),F.orderBy('updated','desc')))).docs.map(d=>({id:d.id,...d.data()}));
+}
+async function saveChat(){
+  if(!user||!fb)return;
+  if(!cur.id)cur.id=Date.now().toString(36);
+  const data={name:cur.name,messages:cur.messages.slice(-100),updated:Date.now()};
+  try{
+    await fb.F.setDoc(fb.F.doc(fb.db,'users',user.uid,'chats',cur.id),data);
+    const i=chats.findIndex(c=>c.id===cur.id);
+    i<0?chats.unshift({id:cur.id,...data}):Object.assign(chats[i],data);
+    chats.sort((a,b)=>b.updated-a.updated);renderList();
+  }catch(e){console.warn('save failed',e)}
+}
+function renderList(){
+  $('list').innerHTML=chats.map(c=>`<div class="ci ${c.id===cur.id?'on':''}" data-id="${esc(c.id)}"><span>${esc(c.name)}</span><b data-a="r">✎</b><b data-a="d">🗑</b></div>`).join('');
+}
+$('list').addEventListener('click',async e=>{
+  const ci=e.target.closest('.ci');if(!ci||busy)return;
+  const id=ci.dataset.id,a=e.target.dataset.a,c=chats.find(x=>x.id===id);if(!c)return;
+  if(a==='r'){const n=prompt('Rename chat',c.name);if(n&&n.trim()){c.name=n.trim().slice(0,60);if(cur.id===id){cur.name=c.name;$('ttl').textContent=c.name}try{await fb.F.setDoc(fb.F.doc(fb.db,'users',user.uid,'chats',id),{name:c.name},{merge:true})}catch{}renderList()}}
+  else if(a==='d'){if(!confirm('Delete this chat?'))return;try{await fb.F.deleteDoc(fb.F.doc(fb.db,'users',user.uid,'chats',id))}catch{}chats=chats.filter(x=>x.id!==id);if(cur.id===id)newChat();else renderList()}
+  else{cur={id:c.id,name:c.name,messages:[...c.messages]};$('msgs').innerHTML='';cur.messages.forEach((m,i)=>m.role==='user'?addUser(m.content,i):addAI(m,i,true));$('welcome').hidden=true;$('ttl').textContent=c.name;renderList();closeSide();$('scroll').scrollTop=1e9}
+});
+window.newChat=()=>{if(busy)return;cur={id:null,name:'',messages:[]};$('msgs').innerHTML='';$('welcome').hidden=false;$('ttl').textContent='Toolify AI';renderList();closeSide()};
+
+// ================= MARKDOWN =================
+const il=s=>s.replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/(^|[^*\w])\*([^*\n]+)\*/g,'$1<em>$2</em>')
+  .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,(m,a,u)=>`<a href="${u}" target="_blank" rel="noopener"${u.startsWith(ROOT)?' class="lk"':''}>${a}</a>`)
+  .replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g,(m,p,u)=>`${p}<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
+const tools=(a,b)=>`<div class="ch"><span>${a}</span><span>${b}<button data-act="fs">⛶ Full</button></span></div>`;
+function md(src){
+  const st=[];
+  const t=esc(String(src).replace(/\u0000/g,'')).replace(/```(\w*)\n?([\s\S]*?)(```|$)/g,(_,l,c)=>{st.push(`<div class="cb">${tools(l||'code','<button data-act="cp-code">Copy</button>')}<pre><code>${c.replace(/\n$/,'')}</code></pre></div>`);return '\u0000'+(st.length-1)+'\u0000'});
+  const L=t.split('\n'),o=[];let i=0;
+  const row=l=>l.trim().replace(/^\||\|$/g,'').split('|').map(c=>il(c.trim()));
+  const isLi=l=>/^\s*[-*•] /.test(l),isOl=l=>/^\s*\d+[.)] /.test(l);
+  while(i<L.length){
+    const l=L[i];let m;
+    if(!l.trim()){i++;continue}
+    if(m=l.match(/^\u0000(\d+)\u0000$/)){o.push(st[+m[1]]);i++;continue}
+    if(/^\s*\|/.test(l)&&/^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(L[i+1]||'')){
+      const h=row(l),rs=[];i+=2;
+      while(i<L.length&&/^\s*\|/.test(L[i])){rs.push(row(L[i]));i++}
+      o.push(`<div class="tb">${tools('Table','<button data-act="cp-tb">Copy</button><button data-act="csv">CSV</button>')}<div class="ts"><table><thead><tr>${h.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rs.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`);continue}
+    if(m=l.match(/^(#{1,4}) (.+)/)){const n=m[1].length+1;o.push(`<h${n}>${il(m[2])}</h${n}>`);i++;continue}
+    if(/^\s*(-{3,}|\*{3,})\s*$/.test(l)){o.push('<hr>');i++;continue}
+    if(isLi(l)||isOl(l)){const ord=isOl(l),f=ord?isOl:isLi,it=[];while(i<L.length&&f(L[i])){it.push(il(L[i].replace(/^\s*([-*•]|\d+[.)]) /,'')));i++}o.push(`<${ord?'ol':'ul'}>${it.map(x=>`<li>${x}</li>`).join('')}</${ord?'ol':'ul'}>`);continue}
+    if(/^&gt; /.test(l)){const q=[];while(i<L.length&&/^&gt; /.test(L[i])){q.push(il(L[i].slice(5)));i++}o.push(`<blockquote>${q.join('<br>')}</blockquote>`);continue}
+    const p=[];
+    while(i<L.length&&L[i].trim()&&!/^(\s*\||#{1,4} |\s*[-*•] |\s*\d+[.)] |&gt; |\u0000)/.test(L[i])){p.push(il(L[i]));i++}
+    if(!p.length){p.push(il(L[i]));i++}
+    o.push('<p>'+p.join('<br>')+'</p>');
+  }
+  return o.join('');
+}
+
+// ================= RENDER =================
+const scrollEnd=()=>{$('scroll').scrollTop=1e9};
+function addUser(text,i){
+  const d=document.createElement('div');d.className='m u';d.dataset.i=i;
+  d.innerHTML=`<div class="bub">${esc(text)}</div>`;$('msgs').appendChild(d);scrollEnd();
+}
+function addAI(msg,i,done){
+  const d=document.createElement('div');d.className='m a';d.dataset.i=i;
+  d.innerHTML=`<div class="lg av">${logo()}</div><div class="col">${msg.searched?'<div class="badge">🌐 Searched the web</div>':''}<div class="bub">${md(msg.content)}</div><div class="acts" ${done?'':'hidden'}><button data-act="copy" title="Copy">📋</button><button data-act="up" title="Good response" class="${msg.fb==='up'?'on':''}">👍</button><button data-act="dn" title="Bad response" class="${msg.fb==='dn'?'on':''}">👎</button><button data-act="regen" title="Regenerate">🔄</button></div></div>`;
+  $('msgs').appendChild(d);scrollEnd();return d;
+}
+function typing(){
+  const d=document.createElement('div');d.className='m a';
+  d.innerHTML=`<div class="lg av">${logo()}</div><div class="bub dots"><span></span><span></span><span></span></div>`;
+  $('msgs').appendChild(d);scrollEnd();return d;
+}
+async function typeOut(el,text){
+  const step=Math.max(3,Math.ceil(text.length/140));
+  for(let i=step;i<text.length;i+=step){el.innerHTML=md(text.slice(0,i));scrollEnd();await sleep(14)}
+  el.innerHTML=md(text);scrollEnd();
+}
+
+// message actions (copy, like, regenerate, code/table tools)
+$('msgs').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-act]');if(!b)return;
+  const act=b.dataset.act,box=b.closest('.cb,.tb'),m=b.closest('.m'),idx=m?+m.dataset.i:-1;
+  if(act==='copy'){copyText(cur.messages[idx]?.content||'');flash(b,'✓')}
+  else if(act==='up'||act==='dn'){const x=cur.messages[idx];if(!x)return;x.fb=x.fb===act?'':act;m.querySelectorAll('[data-act=up],[data-act=dn]').forEach(k=>k.classList.toggle('on',k.dataset.act===x.fb));saveChat()}
+  else if(act==='regen'){if(busy)return;cur.messages.pop();m.remove();run().catch(err=>addErr(err))}
+  else if(act==='cp-code'){copyText(box.querySelector('pre').innerText);flash(b,'Copied')}
+  else if(act==='cp-tb'){copyText([...box.querySelectorAll('tr')].map(r=>[...r.cells].map(c=>c.innerText).join('\t')).join('\n'));flash(b,'Copied')}
+  else if(act==='csv'){
+    const csv=[...box.querySelectorAll('tr')].map(r=>[...r.cells].map(c=>'"'+c.innerText.replace(/"/g,'""')+'"').join(',')).join('\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='table.csv';a.click();URL.revokeObjectURL(a.href)}
+  else if(act==='fs'){$('fsc').innerHTML=(box.querySelector('.ts')||box.querySelector('pre')).outerHTML;openM('fs')}
+});
+const addErr=e=>{const d=document.createElement('div');d.className='m a';d.innerHTML=`<div class="lg av">${logo()}</div><div class="bub">⚠️ ${esc(e.message||e)}</div>`;$('msgs').appendChild(d);scrollEnd()};
+
+// ================= WEATHER (Open-Meteo) =================
+const WX=/\b(weather|mausam|temperature|forecast|barish|rain)\b|मौसम|बारिश|तापमान/i;
+const WMO=c=>c===0?['☀️','Clear sky']:c<=2?['🌤','Partly cloudy']:c===3?['☁️','Overcast']:c<=48?['🌫','Fog']:c<=57?['🌦','Drizzle']:c<=67?['🌧','Rain']:c<=77?['❄️','Snow']:c<=82?['🌧','Rain showers']:['⛈','Thunderstorm'];
+async function weatherData(text){
+  const city=text.replace(WX,' ').replace(/\b(what|whats|what's|how|is|the|in|at|of|for|today|now|current|tell|me|about|ka|ki|ke|me|mein|aaj|abhi|kya|hai|kaisa|hoga|please|check|show|city|like|will|be)\b|में|आज|का|की|कैसा|है/gi,' ').replace(/[?.,!]/g,' ').replace(/\s+/g,' ').trim();
+  let lat,lon,name;
+  if(city){
+    const g=await (await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&name='+encodeURIComponent(city))).json();
+    const r=g.results?.[0];if(!r)return null;lat=r.latitude;lon=r.longitude;name=r.name+(r.country?', '+r.country:'');
+  }else{
+    const p=await new Promise((a,b)=>navigator.geolocation.getCurrentPosition(a,b,{timeout:7000}));lat=p.coords.latitude;lon=p.coords.longitude;name='Your location';
+  }
+  const w=await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`)).json();
+  return {name,w};
+}
+function wxCard(d,anchor){
+  const c=d.w.current,dl=d.w.daily,[ic,tx]=WMO(c.weather_code);
+  const day=i=>new Date(dl.time[i]).toLocaleDateString('en-IN',{weekday:'short'});
+  const el=document.createElement('div');el.className='m a';
+  el.innerHTML=`<div class="lg av">${logo()}</div><div class="wc"><div class="t"><span>${ic}</span><div><b>${Math.round(c.temperature_2m)}°C</b><small>${esc(d.name)} · ${tx}</small></div></div><div class="d"><span>🌡 Feels ${Math.round(c.apparent_temperature)}°</span><span>💧 ${c.relative_humidity_2m}%</span><span>💨 ${Math.round(c.wind_speed_10m)} km/h</span></div><div class="f">${[0,1,2].map(i=>`<div>${i?day(i):'Today'}<br>${WMO(dl.weather_code[i])[0]}<br>${Math.round(dl.temperature_2m_max[i])}° / ${Math.round(dl.temperature_2m_min[i])}°</div>`).join('')}</div></div>`;
+  $('msgs').insertBefore(el,anchor);
+  return `\n\n[LIVE WEATHER DATA from Open-Meteo for ${d.name}: now ${Math.round(c.temperature_2m)}°C (feels ${Math.round(c.apparent_temperature)}°C), ${tx}, humidity ${c.relative_humidity_2m}%, wind ${Math.round(c.wind_speed_10m)} km/h; today high ${Math.round(dl.temperature_2m_max[0])}° low ${Math.round(dl.temperature_2m_min[0])}°. A weather card is already shown. Answer in 1-2 short lines with a tip.]`;
+}
+
+// ================= AI CALL =================
+const NS=/\b(latest|news|today|tonight|current|currently|recent|recently|price|score|live|who is|who won|release date|released|ceo of|stock|trending|202[5-9])\b/i;
+async function callAI(messages,search){
+  const r=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,mode:P.mode,search,detailed:P.dt})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(d.error?.message||'Something went wrong (HTTP '+r.status+')');
+  return d;
+}
+// cur.messages ke last user message ka jawab generate karta hai
+async function run(){
+  busy=true;$('send').disabled=true;
+  const ty=typing();
+  try{
+    const last=cur.messages[cur.messages.length-1].content;
+    let extra='';
+    const wx=WX.test(last);
+    if(wx){try{const d=await weatherData(last);extra=d?wxCard(d,ty):'\n\n[Weather lookup failed: politely ask the user which city they mean.]'}catch{extra='\n\n[Weather lookup failed: politely ask the user to type the city name.]'}}
+    const payload=cur.messages.map((m,i)=>({role:m.role,content:i===cur.messages.length-1?m.content+extra:m.content}));
+    const search=!wx&&(P.sm===1||(P.sm===0&&NS.test(last)));
+    const d=await callAI(payload,search);
+    ty.remove();
+    const msg={role:'assistant',content:d.reply,searched:!!d.searched,fb:''};
+    cur.messages.push(msg);
+    const el=addAI(msg,cur.messages.length-1,false);
+    await typeOut(el.querySelector('.bub'),msg.content);
+    el.querySelector('.acts').hidden=false;
+    saveChat();
+  }catch(e){ty.remove();throw e}
+  finally{busy=false;$('send').disabled=false}
+}
+
+window.send=async text=>{
+  const inp=$('inp'),t=(typeof text==='string'?text:inp.value).trim();
+  if(!t||busy)return;
+  await authReady;
+  const used=+ls.get('tg_n')||0;
+  if(!user&&used>=FREE_MSGS){try{sessionStorage.setItem('tg_pending',t)}catch{}openM('m-limit');return}
+  inp.value='';inp.style.height='auto';
+  if(!user)ls.set('tg_n',used+1);
+  $('welcome').hidden=true;
+  cur.messages.push({role:'user',content:t});
+  if(!cur.name){cur.name=t.length>40?t.slice(0,40)+'…':t;$('ttl').textContent=cur.name}
+  addUser(t,cur.messages.length-1);
+  try{await run()}
+  catch(e){cur.messages.pop();document.querySelector('#msgs .m.u:last-of-type')?.remove();inp.value=t;if(!user)ls.set('tg_n',used);addErr(e)}
+  if(innerWidth>900)inp.focus();
+};
+
+// ================= WEATHER CHIP (header) =================
+(async()=>{
+  try{
+    const p=await navigator.permissions?.query({name:'geolocation'});
+    if(!p||p.state!=='granted')return;
+    const pos=await new Promise((a,b)=>navigator.geolocation.getCurrentPosition(a,b,{timeout:5000}));
+    const w=(await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`)).json()).current_weather;
+    $('wi').textContent=WMO(w.weathercode)[0];$('wt').textContent=Math.round(w.temperature)+'°C';
+  }catch{}
+})();
+
+// ================= INPUT / SHORTCUTS =================
+const inp=$('inp');
+inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&innerWidth>700){e.preventDefault();send()}});
+inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,160)+'px'});
+document.querySelectorAll('.sc').forEach(b=>b.addEventListener('click',()=>send(b.dataset.q)));
+addEventListener('keydown',e=>{
+  const c=e.ctrlKey||e.metaKey,k=e.key.toLowerCase();
+  if(e.key==='Escape'){document.querySelectorAll('.md.on').forEach(m=>m.classList.remove('on'));closeSide()}
+  else if(c&&!e.shiftKey&&k==='k'){e.preventDefault();newChat();inp.focus()}
+  else if(c&&!e.shiftKey&&k==='b'){e.preventDefault();toggleSide()}
+  else if(c&&k==='/'){e.preventDefault();inp.focus()}
+  else if(c&&e.shiftKey&&k==='l'){e.preventDefault();toggleTheme()}
+  else if(c&&e.shiftKey&&k==='s'){e.preventDefault();cycleSearch()}
+});
+paintUser();initFirebase();
+</script>
+<script type="module" src="/toolify/protect.js"></script>
+</body>
+</html>
