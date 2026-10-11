@@ -2,17 +2,18 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+
+  
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Toolify AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
+<title>Toolify AI</title>   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">     <style>
+  
 :root{--accent:#6c63ff;--accent-hover:#5a52e0;--accent-rgb:108,99,255;--bg:#0f0f13;--bg2:#16161d;--bg3:#1e1e28;--surface:#252533;--surface2:#2e2e3f;--border:#333345;--text:#e8e8f0;--text2:#9999b3;--text3:#666688;--ai-bubble:#1e1e28;--shadow:0 8px 32px rgba(0,0,0,.4);--sidebar-w:280px}
 [data-theme="light"]{--bg:#f0f0f8;--bg2:#fff;--bg3:#f5f5fc;--surface:#e8e8f5;--surface2:#ddddf0;--border:#ccccde;--text:#1a1a2e;--text2:#555570;--text3:#888899;--ai-bubble:#eeeef8;--shadow:0 8px 32px rgba(0,0,0,.1)}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif}
 body{background:var(--bg);color:var(--text);display:flex;height:100dvh;transition:background .3s,color .3s;padding-top:env(safe-area-inset-top,0px)}
 button{font-family:inherit}
-/* sidebar */
+          /* sidebar */
 #sidebar{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:width .2s ease,transform .2s ease;overflow:hidden;z-index:100}
 #sidebar.collapsed{width:0;border:none}
 .sidebar-header{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
@@ -39,7 +40,7 @@ button{font-family:inherit}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .user-info{flex:1;min-width:0}.user-info .name{font-size:13px;font-weight:500}.user-info .status{font-size:11px;color:var(--text2)}
 #login-btn{background:none;border:1.5px solid var(--border);color:var(--text2);border-radius:10px;padding:9px;font-size:13px;cursor:pointer}
-#login-btn:hover{border-color:var(--accent);color:var(--text)}
+  #login-btn:hover{border-color:var(--accent);color:var(--text)}
 /* main */
 #main{flex:1;display:flex;flex-direction:column;min-width:0}
 #topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;gap:12px;flex-shrink:0}
@@ -260,7 +261,7 @@ button{font-family:inherit}
 <script>
 // ===== CONFIG =====
 const WORKER_URL = 'https://toolify.mohakchoubey.workers.dev'; // key worker mein secret hai, yahan nahi
-const MODELS = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+const MODELS = ['meta-llama/llama-prompt-guard-2-22m', 'llama-3.1-8b-instant'];
 const SEARCH_MODEL = 'groq/compound'; // Groq ka built-in web search model
 const ACCENTS = ['#6c63ff','#ec4899','#3b82f6','#10b981','#f59e0b','#ef4444','#06b6d4','#a855f7'];
 
