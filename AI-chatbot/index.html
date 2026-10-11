@@ -150,8 +150,16 @@ header{height:56px;padding:0 12px;padding-top:env(safe-area-inset-top);display:f
 <script type="module">
 // ================= CONFIG (ye 3 cheezein bharo) =================
 const WORKER_URL   = 'https://toolify.mohakchoubey.workers.dev';
-const FORMSPREE_URL= 'https://formspree.io/f/YOUR_FORM_ID';           // <-- Formspree form ID
-const FIREBASE_CONFIG = { apiKey:'', authDomain:'', projectId:'', appId:'' }; // <-- login.html wala same Firebase config
+const FORMSPREE_URL= 'https://formspree.io/f/https://formspree.io/f/xkowpdnv';           // <-- Formspree form ID
+  const firebaseConfig = { 
+    apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y", 
+    authDomain: "toolbox-hub-98c03.firebaseapp.com", 
+    projectId: "toolbox-hub-98c03", 
+    storageBucket: "toolbox-hub-98c03.firebasestorage.app", 
+    messagingSenderId: "321020105472", 
+    appId: "1:321020105472:web:356e7c2903def7b9d859e5" 
+  };
+  
 const SITE='https://mohakchoubey.github.io/toolify';
 const CHAT_URL=SITE+'/AI-chatbot/', LOGIN_URL=SITE+'/login.html';
 const TERMS_URL=SITE+'/terms.html', PRIVACY_URL=SITE+'/privacy.html';
@@ -328,6 +336,6 @@ inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=Math.
 document.querySelectorAll('.sc').forEach(b=>b.addEventListener('click',()=>send(b.dataset.q)));
 paintUser();initFirebase();
 </script>
-<script type="module" src="/toolify/protect.js"></script>
+
 </body>
 </html>
