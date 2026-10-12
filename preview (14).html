@@ -1,0 +1,515 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Space</title>
+<style>
+:root {
+  --bg: #0b1020;
+  --panel: #141b2e;
+  --panel2: #1c2740;
+  --text: #f3f6ff;
+  --muted: #9aa8c2;
+  --accent: #8b9dff;
+  --border: #293550;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  background: radial-gradient(ellipse at top, #202b4d, var(--bg) 60%);
+  color: var(--text);
+}
+button, input, textarea { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible,
+textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.container { width: min(1050px, 92%); margin: auto; padding: 32px 0 60px; }
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 50px;
+}
+.logo { font-size: 20px; font-weight: 800; letter-spacing: -1px; }
+.logo span { color: var(--accent); }
+.small { color: var(--muted); font-size: 13px; }
+.hero { margin: 30px 0 34px; }
+.eyebrow {
+  color: var(--accent); font-size: 12px; font-weight: 800;
+  letter-spacing: 2px; text-transform: uppercase;
+}
+h1 { font-size: clamp(34px, 7vw, 58px); line-height: 1.1; letter-spacing: -2px; margin: 14px 0; }
+h2 { font-size: 24px; letter-spacing: -.6px; }
+p { line-height: 1.6; }
+.muted { color: var(--muted); }
+.panel {
+  background: rgba(20,27,46,.92); border: 1px solid var(--border);
+  border-radius: 20px; padding: 24px; margin: 18px 0;
+}
+label { display: block; font-size: 13px; color: #c8d2e8; margin: 17px 0 8px; }
+input, textarea {
+  width: 100%; color: var(--text); background: #0d1426;
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 13px 14px; outline: none;
+}
+input:focus, textarea:focus { border-color: var(--accent); }
+textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
+button {
+  border: 0; border-radius: 10px; padding: 12px 17px;
+  font-weight: 700; transition: transform .15s, opacity .15s;
+}
+button:hover { transform: translateY(-1px); }
+.primary { background: var(--accent); color: #10152a; }
+.secondary { background: var(--panel2); color: var(--text); border: 1px solid var(--border); }
+.danger { color: #ffb4b4; background: #38202c; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.category-form {
+  background: #10182b; border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px; margin-top: 14px;
+}
+.category-heading {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+}
+.category-heading strong { font-size: 15px; }
+.categories {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;
+  margin-top: 24px;
+}
+.category-card {
+  background: linear-gradient(145deg, #1b2742, #131a2d);
+  border: 1px solid var(--border); border-radius: 17px;
+  padding: 23px 20px; text-align: left; color: var(--text);
+  min-height: 145px; display: flex; flex-direction: column; align-items: flex-start;
+  gap: 12px;
+}
+.category-card:hover { border-color: var(--accent); }
+.category-icon { font-size: 25px; }
+.category-card strong { font-size: 17px; }
+.category-card .small { margin-top: auto; }
+.link-list { display: grid; gap: 12px; margin-top: 22px; }
+.link-item {
+  display: flex; align-items: center; gap: 15px;
+  border: 1px solid var(--border); background: #11192b;
+  border-radius: 13px; padding: 16px;
+}
+.link-symbol {
+  width: 42px; height: 42px; border-radius: 12px;
+  display: grid; place-items: center; background: #253252; font-size: 19px;
+  flex-shrink: 0;
+}
+.link-info { flex: 1; min-width: 0; }
+.link-info strong { display: block; overflow-wrap: anywhere; }
+.link-info .small { display: block; margin-top: 5px; overflow-wrap: anywhere; }
+.link-item a { color: var(--accent); font-weight: 700; text-decoration: none; }
+.link-item a:hover { text-decoration: underline; }
+.empty {
+  border: 1px dashed #3b4966; border-radius: 14px;
+  padding: 35px 20px; text-align: center; color: var(--muted);
+}
+footer { margin-top: 55px; text-align: center; color: var(--muted); font-size: 12px; }
+.hidden { display: none !important; }
+@media(max-width: 680px) {
+  .categories { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .category-card { padding: 17px 14px; min-height: 135px; }
+  .panel { padding: 18px; }
+  header { margin-bottom: 36px; }
+  .link-item { padding: 12px; gap: 10px; }
+  .link-item a { font-size: 13px; }
+}
+@media(max-width: 360px) {
+  .categories { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">my<span>.</span>space</div>
+    <div class="small">YOUR PERSONAL DASHBOARD</div>
+  </header>
+
+  <main>
+    <section id="setup">
+      <div class="hero">
+        <div class="eyebrow">MAKE IT YOURS</div>
+        <h1>One space.<br>Everything you need.</h1>
+        <p class="muted">Create your personal homepage. Organize your favorite
+        websites, learning resources, tools, and everything else in one place.</p>
+      </div>
+
+      <div class="panel">
+        <h2>Set up your space</h2>
+        <p class="muted small">Start with your name, then create your categories.</p>
+
+        <label for="userName">What should we call you?</label>
+        <input id="userName" maxlength="60" placeholder="Enter your name">
+
+        <div class="category-heading" style="margin-top:30px">
+          <h2 style="font-size:19px;margin:0">Your categories</h2>
+          <span id="categoryCount" class="small">0 categories</span>
+        </div>
+        <div id="categoryForms"></div>
+
+        <div class="actions">
+          <button class="secondary" id="addCategory">+ Add category</button>
+          <button class="primary" id="createBtn">Create my space →</button>
+        </div>
+        <p id="setupError" style="color:#ffaaaa" role="alert"></p>
+      </div>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <div class="hero">
+        <div class="eyebrow">YOUR SPACE · YOUR RULES</div>
+        <h1 id="welcome">Welcome!</h1>
+        <p class="muted">What do you want to do today?</p>
+      </div>
+      <div id="categoryGrid" class="categories"></div>
+      <div class="actions">
+        <button class="secondary" id="editBtn">⚙ Edit my space</button>
+      </div>
+    </section>
+
+    <section id="categoryView" class="hidden">
+      <button class="secondary" id="backBtn">← All categories</button>
+      <div class="hero">
+        <div class="eyebrow">YOUR COLLECTION</div>
+        <h1 id="categoryTitle"></h1>
+        <p id="categoryDescription" class="muted"></p>
+      </div>
+      <div id="linkList" class="link-list"></div>
+      <div class="actions">
+        <button class="secondary" id="editCategoryBtn">⚙ Edit my space</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>MY.SPACE · YOUR FAVORITES, ORGANIZED.</footer>
+</div>
+
+<script>
+const STORAGE_KEY = "my-space-profile-v1";
+const ICONS = ["📚", "🎬", "💻", "🎮", "🎨", "🌍", "🎵", "🧰", "⭐", "🚀"];
+
+let profile = null;
+let draftCategories = [];
+let nextId = 1;
+
+const $ = id => document.getElementById(id);
+
+function makeId() {
+  return "cat-" + nextId++;
+}
+
+function normalizeUrl(value) {
+  let url = value.trim();
+  if (!url) return null;
+  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+  try {
+    const parsed = new URL(url);
+    if (!["http:", "https:"].includes(parsed.protocol)) return null;
+    return parsed.href;
+  } catch {
+    return null;
+  }
+}
+
+function readProfile() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return null;
+    const data = JSON.parse(saved);
+    if (!data || typeof data.name !== "string" ||
+        !Array.isArray(data.categories)) return null;
+    data.categories = data.categories.filter(c =>
+      c && typeof c.name === "string" && Array.isArray(c.links)
+    );
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function saveProfile() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+    return true;
+  } catch {
+    alert("Could not save your space. Check your browser storage settings.");
+    return false;
+  }
+}
+
+function showSection(section) {
+  ["setup", "dashboard", "categoryView"].forEach(id => {
+    $(id).classList.toggle("hidden", id !== section);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function addCategory(data = {}) {
+  const category = {
+    id: data.id || makeId(),
+    name: data.name || "",
+    icon: data.icon || ICONS[draftCategories.length % ICONS.length],
+    links: Array.isArray(data.links) ? data.links : []
+  };
+  draftCategories.push(category);
+  renderCategoryForms();
+}
+
+function renderCategoryForms() {
+  $("categoryCount").textContent =
+    draftCategories.length + (draftCategories.length === 1 ? " category" : " categories");
+
+  const root = $("categoryForms");
+  root.replaceChildren();
+
+  draftCategories.forEach((category, index) => {
+    const card = document.createElement("div");
+    card.className = "category-form";
+
+    const heading = document.createElement("div");
+    heading.className = "category-heading";
+
+    const title = document.createElement("strong");
+    title.textContent = "Category " + (index + 1);
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "danger";
+    remove.textContent = "Remove";
+    remove.addEventListener("click", () => {
+      draftCategories = draftCategories.filter(c => c.id !== category.id);
+      renderCategoryForms();
+    });
+
+    heading.append(title, remove);
+    card.append(heading);
+
+    const nameLabel = document.createElement("label");
+    nameLabel.textContent = "Category name";
+    const nameInput = document.createElement("input");
+    nameInput.maxLength = 60;
+    nameInput.placeholder = "e.g. Study, Entertainment, Coding";
+    nameInput.value = category.name;
+    nameInput.addEventListener("input", () => category.name = nameInput.value);
+    nameLabel.append(nameInput);
+    card.append(nameLabel);
+
+    const iconLabel = document.createElement("label");
+    iconLabel.textContent = "Choose an icon";
+    const iconSelect = document.createElement("select");
+    iconSelect.style.cssText =
+      "width:100%;padding:12px;background:#0d1426;color:white;border:1px solid var(--border);border-radius:10px";
+    ICONS.forEach(icon => {
+      const option = document.createElement("option");
+      option.value = icon;
+      option.textContent = icon;
+      iconSelect.append(option);
+    });
+    iconSelect.value = ICONS.includes(category.icon) ? category.icon : ICONS[0];
+    iconSelect.addEventListener("change", () => category.icon = iconSelect.value);
+    iconLabel.append(iconSelect);
+    card.append(iconLabel);
+
+    const linksLabel = document.createElement("label");
+    linksLabel.textContent = "Website links (one per line)";
+    const linksInput = document.createElement("textarea");
+    linksInput.placeholder =
+      "https://www.khanacademy.org\nhttps://www.youtube.com\nhttps://www.wikipedia.org";
+    linksInput.value = category.links.map(link =>
+      typeof link === "string" ? link :
+      link.title + " | " + link.url
+    ).join("\n");
+    linksInput.addEventListener("input", () => {
+      category.rawLinks = linksInput.value;
+    });
+    category.rawLinks = linksInput.value;
+    linksLabel.append(linksInput);
+    card.append(linksLabel);
+
+    const hint = document.createElement("p");
+    hint.className = "small";
+    hint.textContent = "Tip: Enter one URL per line. You can add as many as you like.";
+    card.append(hint);
+    root.append(card);
+  });
+}
+
+function openSetup() {
+  $("setupError").textContent = "";
+  $("userName").value = profile?.name || "";
+  draftCategories = (profile?.categories || []).map(category => ({
+    ...category,
+    links: category.links.map(link => ({...link})),
+    rawLinks: category.links.map(link => link.title
+      ? link.title + " | " + link.url : link.url).join("\n")
+  }));
+  renderCategoryForms();
+  showSection("setup");
+}
+
+function createSpace() {
+  const name = $("userName").value.trim();
+  if (!name) {
+    $("setupError").textContent = "Please enter your name.";
+    $("userName").focus();
+    return;
+  }
+
+  if (!draftCategories.length) {
+    $("setupError").textContent = "Add at least one category.";
+    return;
+  }
+
+  const categories = [];
+  for (const category of draftCategories) {
+    const categoryName = category.name.trim();
+    if (!categoryName) {
+      $("setupError").textContent = "Please name every category.";
+      return;
+    }
+
+    const raw = category.rawLinks || "";
+    const links = [];
+
+    for (const line of raw.split("\n").map(s => s.trim()).filter(Boolean)) {
+      let title = "";
+      let address = line;
+      const separator = line.indexOf("|");
+
+      if (separator !== -1) {
+        title = line.slice(0, separator).trim();
+        address = line.slice(separator + 1).trim();
+      }
+
+      const url = normalizeUrl(address);
+      if (!url) {
+        $("setupError").textContent = "Invalid URL in " + categoryName + ": " + line;
+        return;
+      }
+
+      links.push({
+        title: title || (() => {
+          try { return new URL(url).hostname.replace(/^www\./, ""); }
+          catch { return url; }
+        })(),
+        url
+      });
+    }
+
+    categories.push({
+      id: category.id,
+      name: categoryName,
+      icon: category.icon,
+      links
+    });
+  }
+
+  profile = { name, categories };
+  if (saveProfile()) renderDashboard();
+}
+
+function renderDashboard() {
+  $("welcome").textContent = "Welcome, " + profile.name + ".";
+  const grid = $("categoryGrid");
+  grid.replaceChildren();
+
+  profile.categories.forEach(category => {
+    const button = document.createElement("button");
+    button.className = "category-card";
+
+    const icon = document.createElement("span");
+    icon.className = "category-icon";
+    icon.textContent = category.icon;
+
+    const name = document.createElement("strong");
+    name.textContent = category.name;
+
+    const count = document.createElement("span");
+    count.className = "small";
+    count.textContent = category.links.length +
+      (category.links.length === 1 ? " link" : " links") + " →";
+
+    button.append(icon, name, count);
+    button.addEventListener("click", () => openCategory(category.id));
+    grid.append(button);
+  });
+
+  showSection("dashboard");
+}
+
+function openCategory(id) {
+  const category = profile.categories.find(c => c.id === id);
+  if (!category) return;
+
+  $("categoryTitle").textContent = category.icon + " " + category.name;
+  $("categoryDescription").textContent =
+    category.links.length + (category.links.length === 1
+      ? " saved link" : " saved links") + " in this category.";
+
+  const list = $("linkList");
+  list.replaceChildren();
+
+  if (!category.links.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "No links here yet. Edit your space to add some.";
+    list.append(empty);
+  }
+
+  category.links.forEach(link => {
+    const item = document.createElement("div");
+    item.className = "link-item";
+
+    const symbol = document.createElement("div");
+    symbol.className = "link-symbol";
+    symbol.textContent = "↗";
+
+    const info = document.createElement("div");
+    info.className = "link-info";
+
+    const title = document.createElement("strong");
+    title.textContent = link.title;
+
+    const address = document.createElement("span");
+    address.className = "small";
+    address.textContent = link.url;
+
+    info.append(title, address);
+
+    const anchor = document.createElement("a");
+    anchor.href = link.url;
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.textContent = "Open ↗";
+
+    item.append(symbol, info, anchor);
+    list.append(item);
+  });
+
+  showSection("categoryView");
+}
+
+$("addCategory").addEventListener("click", () => addCategory());
+$("createBtn").addEventListener("click", createSpace);
+$("editBtn").addEventListener("click", openSetup);
+$("editCategoryBtn").addEventListener("click", openSetup);
+$("backBtn").addEventListener("click", renderDashboard);
+
+profile = readProfile();
+
+if (profile) {
+  renderDashboard();
+} else {
+  draftCategories = [];
+  addCategory({ name: "Study", icon: "📚" });
+  addCategory({ name: "Entertainment", icon: "🎬" });
+  openSetup();
+}
+</script>
+</body>
+</html>
