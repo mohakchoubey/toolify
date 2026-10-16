@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Task Manager · Firebase Real-time</title>
+<style>
+  :root {
+    --paper: #fffdf4;
+    --ink: #243047;
+    --muted: #697386;
+    --line: #dbe6f2;
+    --accent: #3867a8;
+    --danger: #ef5350;
+    --success: #66bb6a;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 30px 16px;
+    background: #e8edf3;
+    color: var(--ink);
+    font: 15px "Segoe UI", Arial, sans-serif;
+  }
+  .app { max-width: 600px; margin: auto; background: var(--paper); padding: 24px; border-radius: var(--radius); box-shadow: 0 4px 12px rgba(29, 43, 59, 0.13); }
+  h2 { margin-top: 0; color: var(--accent); }
+  form { display: flex; gap: 8px; margin-bottom: 20px; }
+  input[type="text"], input[type="date"] {
+    font: inherit;
+    border: 1px solid #c7d0dd;
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    background: #fff;
+    color: var(--ink);
+  }
+  input[type="text"] { flex: 1; }
+  button {
+    font: inherit;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 8px 14px;
+    background: var(--accent);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button:hover { filter: brightness(1.1); }
+  .btn-danger { background: var(--danger); border-color: var(--danger); font-size: 11px; padding: 4px 8px; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  li.done span.task-text { text-decoration: line-through; opacity: 0.5; }
+  .task-text { flex: 1; overflow-wrap: anywhere; }
+  .task-due { font-size: 12px; color: var(--muted); background: rgba(56, 103, 168, 0.1); padding: 2px 6px; border-radius: 4px; }
+  .empty { color: var(--muted); text-align: center; padding: 20px 0; }
+  .status {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: var(--muted);
+    color: white;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .status.online { opacity: 1; background: var(--success); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <h2>✓ My Tasks</h2>
+  
+  <form id="addTaskForm">
+    <input id="newTask" type="text" placeholder="Add a new task..." maxlength="200" autocomplete="off" required>
+    <input id="taskDue" type="date">
+    <button type="submit">Add Task</button>
+  </form>
+
+  <ul id="tasksList"></ul>
+  <div id="tasksEmpty" class="empty">No tasks added yet.</div>
+</div>
+
+<div id="status" class="status">⚡ Syncing...</div>
+
+<!-- Firebase Compat Scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore-compat.js"></script>
+
+<script>
+  // ==========================================
+  // FIREBASE CONFIGURATION
+  // ==========================================
+  const firebaseConfig = { 
+    apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y", 
+    authDomain: "toolbox-hub-98c03.firebaseapp.com", 
+    projectId: "toolbox-hub-98c03", 
+    storageBucket: "toolbox-hub-98c03.firebasestorage.app", 
+    messagingSenderId: "321020105472", 
+    appId: "1:321020105472:web:356e7c2903def7b9d859e5" 
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const $ = id => document.getElementById(id);
+  let tasks = [];
+
+  function setStatus(isOnline) {
+    const el = $('status');
+    if (isOnline) {
+      el.textContent = '✓ Firebase Synced';
+      el.classList.add('online');
+      setTimeout(() => el.classList.remove('online'), 2000);
+    }
+  }
+
+  // Fetch tasks in real-time from Firestore
+  function listenTasks() {
+    db.collection('users').doc('anonymous').collection('tasks')
+      .orderBy('created', 'desc')
+      .onSnapshot(snapshot => {
+        tasks = [];
+        snapshot.forEach(doc => {
+          tasks.push({ id: doc.id, ...doc.data() });
+        });
+        renderTasks();
+        setStatus(true);
+      }, error => {
+        console.error("Error loading tasks: ", error);
+      });
+  }
+
+  // Render tasks to the DOM
+  function renderTasks() {
+    const ul = $('tasksList');
+    ul.replaceChildren();
+    $('tasksEmpty').style.display = tasks.length ? 'none' : 'block';
+
+    tasks.forEach(task => {
+      const li = document.createElement('li');
+      if (task.done) li.className = 'done';
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = task.done;
+      cb.onchange = async () => {
+        await db.collection('users').doc('anonymous').collection('tasks').doc(task.id).update({ done: cb.checked });
+      };
+
+      const txt = document.createElement('span');
+      txt.className = 'task-text';
+      txt.textContent = task.text;
+
+      li.append(cb, txt);
+
+      if (task.due) {
+        const due = document.createElement('span');
+        due.className = 'task-due';
+        due.textContent = task.due;
+        li.append(due);
+      }
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-danger';
+      delBtn.textContent = 'Delete';
+      delBtn.onclick = async () => {
+        await db.collection('users').doc('anonymous').collection('tasks').doc(task.id).delete();
+      };
+      li.append(delBtn);
+
+      ul.append(li);
+    });
+  }
+
+  // Handle Form Submission
+  $('addTaskForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const text = $('newTask').value.trim();
+    const due = $('taskDue').value;
+    if (!text) return;
+
+    try {
+      await db.collection('users').doc('anonymous').collection('tasks').add({
+        text,
+        due: due || null,
+        done: false,
+        created: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      $('newTask').value = '';
+      $('taskDue').value = '';
+    } catch (err) {
+      alert('Failed to add task: ' + err.message);
+    }
+  });
+
+  // Initialize Listener
+  listenTasks();
+</script>
+
+</body>
+</html>
