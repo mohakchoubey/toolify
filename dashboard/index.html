@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-t="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tasks · Toolify</title>
+<link rel="icon" href="/toolify/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<style>
+[hidden]{display:none!important}
+.g{display:grid;grid-template-columns:1fr 20rem;gap:1.2rem;align-items:start}
+@media(max-width:60rem){.g{grid-template-columns:1fr}}
+.cmp{display:grid;grid-template-columns:1fr auto auto;gap:.6rem;margin-bottom:.8rem}
+.cmp .big{grid-column:1/-1}.cmp input#nt{grid-column:1/-1;font-size:1.1rem;padding:.8rem 1rem}
+.pp{display:flex;gap:.4rem}.pp button{padding:.4rem .8rem}
+.fl{display:flex;gap:.4rem;margin:1rem 0 .6rem;align-items:center}.fl .sp{flex:1}
+.t{display:flex;align-items:center;gap:.8rem;padding:.8rem 1rem;margin-bottom:.55rem;border-left:4px solid var(--pc);animation:in .35s ease both;transition:.25s}
+.t:hover{transform:translateX(3px);border-color:var(--pc)}.t.out{opacity:0;transform:translateX(2rem) scale(.96)}
+.t[data-p="1"]{--pc:#10b981}.t[data-p="2"]{--pc:#f59e0b}.t[data-p="3"]{--pc:#ef4444}
+@keyframes in{from{opacity:0;transform:translateY(.6rem)}}
+.chk{width:1.6rem;height:1.6rem;border-radius:50%;border:2px solid var(--mu);background:none;color:#fff;display:grid;place-items:center;cursor:pointer;transition:.25s;flex:none;padding:0}
+.chk svg{width:.9rem;stroke-dasharray:24;stroke-dashoffset:24;transition:.3s .1s}.t.dn .chk{background:var(--a);border-color:var(--a);transform:scale(1.1)}.t.dn .chk svg{stroke-dashoffset:0}
+.tx{flex:1;min-width:0}.tx b{font-weight:500;overflow-wrap:anywhere;transition:.3s}.t.dn .tx b{text-decoration:line-through;opacity:.45}
+.tx small{display:block;color:var(--mu);font-size:.8rem}.tx small.od{color:#ef4444}
+.t .x{opacity:0;width:1.9rem;height:1.9rem}.t:hover .x,.t:focus-within .x{opacity:1}@media(hover:none){.t .x{opacity:1}}
+.rg{display:flex;align-items:center;gap:1rem}.rg svg{width:4.6rem;transform:rotate(-90deg)}.rg circle{fill:none;stroke-width:7;stroke-linecap:round}.rg .tr{stroke:var(--b)}.rg .pg{stroke:var(--a);transition:stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1)}
+.rg b{font-size:1.8rem;line-height:1}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:.2rem;text-align:center}.dw{font-style:normal;color:var(--mu);font-size:.75rem;padding:.2rem}
+.dy{position:relative;aspect-ratio:1;border:0;border-radius:.6rem;background:none;color:var(--tx);font:inherit;font-size:.85rem;cursor:pointer;transition:.2s}.dy:hover{background:color-mix(in srgb,var(--a) 18%,transparent)}
+.dy.td{box-shadow:inset 0 0 0 1.5px var(--a)}.dy.sl{background:var(--a);color:#fff}
+.dy u{position:absolute;bottom:.15rem;left:0;right:0;display:flex;justify-content:center;gap:2px}.dy s{width:4px;height:4px;border-radius:50%;background:#f59e0b}.dy.sl s{background:#fff}
+</style>
+</head>
+<body>
+<script src="/toolify/shared.js"></script>
+<script>
+const {$,esc,toast,Store,I}=TF;
+const pad=n=>String(n).padStart(2,'0'),ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today=()=>ymd(new Date()),off=n=>{const d=new Date();d.setDate(d.getDate()+n);return ymd(d)};
+const nowKey=()=>{const d=new Date();return `${ymd(d)}T${pad(d.getHours())}:${pad(d.getMinutes())}`};
+const SAMPLE=[{id:'s1',t:'Ship the Toolify launch video',due:off(1),tm:'18:00',p:3,done:false},{id:'s2',t:'Pay the electricity bill',due:off(3),tm:'',p:2,done:false},
+{id:'s3',t:'Morning workout',due:today(),tm:'',p:1,done:true},{id:'s4',t:'Reply to client emails',due:off(-1),tm:'',p:3,done:false}];
+let S,items=[],flt='all',sel=null,cal=new Date(),pr=2,sent=JSON.parse(localStorage.tf_nt||'[]');
+const data=()=>items.length?items:SAMPLE;
+const late=t=>!t.done&&t.due&&`${t.due}T${t.tm||'23:59'}`<nowKey();
+const when=t=>t.due?new Date(t.due+'T00:00').toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'})+(t.tm?' · '+t.tm:''):'No date';
+const row=t=>`<div class="glass t${t.done?' dn':''}" data-id="${t.id}" data-p="${t.p}"><button class="chk" aria-label="Toggle complete">${I.check}</button><div class="tx"><b>${esc(t.t)}</b><small class="${late(t)?'od':''}">${late(t)?'Overdue · ':''}${when(t)}</small></div><button class="ic x" aria-label="Delete">${I.x}</button></div>`;
+function notify(title,body){toast(title+': '+body);if('Notification'in window&&Notification.permission=='granted')new Notification(title,{body,icon:'/toolify/logo.png'})}
+function render(){const all=data(),real=items.length>0;let v=all.filter(t=>flt=='all'||(flt=='done')==t.done);if(sel)v=v.filter(t=>t.due==sel);
+v.sort((a,b)=>a.done-b.done||(a.due||'9').localeCompare(b.due||'9')||b.p-a.p);
+$('#ls').innerHTML=(real?'':'<div class="note">Sample data — add your first task and this preview disappears.</div>')+(v.map(row).join('')||'<p class="empty">Nothing here. Enjoy the calm ✨</p>');
+const dn=all.filter(t=>t.done).length,pc=all.length?dn/all.length:0;$('#pc').style.strokeDashoffset=(1-pc)*326.7;$('#pn').textContent=Math.round(pc*100)+'%';$('#pt').textContent=`${dn} of ${all.length} done`;
+$('#fa').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.f==flt));$('#sd').hidden=!sel;$('#sd').textContent=sel?'Clear '+sel+' ✕':'';drawCal(all)}
+function drawCal(all){const y=cal.getFullYear(),m=cal.getMonth(),first=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate();
+let h=['S','M','T','W','T','F','S'].map(d=>`<i class="dw">${d}</i>`).join('')+'<i></i>'.repeat(first);
+for(let d=1;d<=n;d++){const k=`${y}-${pad(m+1)}-${pad(d)}`,c=all.filter(t=>!t.done&&t.due==k).length;h+=`<button class="dy${k==today()?' td':''}${k==sel?' sl':''}" data-d="${k}">${d}${c?`<u>${'<s></s>'.repeat(Math.min(c,3))}</u>`:''}</button>`}
+$('#cg').innerHTML=h;$('#cmn').textContent=cal.toLocaleDateString(undefined,{month:'long',year:'numeric'});const p=all.filter(t=>!t.done);$('#cs').textContent=`${p.length} pending · ${p.filter(late).length} overdue`}
+function add(){const i=$('#nt'),t=i.value.trim();if(!t)return i.focus();
+S.put({id:crypto.randomUUID().slice(0,12),t,due:$('#nd').value,tm:$('#ntm').value,p:pr,done:false,ts:Date.now()});
+i.value='';notify('Task added',t);if('Notification'in window&&Notification.permission=='default')Notification.requestPermission();i.focus()}
+function remind(){items.forEach(t=>{if(!t.done&&t.due&&`${t.due}T${t.tm||'09:00'}`<=nowKey()&&!sent.includes(t.id)){sent.push(t.id);localStorage.tf_nt=JSON.stringify(sent);notify('Task due',t.t)}})}
+function kill(id){const el=document.querySelector(`[data-id="${id}"]`);el?.classList.add('out');setTimeout(()=>S.del(id),250)}
+
+TF.boot({page:'tasks',
+menu:e=>{const id=e.target.closest?.('[data-id]')?.dataset.id,t=items.find(x=>x.id==id);
+return[{l:'＋ Add a task',fn:()=>$('#nt').focus()},{l:t?.done?'↺ Mark as pending':'✓ Mark as complete',off:!t,fn:()=>S.put({...t,done:!t.done})},{l:'🗑 Delete task',off:!t,danger:1,fn:()=>kill(id)}]},
+start:()=>{
+$('#m').innerHTML=`<div class="g"><section><div class="glass pad cmp"><input id="nt" placeholder="What needs doing?" maxlength="200" autocomplete="off"><input type="date" id="nd" value="${today()}"><input type="time" id="ntm"><div class="pp seg" id="pp">${[['1','Low'],['2','Medium'],['3','High']].map(([v,l])=>`<button data-p="${v}" class="${v==2?'on':''}">${l}</button>`).join('')}</div><button class="btn pri big" id="ab">＋ Add task</button></div>
+<div class="fl"><div class="seg" id="fa">${[['all','All'],['todo','Active'],['done','Done']].map(([v,l])=>`<button data-f="${v}">${l}</button>`).join('')}</div><div class="sp"></div><button class="btn" id="sd" hidden></button></div><div id="ls"></div></section>
+<aside style="display:grid;gap:1.2rem"><div class="glass pad rg"><svg viewBox="0 0 120 120"><circle class="tr" cx="60" cy="60" r="52"/><circle class="pg" id="pc" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg><div><b id="pn">0%</b><p class="mu" id="pt"></p></div></div>
+<div class="glass pad"><div class="ch"><button class="ic" id="cp">‹</button><b id="cmn"></b><button class="ic" id="cn">›</button></div><div class="cg" id="cg"></div><p class="mu" id="cs" style="margin-top:.7rem;text-align:center"></p></div></aside></div>`;
+$('#ab').onclick=add;$('#nt').onkeydown=e=>e.key=='Enter'&&add();
+$('#pp').onclick=e=>{const b=e.target.closest('button');if(!b)return;pr=+b.dataset.p;$('#pp').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x==b))};
+$('#fa').onclick=e=>{const b=e.target.closest('button');if(b){flt=b.dataset.f=='todo'?'todo':b.dataset.f;render()}};
+$('#sd').onclick=()=>{sel=null;render()};
+$('#cp').onclick=()=>{cal=new Date(cal.getFullYear(),cal.getMonth()-1,1);render()};$('#cn').onclick=()=>{cal=new Date(cal.getFullYear(),cal.getMonth()+1,1);render()};
+$('#cg').onclick=e=>{const b=e.target.closest('.dy');if(b){sel=sel==b.dataset.d?null:b.dataset.d;render()}};
+$('#ls').onclick=e=>{const el=e.target.closest('[data-id]');if(!el||!items.find(x=>x.id==el.dataset.id))return;const id=el.dataset.id;
+if(e.target.closest('.chk')){const t=items.find(x=>x.id==id);S.put({...t,done:!t.done})}else if(e.target.closest('.x'))kill(id)};
+S=Store('tasks',v=>{items=v;render()});S.start();remind();setInterval(remind,30000);setInterval(render,60000)}});
+</script>
+</body>
+</html>
