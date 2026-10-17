@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-t="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lists · Toolify</title>
+<link rel="icon" href="./favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<style>
+[hidden]{display:none!important}
+.lg{display:grid;grid-template-columns:15rem 1fr;gap:1.4rem;align-items:start}
+@media(max-width:52rem){.lg{grid-template-columns:1fr}.rail{display:flex!important;overflow-x:auto;padding-bottom:.3rem}.rail .rl{flex:none}}
+.rail{display:grid;gap:.5rem}
+.rl{display:flex;justify-content:space-between;gap:.6rem;text-align:left;font:inherit;padding:.7rem .9rem;border-radius:.9rem;border:1px solid var(--b);background:var(--c);color:var(--tx);cursor:pointer;transition:.25s}
+.rl:hover{transform:translateX(3px)}.rl.on{border-color:var(--a);background:color-mix(in srgb,var(--a) 18%,transparent)}.rl span{color:var(--mu);font-size:.85rem}
+.paper{--ink:#2b2b3a;--rl:#cfdcf0;--mg:#f2a2a2;position:relative;background:#fffdf6;color:var(--ink);border-radius:.5rem .5rem .8rem .8rem;padding:1.4rem 1.4rem 1.6rem 4.2rem;font-family:'Caveat',cursive;font-size:1.5rem;
+box-shadow:0 2rem 3.5rem -1.2rem rgba(0,0,0,.4),0 0 0 1px rgba(0,0,0,.06);animation:land .45s cubic-bezier(.2,.8,.2,1) both}
+[data-t=dark] .paper{--ink:#ece9dd;--rl:#2f2e40;--mg:#7a3f4d;background:#1c1b26}
+.paper::before{content:"";position:absolute;left:3.2rem;top:0;bottom:0;width:2px;background:var(--mg)}
+@keyframes land{from{opacity:0;transform:translateY(1rem) rotate(.8deg)}}
+.paper h2{font-size:2.3rem;line-height:1.1;font-weight:700;outline:0;border-bottom:2px dashed transparent;display:inline-block;min-width:6rem}.paper h2:focus{border-color:var(--a)}
+.pm{font-size:1.1rem;opacity:.6;margin-bottom:.5rem}.ptop{position:absolute;right:1rem;top:1rem;display:flex;gap:.4rem}
+.ruled{list-style:none;padding:0;background:repeating-linear-gradient(transparent 0 calc(2.2rem - 1px),var(--rl) calc(2.2rem - 1px) 2.2rem)}
+.ruled li{position:relative;height:2.2rem;line-height:2.2rem;display:flex;align-items:center;gap:.7rem;animation:in .3s ease both}
+@keyframes in{from{opacity:0;transform:translateX(-.8rem)}}
+.ruled li.gone{height:0;opacity:0;transition:.35s}
+.ck{width:1.35rem;height:1.35rem;border:2px solid var(--ink);border-radius:.35rem;background:none;color:var(--a);display:grid;place-items:center;cursor:pointer;padding:0;flex:none;transition:.2s}
+.ck svg{width:1.1rem;stroke-width:3;stroke-dasharray:24;stroke-dashoffset:24;transition:.35s}.dn .ck{border-color:var(--a)}.dn .ck svg{stroke-dashoffset:0}
+.ruled .tx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;outline:0;transition:.3s}.ruled .tx[contenteditable=true]{background:color-mix(in srgb,var(--a) 14%,transparent);border-radius:.3rem;padding:0 .3rem;text-overflow:clip}
+.dn .tx{text-decoration:line-through;text-decoration-color:var(--a);text-decoration-thickness:2px;opacity:.5}
+.ruled .ic{width:1.7rem;height:1.7rem;opacity:0;background:none;border:0;color:var(--ink)}.ruled li:hover .ic,.ruled li:focus-within .ic{opacity:.75}@media(hover:none){.ruled .ic{opacity:.75}}
+.pe:hover svg{animation:wig .5s}@keyframes wig{25%{transform:rotate(-18deg)}75%{transform:rotate(14deg)}}
+.addr input{flex:1;font:inherit;font-size:1.5rem;background:none;border:0;border-radius:0;box-shadow:none!important;color:var(--ink);padding:0}.addr input::placeholder{color:var(--ink);opacity:.35}
+.pen{position:absolute;top:-.35rem;left:0;width:1.7rem;color:var(--a);pointer-events:none;z-index:3;animation:wr .85s ease-in-out forwards;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}.pen svg{width:100%;stroke-width:1.8}
+@keyframes wr{0%{left:0;transform:rotate(-30deg)}20%{transform:rotate(-12deg) translateY(.25rem)}40%{transform:rotate(-34deg)}60%{transform:rotate(-12deg) translateY(.25rem)}80%{transform:rotate(-30deg)}100%{left:calc(100% - 1.7rem);transform:rotate(-30deg);opacity:0}}
+li.ink::after,li.strike::after{content:"";position:absolute;left:0;bottom:.45rem;height:2px;border-radius:2px;background:var(--a);width:0;animation:ln .75s ease forwards}li.strike::after{bottom:50%;height:3px}
+@keyframes ln{to{width:100%}}li.ink::after{animation:ln .75s ease forwards,fade .4s .8s forwards}@keyframes fade{to{opacity:0}}
+.vw{max-width:42rem;margin:0 auto;display:grid;gap:1rem}.cta{text-align:center}
+</style>
+</head>
+<body>
+<script>
+
+const TF=(()=>{
+ const firebaseConfig = { 
+    apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y", 
+    authDomain: "toolbox-hub-98c03.firebaseapp.com", 
+    projectId: "toolbox-hub-98c03", 
+    storageBucket: "toolbox-hub-98c03.firebasestorage.app", 
+    messagingSenderId: "321020105472", 
+    appId: "1:321020105472:web:356e7c2903def7b9d859e5" 
+  };
+const BASE='./',LOGIN=BASE+'login.html';
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const I={gear:'⚙',check:P('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),x:P('<path d="M6 6l12 12M18 6L6 18"/>'),plus:P('<path d="M12 5v14M5 12h14"/>'),
+pen:P('<path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19z"/>'),share:P('<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.6M8.2 13.2l7.6 4.6"/>'),
+out:P('<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>'),moon:P('<path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z"/>'),
+sun:P('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>')};
+let U=null,db,auth,cfg={theme:'system',accent:'#8b5cf6',scale:100},menuFn=null;
+try{Object.assign(cfg,JSON.parse(localStorage.tf_cfg||'{}'))}catch{}
+const mq=matchMedia('(prefers-color-scheme:dark)');
+const dark=()=>cfg.theme=='system'?mq.matches:cfg.theme=='dark';
+function apply(){const r=document.documentElement;r.dataset.t=dark()?'dark':'light';r.style.setProperty('--a',cfg.accent);r.style.setProperty('--s',cfg.scale/100);localStorage.tf_cfg=JSON.stringify(cfg);syncUI()}
+function setCfg(p){Object.assign(cfg,p);apply();if(U)db.doc(`dayPasser/${U.uid}/meta/toolifySettings`).set(cfg).catch(()=>{})}
+mq.onchange=apply;
+
+const CSS=`*{box-sizing:border-box;margin:0}html{font-size:calc(16px*var(--s,1));scroll-behavior:smooth}
+[data-t=dark]{--bg:#000;--c:#0f0f0f;--b:rgba(255,255,255,.14);--tx:#fff;--mu:#a1a1aa;color-scheme:dark}
+[data-t=light]{--bg:#fff;--c:#f6f6f7;--b:rgba(0,0,0,.12);--tx:#000;--mu:#6b6b76;color-scheme:light}
+body{font:400 1rem/1.5 'Space Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;transition:background .3s,color .3s}
+a{color:inherit;text-decoration:none}.wrap{max-width:72rem;margin:auto;padding:1rem;min-height:100vh;display:flex;flex-direction:column}main{flex:1}
+.glass{background:var(--c);border:1px solid var(--b);border-radius:1.1rem;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.pad{padding:1.2rem}
+.top{display:flex;align-items:center;gap:.5rem;padding:.55rem .8rem;position:sticky;top:.6rem;z-index:20;margin-bottom:1.2rem}
+.brand{display:flex;align-items:center;gap:.5rem;font-weight:700}.brand img{width:1.8rem;height:1.8rem;border-radius:.5rem}
+nav{display:flex;gap:.2rem;margin-left:.5rem}nav a{padding:.35rem .8rem;border-radius:.7rem;color:var(--mu);font-size:.9rem;transition:.2s}nav a:hover{color:var(--tx)}nav a.on{background:color-mix(in srgb,var(--a) 22%,transparent);color:var(--tx)}.sp{flex:1}
+.ic{width:2.2rem;height:2.2rem;display:grid;place-items:center;border-radius:.7rem;border:1px solid var(--b);background:var(--c);color:var(--tx);cursor:pointer;transition:.2s;font:inherit;flex:none}.ic:hover{border-color:var(--a);transform:translateY(-1px)}.ic svg{width:1.05rem;height:1.05rem}
+.btn{font:inherit;font-weight:600;padding:.6rem 1rem;border-radius:.8rem;border:1px solid var(--b);background:var(--c);color:var(--tx);cursor:pointer;transition:.2s;display:inline-block}.btn:hover{transform:translateY(-1px)}.btn.pri{background:var(--a);border-color:transparent;color:#fff;box-shadow:0 .5rem 1.4rem -.5rem var(--a)}
+input,select{font:inherit;color:var(--tx);background:color-mix(in srgb,var(--tx) 6%,transparent);border:1px solid var(--b);border-radius:.75rem;padding:.6rem .8rem;outline:0;min-width:0;transition:.2s}input:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 25%,transparent)}
+input[type=color]{padding:.15rem;width:2.4rem;height:2.1rem;cursor:pointer}input[type=range]{padding:0;accent-color:var(--a);width:100%}
+footer{text-align:center;color:var(--mu);font-size:.85rem;padding:2rem 0 1rem}footer a{text-decoration:underline}
+.mu{color:var(--mu);font-size:.9rem}.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}.empty{text-align:center;color:var(--mu);padding:2rem}
+.note{padding:.6rem .9rem;border-radius:.8rem;background:color-mix(in srgb,#f59e0b 16%,transparent);border:1px dashed #f59e0b;font-size:.88rem;margin-bottom:.8rem}
+.seg{display:flex;gap:.3rem;padding:.25rem;border:1px solid var(--b);border-radius:.9rem}.seg button{flex:1;font:inherit;padding:.4rem .6rem;border:0;border-radius:.65rem;background:none;color:var(--mu);cursor:pointer;transition:.2s}.seg button.on{background:var(--a);color:#fff}
+.dr{position:fixed;top:0;right:0;height:100%;width:min(22rem,92vw);transform:translateX(105%);transition:transform .35s cubic-bezier(.2,.8,.2,1);z-index:50;padding:1.2rem;background:var(--bg);border-left:1px solid var(--b);display:flex;flex-direction:column;gap:.7rem;box-shadow:-2rem 0 4rem rgba(0,0,0,.25)}.dr.on{transform:none}.dr label{font-size:.8rem;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-top:.5rem}
+.sw{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center}.sw button{width:1.7rem;height:1.7rem;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.2s}.sw button.on{border-color:var(--tx);transform:scale(1.15)}
+.cm{position:fixed;z-index:70;min-width:12rem;padding:.35rem;background:var(--bg);border:1px solid var(--b);border-radius:.9rem;box-shadow:0 1.5rem 3rem -.5rem rgba(0,0,0,.4);animation:pop .15s ease}.cm[hidden]{display:none}.cm button{display:block;width:100%;text-align:left;font:inherit;padding:.5rem .8rem;border:0;border-radius:.6rem;background:none;color:var(--tx);cursor:pointer}.cm button:hover:not(:disabled){background:color-mix(in srgb,var(--a) 20%,transparent)}.cm button:disabled{opacity:.4;cursor:default}.cm .dg{color:#ef4444}
+@keyframes pop{from{opacity:0;transform:scale(.94)}}
+.ts{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);display:grid;gap:.4rem;z-index:80}.ts div{padding:.6rem 1.1rem;border-radius:2rem;background:var(--tx);color:var(--bg);font-weight:600;font-size:.9rem;animation:pop .25s ease}
+.md{position:fixed;inset:0;background:rgba(0,0,0,.5);display:grid;place-items:center;z-index:60;padding:1rem}.md>div{width:min(28rem,100%);padding:1.4rem;display:grid;gap:.8rem;background:var(--bg)}
+@media(max-width:640px){.brand b{display:none}nav a{padding:.3rem .55rem}.wrap{padding:.6rem}}`;
+const st=document.createElement('style');st.textContent=CSS;document.head.append(st);
+
+function shell(page){
+document.body.innerHTML=`<div class="wrap"><header class="glass top"><a class="brand" href="${BASE}"><img src="${BASE}favicon.png" alt="" onerror="this.remove()"><b>Toolify</b></a><div class="sp"></div><button class="ic" id="tg" title="Toggle theme"></button><button class="ic" id="gear" title="Settings">${I.gear}</button><button class="ic" id="out" title="Sign out" hidden>${I.out}</button></header><main id="m"></main><footer>© <span id="copyright-year"></span> Toolify · Made by Mohak Choubey · <a href="${BASE}">Home</a></footer></div>
+<aside class="dr" id="dr"><div class="row"><b style="flex:1;font-size:1.2rem">Settings</b><button class="ic" id="dx">${I.x}</button></div>
+<label>Theme</label><div class="seg" id="sg">${['light','dark','system'].map(v=>`<button data-v="${v}">${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div>
+<label>Accent colour</label><div class="sw" id="sw">${['#8b5cf6','#f59e0b','#10b981','#ef4444','#3b82f6','#ec4899','#14b8a6'].map(c=>`<button data-c="${c}" style="background:${c}"></button>`).join('')}<input type="color" id="ac"></div>
+<label>Interface size · <span id="sv"></span></label><input type="range" id="sc" min="80" max="130" step="5">
+<button class="btn" id="rs" style="margin-top:.8rem">Reset to defaults</button></aside>
+<div class="cm" id="cm" hidden></div><div class="ts" id="ts"></div>`;
+document.getElementById('copyright-year').textContent = new Date().getFullYear();
+$('#tg').onclick=()=>setCfg({theme:dark()?'light':'dark'});
+$('#gear').onclick=e=>{e.stopPropagation();$('#dr').classList.toggle('on')};$('#dx').onclick=()=>$('#dr').classList.remove('on');
+$('#sg').onclick=e=>{const b=e.target.closest('button');b&&setCfg({theme:b.dataset.v})};
+$('#sw').onclick=e=>{const b=e.target.closest('button');b&&setCfg({accent:b.dataset.c})};
+$('#ac').oninput=e=>setCfg({accent:e.target.value});$('#sc').oninput=e=>setCfg({scale:+e.target.value});
+$('#rs').onclick=()=>setCfg({theme:'system',accent:'#8b5cf6',scale:100});
+document.addEventListener('click',e=>{if(!e.target.closest('#dr'))$('#dr').classList.remove('on')});
+apply()}
+function syncUI(){if(!$('#dr'))return;$('#tg').innerHTML=dark()?I.sun:I.moon;$('#sg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v==cfg.theme));
+$('#sw').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.c==cfg.accent));$('#ac').value=cfg.accent;$('#sc').value=cfg.scale;$('#sv').textContent=cfg.scale+'%'}
+
+function showMenu(x,y,items){const m=$('#cm');m.innerHTML=items.map((it,i)=>`<button data-i="${i}" class="${it.danger?'dg':''}" ${it.off?'disabled':''}>${it.l}</button>`).join('');m.hidden=false;
+m.style.left=Math.max(8,Math.min(x,innerWidth-m.offsetWidth-8))+'px';m.style.top=Math.max(8,Math.min(y,innerHeight-m.offsetHeight-8))+'px';
+m.onclick=e=>{const b=e.target.closest('button');if(b&&!b.disabled)items[b.dataset.i].fn()}}
+document.addEventListener('contextmenu',e=>{if(!menuFn||e.target.closest('input,[contenteditable=true]'))return;const it=menuFn(e);if(!it)return;e.preventDefault();showMenu(e.clientX,e.clientY,it)});
+['click','scroll','resize','keydown'].forEach(v=>addEventListener(v,e=>{if((v!='keydown'||e.key=='Escape')&&$('#cm'))$('#cm').hidden=true},true));
+let lp;addEventListener('touchstart',e=>{if(!menuFn||e.target.closest('input'))return;const t=e.touches[0],tg=e.target;lp=setTimeout(()=>{const it=menuFn({target:tg});if(it)showMenu(t.clientX,t.clientY,it)},650)},{passive:true});
+['touchend','touchmove','touchcancel'].forEach(v=>addEventListener(v,()=>clearTimeout(lp),{passive:true}));
+
+function toast(msg){const d=document.createElement('div');d.textContent=msg;$('#ts').append(d);setTimeout(()=>d.remove(),2800)}
+function modal(h){const o=document.createElement('div');o.className='md';o.innerHTML=`<div class="glass">${h}</div>`;document.body.append(o);const b=o.firstChild;b.close=()=>o.remove();o.onclick=e=>{if(e.target==o)o.remove()};return b}
+
+/* Local-first store: instant from localStorage, live-synced with Firestore (dayPasser/{uid}/{col}) */
+function Store(col,onChange){let items=[];const k=()=>`tf_${col}_${U.uid}`,ref=()=>db.collection(`dayPasser/${U.uid}/${col}`),keep=()=>localStorage[k()]=JSON.stringify(items);
+try{items=JSON.parse(localStorage[k()]||'[]')}catch{}
+return{get:()=>items,
+async put(it){const i=items.findIndex(x=>x.id==it.id);i<0?items.push(it):items[i]=it;keep();onChange(items);try{await ref().doc(it.id).set(JSON.parse(JSON.stringify(it)))}catch{toast('Saved on this device · cloud sync failed')}},
+async del(id){items=items.filter(x=>x.id!=id);keep();onChange(items);try{await ref().doc(id).delete()}catch{toast('Deleted locally · cloud sync failed')}},
+start(){onChange(items);return ref().onSnapshot(s=>{items=s.docs.map(d=>d.data());keep();onChange(items)},()=>toast('Offline · showing saved data'))}}}
+
+function boot({page,open,menu,start}){
+shell(page);menuFn=menu||null;
+if(FIREBASE_CONFIG.apiKey=='PASTE'){$('#m').innerHTML='<div class="glass pad"><b>Firebase config missing</b><p class="mu">Search this file for PASTE and fill in the same firebaseConfig your login.html uses.</p></div>';return}
+firebase.initializeApp(FIREBASE_CONFIG);auth=firebase.auth();db=firebase.firestore();
+$('#out').onclick=()=>auth.signOut();
+auth.onAuthStateChanged(async u=>{
+if(!u){if(open&&open()){$('#out').remove();return start(null)}location.href=LOGIN+'?next='+encodeURIComponent(location.pathname+location.search);return}
+U=u;$('#out').hidden=false;try{const d=await db.doc(`dayPasser/${u.uid}/meta/toolifySettings`).get();if(d.exists){Object.assign(cfg,d.data());apply()}}catch{}
+start(u)})}
+apply();
+return{boot,$,esc,I,toast,modal,Store,get U(){return U},get db(){return db}}})();
+
+</script>
+<script>
+const {$,esc,toast,Store,I,modal}=TF;
+const qid=new URLSearchParams(location.search).get('id');
+const SAMPLE=[{id:'sample',name:'Weekend Groceries',items:[{id:'a',t:'Oat milk',d:1},{id:'b',t:'Sourdough bread',d:0},{id:'c',t:'Cherry tomatoes',d:0},{id:'d',t:'Dark chocolate',d:1}]}];
+let S,L=[],cur=null;
+const real=()=>L.length>0,data=()=>real()?L:SAMPLE,act=()=>data().find(l=>l.id==cur)||data()[0];
+const uid=()=>crypto.randomUUID().slice(0,12);
+const li=(i,ro)=>`<li data-id="${i.id}" class="${i.d?'dn':''}"><button class="ck" ${ro?'disabled':''} aria-label="Tick">${I.check}</button><span class="tx">${esc(i.t)}</span>${ro?'':`<button class="ic pe" aria-label="Edit">${I.pen}</button><button class="ic px" aria-label="Delete">${I.x}</button>`}</li>`;
+const paper=(l,ro)=>`<article class="paper" data-l="${l.id}"><div class="ptop">${ro?'':`<button class="ic" id="sh" title="Share">${I.share}</button>`}</div><h2 id="ph" ${ro?'':'contenteditable="true" spellcheck="false"'}>${esc(l.name)}</h2><p class="pm">${l.items.filter(i=>i.d).length} of ${l.items.length} done</p><ul class="ruled" id="pi">${l.items.map(i=>li(i,ro)).join('')}${ro?'':'<li class="addr"><input id="pn" placeholder="Write something down…" maxlength="120" autocomplete="off"></li>'}</ul></article>`;
+const save=l=>{l.ts=Date.now();S.put(l);if(l.shared)pub(l)};
+const pub=l=>TF.db.doc('toolifyShared/'+l.id).set({ownerUid:TF.U.uid,name:l.name,items:l.items,ts:l.ts}).catch(()=>toast('Could not update shared copy'));
+function pencil(el,mode){const p=document.createElement('div');p.className='pen';p.innerHTML=I.pen;el.append(p);el.classList.add(mode);setTimeout(()=>{p.remove();el.classList.remove(mode)},900)}
+function render(){if(qid)return;const f=document.activeElement?.id=='pn',l=act(),ro=!real();
+$('#rail').innerHTML=data().map(x=>`<button class="rl${x.id==l.id?' on':''}" data-l="${x.id}">${esc(x.name)}<span>${x.items.filter(i=>i.d).length}/${x.items.length}</span></button>`).join('');
+$('#pp').innerHTML=(ro?'<div class="note">Sample list — create your first list and this preview disappears.</div>':'')+paper(l,ro);
+if(f)$('#pn').focus();wire()}
+function wire(){const ph=$('#ph'),pn=$('#pn');if(ph&&ph.isContentEditable){ph.onkeydown=e=>{if(e.key=='Enter'){e.preventDefault();ph.blur()}};ph.onblur=()=>{const l=act(),n=ph.textContent.trim()||'Untitled list';if(n!=l.name){l.name=n;save(l)}}}
+if(pn)pn.onkeydown=e=>{const t=pn.value.trim();if(e.key!='Enter'||!t)return;const l=act(),i={id:uid(),t,d:0};l.items.push(i);save(l);render();const el=document.querySelector(`[data-id="${i.id}"]`);el&&pencil(el,'ink')};
+const sh=$('#sh');if(sh)sh.onclick=()=>share(act())}
+function share(l){l.shared=true;save(l);const url=`https://mohakchoubey.github.io/toolify/list.html?id=${l.id}&utm_source=share`;
+const m=modal(`<h3>Share “${esc(l.name)}”</h3><p class="mu">Anyone with this link can view the list (read-only). Your edits appear on the shared copy automatically.</p><input readonly id="su" value="${url}"><div class="row"><button class="btn pri" id="cp">Copy link</button><button class="btn" id="ns">Stop sharing</button></div>`);
+m.querySelector('#su').onclick=e=>e.target.select();
+m.querySelector('#cp').onclick=()=>navigator.clipboard.writeText(url).then(()=>toast('Link copied'),()=>{m.querySelector('#su').select();toast('Press Ctrl+C to copy')});
+m.querySelector('#ns').onclick=()=>{l.shared=false;S.put(l);TF.db.doc('toolifyShared/'+l.id).delete().catch(()=>{});m.close();toast('Sharing stopped')}}
+function newList(){const l={id:uid(),name:'Untitled list',items:[],ts:Date.now()};cur=l.id;S.put(l);render();const h=$('#ph');h.focus();getSelection().selectAllChildren(h)}
+function delList(id){const l=L.find(x=>x.id==id);if(!l||!confirm(`Delete “${l.name}”?`))return;if(l.shared)TF.db.doc('toolifyShared/'+id).delete().catch(()=>{});cur=null;S.del(id);toast('List deleted')}
+async function view(){$('#m').innerHTML='<p class="empty">Loading list…</p>';
+try{const d=await TF.db.doc('toolifyShared/'+qid).get();if(!d.exists)throw 0;const l=d.data();document.title=l.name+' · Toolify';
+$('#m').innerHTML=`<div class="vw"><p class="mu" style="text-align:center">Shared list · read-only</p>${paper({id:qid,name:l.name,items:l.items},true)}<p class="cta"><a class="btn pri" href="./list.html">Make your own lists on Toolify</a></p></div>`}
+catch{$('#m').innerHTML='<div class="glass pad empty">This list isn’t available — the owner may have stopped sharing it.</div>'}}
+
+TF.boot({page:'list',open:()=>!!qid,
+menu:e=>{if(qid)return null;const id=e.target.closest?.('[data-l]')?.dataset.l||cur,l=L.find(x=>x.id==id);
+return[{l:'＋ Add a list',fn:newList},{l:'✎ Edit list name',off:!l,fn:()=>{cur=l.id;render();const h=$('#ph');h.focus();getSelection().selectAllChildren(h)}},{l:'🗑 Delete list',off:!l,danger:1,fn:()=>delList(l.id)}]},
+start:()=>{if(qid)return view();
+$('#m').innerHTML=`<div class="lg"><aside><div class="rail" id="rail"></div><button class="btn pri" id="nl" style="width:100%;margin-top:.7rem">＋ New list</button></aside><section id="pp"></section></div>`;
+$('#nl').onclick=newList;
+$('#rail').onclick=e=>{const b=e.target.closest('.rl');if(b){cur=b.dataset.l;render()}};
+$('#pp').onclick=e=>{if(!real())return;const el=e.target.closest('#pi>li[data-id]');if(!el)return;const l=act(),it=l.items.find(x=>x.id==el.dataset.id);if(!it)return;
+if(e.target.closest('.ck')){it.d=it.d?0:1;save(l);render()}
+else if(e.target.closest('.px')){pencil(el,'strike');setTimeout(()=>{el.classList.add('gone');setTimeout(()=>{l.items=l.items.filter(x=>x.id!=it.id);save(l);render()},350)},800)}
+else if(e.target.closest('.pe')){const tx=el.querySelector('.tx');tx.contentEditable=true;tx.focus();getSelection().selectAllChildren(tx);
+const done=()=>{tx.contentEditable=false;const v=tx.textContent.trim();if(v&&v!=it.t){it.t=v;save(l)}render()};tx.onblur=done;tx.onkeydown=k=>{if(k.key=='Enter'){k.preventDefault();tx.blur()}}}};
+S=Store('lists',v=>{L=v.sort((a,b)=>(a.ts||0)-(b.ts||0));if(!L.find(x=>x.id==cur))cur=L[0]?.id||null;render()});S.start()}});
+</script>
+<script type="module" src="https://mohakchoubey.github.io/toolify/protect.js"></script>
+</body>
+</html>
