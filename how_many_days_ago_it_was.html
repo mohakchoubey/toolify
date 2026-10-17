@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-t="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Day Counter · Toolify</title>
+<link rel="icon" href="./favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<style>
+[hidden]{display:none!important}
+.hero{margin-bottom:1.2rem}.hero h1{font-size:clamp(1.6rem,4vw,2.4rem);line-height:1.15;margin-bottom:.3rem}.hero h1 em{font-style:normal;color:var(--a)}
+.frm{display:grid;grid-template-columns:2fr 1fr auto;gap:.6rem;margin-top:1rem}.frm .em{grid-column:1/-1;display:flex;gap:.4rem;flex-wrap:wrap}
+.frm .em button{width:2.4rem;height:2.4rem;font-size:1.2rem;border-radius:.8rem;border:1px solid var(--b);background:var(--c);cursor:pointer;transition:.2s}.frm .em button.on{border-color:var(--a);background:color-mix(in srgb,var(--a) 22%,transparent);transform:scale(1.12)}
+@media(max-width:44rem){.frm{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:1.1rem}
+.card{position:relative;padding:1.4rem 1.2rem;text-align:center;overflow:hidden;animation:up .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*70ms);transition:.3s}
+.card:hover{transform:translateY(-5px);border-color:var(--a);box-shadow:0 1.5rem 3rem -1.5rem var(--a)}
+@keyframes up{from{opacity:0;transform:translateY(1.4rem) scale(.96)}}
+.card .x{position:absolute;top:.6rem;right:.6rem;opacity:0;width:1.9rem;height:1.9rem}.card:hover .x{opacity:1}@media(hover:none){.card .x{opacity:1}}
+.card .e{font-size:1.6rem;position:absolute;top:.8rem;left:1rem}
+.rg{position:relative;width:9rem;margin:.4rem auto .8rem}.rg svg{width:100%;transform:rotate(-90deg)}.rg circle{fill:none;stroke-width:6;stroke-linecap:round}.rg .tr{stroke:var(--b)}.rg .pg{stroke:var(--a);transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)}
+.nm{position:absolute;inset:0;display:grid;place-content:center;line-height:1.1}.nm b{font:700 1.9rem 'JetBrains Mono',monospace}.nm small{color:var(--mu);font-size:.78rem;letter-spacing:.04em}
+.card h3{font-size:1.1rem;font-weight:500}.card .ms{margin-top:.6rem;font-size:.8rem;color:var(--a);font-weight:600}
+</style>
+</head>
+<body>
+<script>
+/* Toolify shared core: Firebase, auth gate, theme, settings, context menu, local+cloud store */
+const TF=(()=>{
+// >>> Paste the SAME firebaseConfig object your login.html uses <<<
+const FIREBASE_CONFIG={apiKey:"PASTE",authDomain:"PASTE",projectId:"PASTE",appId:"PASTE"};
+const BASE='./',LOGIN=BASE+'login.html';
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const I={gear:'⚙',check:P('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),x:P('<path d="M6 6l12 12M18 6L6 18"/>'),plus:P('<path d="M12 5v14M5 12h14"/>'),
+pen:P('<path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19z"/>'),share:P('<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.6M8.2 13.2l7.6 4.6"/>'),
+out:P('<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>'),moon:P('<path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z"/>'),
+sun:P('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>')};
+let U=null,db,auth,cfg={theme:'system',accent:'#8b5cf6',scale:100},menuFn=null;
+try{Object.assign(cfg,JSON.parse(localStorage.tf_cfg||'{}'))}catch{}
+const mq=matchMedia('(prefers-color-scheme:dark)');
+const dark=()=>cfg.theme=='system'?mq.matches:cfg.theme=='dark';
+function apply(){const r=document.documentElement;r.dataset.t=dark()?'dark':'light';r.style.setProperty('--a',cfg.accent);r.style.setProperty('--s',cfg.scale/100);localStorage.tf_cfg=JSON.stringify(cfg);syncUI()}
+function setCfg(p){Object.assign(cfg,p);apply();if(U)db.doc(`dayPasser/${U.uid}/meta/toolifySettings`).set(cfg).catch(()=>{})}
+mq.onchange=apply;
+
+const CSS=`*{box-sizing:border-box;margin:0}html{font-size:calc(16px*var(--s,1));scroll-behavior:smooth}
+[data-t=dark]{--bg:#000;--c:#0f0f0f;--b:rgba(255,255,255,.14);--tx:#fff;--mu:#a1a1aa;color-scheme:dark}
+[data-t=light]{--bg:#fff;--c:#f6f6f7;--b:rgba(0,0,0,.12);--tx:#000;--mu:#6b6b76;color-scheme:light}
+body{font:400 1rem/1.5 'Space Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;transition:background .3s,color .3s}
+a{color:inherit;text-decoration:none}.wrap{max-width:72rem;margin:auto;padding:1rem;min-height:100vh;display:flex;flex-direction:column}main{flex:1}
+.glass{background:var(--c);border:1px solid var(--b);border-radius:1.1rem;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.pad{padding:1.2rem}
+.top{display:flex;align-items:center;gap:.5rem;padding:.55rem .8rem;position:sticky;top:.6rem;z-index:20;margin-bottom:1.2rem}
+.brand{display:flex;align-items:center;gap:.5rem;font-weight:700}.brand img{width:1.8rem;height:1.8rem;border-radius:.5rem}
+nav{display:flex;gap:.2rem;margin-left:.5rem}nav a{padding:.35rem .8rem;border-radius:.7rem;color:var(--mu);font-size:.9rem;transition:.2s}nav a:hover{color:var(--tx)}nav a.on{background:color-mix(in srgb,var(--a) 22%,transparent);color:var(--tx)}.sp{flex:1}
+.ic{width:2.2rem;height:2.2rem;display:grid;place-items:center;border-radius:.7rem;border:1px solid var(--b);background:var(--c);color:var(--tx);cursor:pointer;transition:.2s;font:inherit;flex:none}.ic:hover{border-color:var(--a);transform:translateY(-1px)}.ic svg{width:1.05rem;height:1.05rem}
+.btn{font:inherit;font-weight:600;padding:.6rem 1rem;border-radius:.8rem;border:1px solid var(--b);background:var(--c);color:var(--tx);cursor:pointer;transition:.2s;display:inline-block}.btn:hover{transform:translateY(-1px)}.btn.pri{background:var(--a);border-color:transparent;color:#fff;box-shadow:0 .5rem 1.4rem -.5rem var(--a)}
+input,select{font:inherit;color:var(--tx);background:color-mix(in srgb,var(--tx) 6%,transparent);border:1px solid var(--b);border-radius:.75rem;padding:.6rem .8rem;outline:0;min-width:0;transition:.2s}input:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 25%,transparent)}
+input[type=color]{padding:.15rem;width:2.4rem;height:2.1rem;cursor:pointer}input[type=range]{padding:0;accent-color:var(--a);width:100%}
+footer{text-align:center;color:var(--mu);font-size:.85rem;padding:2rem 0 1rem}footer a{text-decoration:underline}
+.mu{color:var(--mu);font-size:.9rem}.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}.empty{text-align:center;color:var(--mu);padding:2rem}
+.note{padding:.6rem .9rem;border-radius:.8rem;background:color-mix(in srgb,#f59e0b 16%,transparent);border:1px dashed #f59e0b;font-size:.88rem;margin-bottom:.8rem}
+.seg{display:flex;gap:.3rem;padding:.25rem;border:1px solid var(--b);border-radius:.9rem}.seg button{flex:1;font:inherit;padding:.4rem .6rem;border:0;border-radius:.65rem;background:none;color:var(--mu);cursor:pointer;transition:.2s}.seg button.on{background:var(--a);color:#fff}
+.dr{position:fixed;top:0;right:0;height:100%;width:min(22rem,92vw);transform:translateX(105%);transition:transform .35s cubic-bezier(.2,.8,.2,1);z-index:50;padding:1.2rem;background:var(--bg);border-left:1px solid var(--b);display:flex;flex-direction:column;gap:.7rem;box-shadow:-2rem 0 4rem rgba(0,0,0,.25)}.dr.on{transform:none}.dr label{font-size:.8rem;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-top:.5rem}
+.sw{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center}.sw button{width:1.7rem;height:1.7rem;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.2s}.sw button.on{border-color:var(--tx);transform:scale(1.15)}
+.cm{position:fixed;z-index:70;min-width:12rem;padding:.35rem;background:var(--bg);border:1px solid var(--b);border-radius:.9rem;box-shadow:0 1.5rem 3rem -.5rem rgba(0,0,0,.4);animation:pop .15s ease}.cm[hidden]{display:none}.cm button{display:block;width:100%;text-align:left;font:inherit;padding:.5rem .8rem;border:0;border-radius:.6rem;background:none;color:var(--tx);cursor:pointer}.cm button:hover:not(:disabled){background:color-mix(in srgb,var(--a) 20%,transparent)}.cm button:disabled{opacity:.4;cursor:default}.cm .dg{color:#ef4444}
+@keyframes pop{from{opacity:0;transform:scale(.94)}}
+.ts{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);display:grid;gap:.4rem;z-index:80}.ts div{padding:.6rem 1.1rem;border-radius:2rem;background:var(--tx);color:var(--bg);font-weight:600;font-size:.9rem;animation:pop .25s ease}
+.md{position:fixed;inset:0;background:rgba(0,0,0,.5);display:grid;place-items:center;z-index:60;padding:1rem}.md>div{width:min(28rem,100%);padding:1.4rem;display:grid;gap:.8rem;background:var(--bg)}
+@media(max-width:640px){.brand b{display:none}nav a{padding:.3rem .55rem}.wrap{padding:.6rem}}`;
+const st=document.createElement('style');st.textContent=CSS;document.head.append(st);
+
+function shell(page){
+document.body.innerHTML=`<div class="wrap"><header class="glass top"><a class="brand" href="${BASE}"><img src="${BASE}favicon.png" alt="" onerror="this.remove()"><b>Toolify</b></a><div class="sp"></div><button class="ic" id="tg" title="Toggle theme"></button><button class="ic" id="gear" title="Settings">${I.gear}</button><button class="ic" id="out" title="Sign out" hidden>${I.out}</button></header><main id="m"></main><footer>© <span id="copyright-year"></span> Toolify · Made by Mohak Choubey · <a href="${BASE}">Home</a></footer></div>
+<aside class="dr" id="dr"><div class="row"><b style="flex:1;font-size:1.2rem">Settings</b><button class="ic" id="dx">${I.x}</button></div>
+<label>Theme</label><div class="seg" id="sg">${['light','dark','system'].map(v=>`<button data-v="${v}">${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div>
+<label>Accent colour</label><div class="sw" id="sw">${['#8b5cf6','#f59e0b','#10b981','#ef4444','#3b82f6','#ec4899','#14b8a6'].map(c=>`<button data-c="${c}" style="background:${c}"></button>`).join('')}<input type="color" id="ac"></div>
+<label>Interface size · <span id="sv"></span></label><input type="range" id="sc" min="80" max="130" step="5">
+<button class="btn" id="rs" style="margin-top:.8rem">Reset to defaults</button></aside>
+<div class="cm" id="cm" hidden></div><div class="ts" id="ts"></div>`;
+document.getElementById('copyright-year').textContent = new Date().getFullYear();
+$('#tg').onclick=()=>setCfg({theme:dark()?'light':'dark'});
+$('#gear').onclick=e=>{e.stopPropagation();$('#dr').classList.toggle('on')};$('#dx').onclick=()=>$('#dr').classList.remove('on');
+$('#sg').onclick=e=>{const b=e.target.closest('button');b&&setCfg({theme:b.dataset.v})};
+$('#sw').onclick=e=>{const b=e.target.closest('button');b&&setCfg({accent:b.dataset.c})};
+$('#ac').oninput=e=>setCfg({accent:e.target.value});$('#sc').oninput=e=>setCfg({scale:+e.target.value});
+$('#rs').onclick=()=>setCfg({theme:'system',accent:'#8b5cf6',scale:100});
+document.addEventListener('click',e=>{if(!e.target.closest('#dr'))$('#dr').classList.remove('on')});
+apply()}
+function syncUI(){if(!$('#dr'))return;$('#tg').innerHTML=dark()?I.sun:I.moon;$('#sg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v==cfg.theme));
+$('#sw').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.c==cfg.accent));$('#ac').value=cfg.accent;$('#sc').value=cfg.scale;$('#sv').textContent=cfg.scale+'%'}
+
+function showMenu(x,y,items){const m=$('#cm');m.innerHTML=items.map((it,i)=>`<button data-i="${i}" class="${it.danger?'dg':''}" ${it.off?'disabled':''}>${it.l}</button>`).join('');m.hidden=false;
+m.style.left=Math.max(8,Math.min(x,innerWidth-m.offsetWidth-8))+'px';m.style.top=Math.max(8,Math.min(y,innerHeight-m.offsetHeight-8))+'px';
+m.onclick=e=>{const b=e.target.closest('button');if(b&&!b.disabled)items[b.dataset.i].fn()}}
+document.addEventListener('contextmenu',e=>{if(!menuFn||e.target.closest('input,[contenteditable=true]'))return;const it=menuFn(e);if(!it)return;e.preventDefault();showMenu(e.clientX,e.clientY,it)});
+['click','scroll','resize','keydown'].forEach(v=>addEventListener(v,e=>{if((v!='keydown'||e.key=='Escape')&&$('#cm'))$('#cm').hidden=true},true));
+let lp;addEventListener('touchstart',e=>{if(!menuFn||e.target.closest('input'))return;const t=e.touches[0],tg=e.target;lp=setTimeout(()=>{const it=menuFn({target:tg});if(it)showMenu(t.clientX,t.clientY,it)},650)},{passive:true});
+['touchend','touchmove','touchcancel'].forEach(v=>addEventListener(v,()=>clearTimeout(lp),{passive:true}));
+
+function toast(msg){const d=document.createElement('div');d.textContent=msg;$('#ts').append(d);setTimeout(()=>d.remove(),2800)}
+function modal(h){const o=document.createElement('div');o.className='md';o.innerHTML=`<div class="glass">${h}</div>`;document.body.append(o);const b=o.firstChild;b.close=()=>o.remove();o.onclick=e=>{if(e.target==o)o.remove()};return b}
+
+/* Local-first store: instant from localStorage, live-synced with Firestore (dayPasser/{uid}/{col}) */
+function Store(col,onChange){let items=[];const k=()=>`tf_${col}_${U.uid}`,ref=()=>db.collection(`dayPasser/${U.uid}/${col}`),keep=()=>localStorage[k()]=JSON.stringify(items);
+try{items=JSON.parse(localStorage[k()]||'[]')}catch{}
+return{get:()=>items,
+async put(it){const i=items.findIndex(x=>x.id==it.id);i<0?items.push(it):items[i]=it;keep();onChange(items);try{await ref().doc(it.id).set(JSON.parse(JSON.stringify(it)))}catch{toast('Saved on this device · cloud sync failed')}},
+async del(id){items=items.filter(x=>x.id!=id);keep();onChange(items);try{await ref().doc(id).delete()}catch{toast('Deleted locally · cloud sync failed')}},
+start(){onChange(items);return ref().onSnapshot(s=>{items=s.docs.map(d=>d.data());keep();onChange(items)},()=>toast('Offline · showing saved data'))}}}
+
+function boot({page,open,menu,start}){
+shell(page);menuFn=menu||null;
+if(FIREBASE_CONFIG.apiKey=='PASTE'){$('#m').innerHTML='<div class="glass pad"><b>Firebase config missing</b><p class="mu">Search this file for PASTE and fill in the same firebaseConfig your login.html uses.</p></div>';return}
+firebase.initializeApp(FIREBASE_CONFIG);auth=firebase.auth();db=firebase.firestore();
+$('#out').onclick=()=>auth.signOut();
+auth.onAuthStateChanged(async u=>{
+if(!u){if(open&&open()){$('#out').remove();return start(null)}location.href=LOGIN+'?next='+encodeURIComponent(location.pathname+location.search);return}
+U=u;$('#out').hidden=false;try{const d=await db.doc(`dayPasser/${u.uid}/meta/toolifySettings`).get();if(d.exists){Object.assign(cfg,d.data());apply()}}catch{}
+start(u)})}
+apply();
+return{boot,$,esc,I,toast,modal,Store,get U(){return U},get db(){return db}}})();
+
+</script>
+<script>
+const {$,esc,toast,Store,I}=TF;
+const pad=n=>String(n).padStart(2,'0'),ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const off=n=>{const d=new Date();d.setDate(d.getDate()+n);return ymd(d)};
+const SAMPLE=[{id:'s1',t:'your kid was born',date:off(-14),e:'👶',m:'ago'},{id:'s2',t:'you bought a house',date:off(-8188),e:'🏠',m:'ago'},
+{id:'s3',t:'with your girlfriend',date:off(-41),e:'💞',m:'with'},{id:'s4',t:'your Japan trip',date:off(30),e:'✈️',m:'ago'}];
+const EM=['👶','🏠','💞','🎂','🎓','✈️','🏆','🚗','🐶','💍'];
+let S,items=[],em='💞',m='ago',first=true;
+const utc=s=>{const[y,mo,d]=s.split('-').map(Number);return Date.UTC(y,mo-1,d)};
+const diff=s=>{const n=new Date();return Math.round((Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())-utc(s))/864e5)};
+function parts(s){const[y,mo,d]=s.split('-').map(Number),n=new Date();let Y=n.getFullYear()-y,M=n.getMonth()+1-mo,D=n.getDate()-d;if(D<0){M--;D+=new Date(n.getFullYear(),n.getMonth(),0).getDate()}if(M<0){Y--;M+=12}return`${Y}y ${M}m ${D}d`}
+function card(e,i){const n=diff(e.date),fut=n<0,a=Math.abs(n),unit=fut?'days to go':e.m=='with'?'days together':'days ago';
+const nx=Math.floor(a/100)*100+100,pc=fut?Math.max(0,1-a/365):(a%100)/100;
+const ms=fut?`That's ${Math.floor(a/7)} weeks and ${a%7} days away`:a&&a%100==0?'🎉 Milestone day today!':`Day ${nx.toLocaleString()} arrives in ${nx-a} days`;
+const dt=new Date(e.date+'T00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+return`<article class="glass card" data-id="${e.id}" style="--i:${i}"><button class="ic x" aria-label="Delete">${I.x}</button><span class="e">${e.e}</span>
+<div class="rg"><svg viewBox="0 0 120 120"><circle class="tr" cx="60" cy="60" r="52"/><circle class="pg" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7" data-o="${(1-pc)*326.7}"/></svg><div class="nm"><b class="num" data-n="${a}">${a.toLocaleString()}</b><small>${unit}</small></div></div>
+<h3>${esc(e.t)}</h3><p class="mu">${dt}${fut?'':' · '+parts(e.date)}</p><p class="ms">${ms}</p></article>`}
+function render(){const real=items.length>0,all=real?items:SAMPLE;
+const v=[...all].sort((a,b)=>b.date.localeCompare(a.date));
+$('#gr').innerHTML=(real?'':'<div class="note" style="grid-column:1/-1">Sample moments — add your first one and these disappear.</div>')+v.map(card).join('');
+requestAnimationFrame(()=>{document.querySelectorAll('.pg').forEach(c=>c.style.strokeDashoffset=c.dataset.o);
+if(first){first=false;document.querySelectorAll('.num').forEach(el=>{const to=+el.dataset.n,t0=performance.now();const step=t=>{const p=Math.min(1,(t-t0)/1100);el.textContent=Math.round(to*(1-Math.pow(1-p,3))).toLocaleString();if(p<1)requestAnimationFrame(step)};requestAnimationFrame(step)})}})}
+function add(){const t=$('#dt').value.trim(),d=$('#dd').value;if(!t||!d)return toast('Add a title and a date');
+S.put({id:crypto.randomUUID().slice(0,12),t,date:d,e:em,m,ts:Date.now()});$('#dt').value='';toast('Moment added ✨')}
+
+TF.boot({page:'days',
+start:()=>{
+$('#m').innerHTML=`<div class="glass pad hero"><h1>Every day, <em>counted</em>.</h1><p class="mu">Track the moments that matter — births, homes, anniversaries, trips. Counts update automatically every day.</p>
+<div class="frm"><div class="em" id="em">${EM.map(x=>`<button data-e="${x}" class="${x==em?'on':''}">${x}</button>`).join('')}</div>
+<input id="dt" placeholder="e.g. your kid was born / with your girlfriend" maxlength="80" autocomplete="off"><input type="date" id="dd" value="${ymd(new Date())}">
+<div class="seg" id="md"><button data-m="ago" class="on">Days ago</button><button data-m="with">Together</button></div><button class="btn pri" id="ad" style="grid-column:1/-1">＋ Add moment</button></div></div><div class="grid" id="gr"></div>`;
+$('#ad').onclick=add;$('#dt').onkeydown=e=>e.key=='Enter'&&add();
+$('#em').onclick=e=>{const b=e.target.closest('button');if(!b)return;em=b.dataset.e;$('#em').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x==b))};
+$('#md').onclick=e=>{const b=e.target.closest('button');if(!b)return;m=b.dataset.m;$('#md').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x==b))};
+$('#gr').onclick=e=>{const el=e.target.closest('.card'),b=e.target.closest('.x');if(!el||!b||!items.find(x=>x.id==el.dataset.id))return;
+if(confirm('Delete this moment?')){el.style.transition='.3s';el.style.opacity=0;el.style.transform='scale(.9)';setTimeout(()=>S.del(el.dataset.id),280)}};
+S=Store('memories',v=>{items=v;render()});S.start();
+let day=new Date().getDate();setInterval(()=>{const d=new Date().getDate();if(d!=day){day=d;render()}},60000)}});
+</script>
+<script type="module" src="https://mohakchoubey.github.io/toolify/protect.js"></script>
+</body>
+</html>
