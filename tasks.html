@@ -42,7 +42,14 @@
 /* Toolify shared core: Firebase, auth gate, theme, settings, context menu, local+cloud store */
 const TF=(()=>{
 // >>> Paste the SAME firebaseConfig object your login.html uses <<<
-const FIREBASE_CONFIG={apiKey:"PASTE",authDomain:"PASTE",projectId:"PASTE",appId:"PASTE"};
+ const firebaseConfig = { 
+    apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y", 
+    authDomain: "toolbox-hub-98c03.firebaseapp.com", 
+    projectId: "toolbox-hub-98c03", 
+    storageBucket: "toolbox-hub-98c03.firebasestorage.app", 
+    messagingSenderId: "321020105472", 
+    appId: "1:321020105472:web:356e7c2903def7b9d859e5" 
+  };
 const BASE='./',LOGIN=BASE+'login.html';
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
