@@ -161,7 +161,7 @@ start(){onChange(items);if(!db)return;return ref().onSnapshot(s=>{items=s.docs.m
 
 function boot({page,open,menu,start}){
 shell(page);menuFn=menu||null;
-if(FIREBASE_CONFIG.apiKey=='PASTE'){U={uid:'local'};const nb=document.createElement('div');nb.className='note';nb.textContent='Local mode — data is saved only in this browser. Add your Firebase config (search PASTE in this file) to sign in and sync across devices.';$('#m').before(nb);return start(U)}
+if(FIREBASE_CONFIG.apiKey=='AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y'){U={uid:'local'};const nb=document.createElement('div');nb.className='note';nb.textContent='Local mode — data is saved only in this browser. Add your Firebase config (search PASTE in this file) to sign in and sync across devices.';$('#m').before(nb);return start(U)}
 firebase.initializeApp(FIREBASE_CONFIG);auth=firebase.auth();db=firebase.firestore();
 $('#out').onclick=()=>auth.signOut();
 auth.onAuthStateChanged(async u=>{
