@@ -40,22 +40,20 @@ box-shadow:0 2rem 3.5rem -1.2rem rgba(0,0,0,.4),0 0 0 1px rgba(0,0,0,.06);animat
 li.ink::after,li.strike::after{content:"";position:absolute;left:0;bottom:.45rem;height:2px;border-radius:2px;background:var(--a);width:0;animation:ln .75s ease forwards}li.strike::after{bottom:50%;height:3px}
 @keyframes ln{to{width:100%}}li.ink::after{animation:ln .75s ease forwards,fade .4s .8s forwards}@keyframes fade{to{opacity:0}}
 .vw{max-width:42rem;margin:0 auto;display:grid;gap:1rem}.cta{text-align:center}
+@media(max-width:40rem){.lg{gap:.9rem}.paper{padding:1.1rem 1rem 1.2rem 3rem;font-size:1.3rem}.paper::before{left:2.2rem}.paper h2{font-size:1.9rem}.ptop{top:.6rem;right:.6rem}.rl{padding:.6rem .8rem}}
 </style>
 </head>
 <body>
 <script>
+/* ===== STEP 1: PASTE YOUR FIREBASE CONFIG HERE (same values as login.html) =====
+   Replace the 4 "PASTE" values (you can add more keys like storageBucket). Keep the name: firebaseConfig */
+const firebaseConfig={apiKey:"PASTE",authDomain:"PASTE",projectId:"PASTE",appId:"PASTE"};
+</script>
+<script>
 /* Toolify shared core: Firebase, auth gate, theme, settings, context menu, local+cloud store */
 const TF=(()=>{
 // >>> Paste the SAME firebaseConfig object your login.html uses <<<
-  const firebaseConfig = { 
-    apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y", 
-    authDomain: "toolbox-hub-98c03.firebaseapp.com", 
-    projectId: "toolbox-hub-98c03", 
-    storageBucket: "toolbox-hub-98c03.firebasestorage.app", 
-    messagingSenderId: "321020105472", 
-    appId: "1:321020105472:web:356e7c2903def7b9d859e5" 
-  };
-  
+const FIREBASE_CONFIG=typeof firebaseConfig!=='undefined'?firebaseConfig:{apiKey:'PASTE'};
 const BASE='./',LOGIN=BASE+'login.html';
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -117,6 +115,7 @@ input,select{background:var(--c);border:1px solid var(--b);border-radius:.75rem}
 .seg{background:color-mix(in srgb,var(--tx) 6%,transparent);border:0;border-radius:999px;padding:.25rem}.seg button{border-radius:999px;font-weight:500;color:var(--tx)}
 .note{display:flex;gap:.6rem;align-items:center;background:color-mix(in srgb,var(--a) 10%,var(--c));border:0;border-radius:.8rem;color:var(--mu)}.note svg{width:1.1rem;color:var(--a);flex:none}
 .dr{box-shadow:-2rem 0 4rem rgba(15,23,42,.15)}
+@media(max-width:640px){.brand b{display:block}.top .in{padding:.6rem .8rem}input,select{font-size:max(16px,1rem)}.btn{padding:.7rem 1rem}.wrap{padding:.9rem .8rem 5rem}}
 `;
 const st=document.createElement('style');st.textContent=CSS;document.head.append(st);const st2=document.createElement('style');st2.textContent=CSS2;document.head.append(st2);
 
@@ -161,7 +160,7 @@ start(){onChange(items);if(!db)return;return ref().onSnapshot(s=>{items=s.docs.m
 
 function boot({page,open,menu,start}){
 shell(page);menuFn=menu||null;
-if(FIREBASE_CONFIG.apiKey=='PASTE'){U={uid:'local'};const nb=document.createElement('div');nb.className='note';nb.textContent='Local mode — data is saved only in this browser. Add your Firebase config (search PASTE in this file) to sign in and sync across devices.';$('#m').before(nb);return start(U)}
+if(FIREBASE_CONFIG.apiKey=='PASTE'||typeof firebase=='undefined'){U={uid:'local'};const nb=document.createElement('div');nb.className='note';nb.textContent='Local mode — data is saved only in this browser. To sync across devices, fill in firebaseConfig at the top of this file and allow Firebase in your ad-blocker / Brave shields.';$('#m').before(nb);return start(U)}
 firebase.initializeApp(FIREBASE_CONFIG);auth=firebase.auth();db=firebase.firestore();
 $('#out').onclick=()=>auth.signOut();
 auth.onAuthStateChanged(async u=>{
