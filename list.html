@@ -6,7 +6,7 @@
 <title>Lists · Toolify</title>
 <link rel="icon" href="./favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -44,9 +44,10 @@ li.ink::after,li.strike::after{content:"";position:absolute;left:0;bottom:.45rem
 </head>
 <body>
 <script>
-
+/* Toolify shared core: Firebase, auth gate, theme, settings, context menu, local+cloud store */
 const TF=(()=>{
- const firebaseConfig = { 
+// >>> Paste the SAME firebaseConfig object your login.html uses <<<
+  const firebaseConfig = { 
     apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y", 
     authDomain: "toolbox-hub-98c03.firebaseapp.com", 
     projectId: "toolbox-hub-98c03", 
@@ -54,20 +55,21 @@ const TF=(()=>{
     messagingSenderId: "321020105472", 
     appId: "1:321020105472:web:356e7c2903def7b9d859e5" 
   };
+  
 const BASE='./',LOGIN=BASE+'login.html';
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const P=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
-const I={gear:'⚙',check:P('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),x:P('<path d="M6 6l12 12M18 6L6 18"/>'),plus:P('<path d="M12 5v14M5 12h14"/>'),
+const I={bell:P('<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/>'),chev:P('<path d="M6 9l6 6 6-6"/>'),cal:P('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'),clock:P('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),info:P('<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>'),dots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg>',list:P('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'),cl:P('<path d="M15 18l-6-6 6-6"/>'),cr:P('<path d="M9 18l6-6-6-6"/>'),gear:'⚙',check:P('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),x:P('<path d="M6 6l12 12M18 6L6 18"/>'),plus:P('<path d="M12 5v14M5 12h14"/>'),
 pen:P('<path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19z"/>'),share:P('<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.6M8.2 13.2l7.6 4.6"/>'),
 out:P('<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>'),moon:P('<path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z"/>'),
 sun:P('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>')};
-let U=null,db,auth,cfg={theme:'system',accent:'#8b5cf6',scale:100},menuFn=null;
+let U=null,db,auth,cfg={theme:'system',accent:'#2563eb',scale:100},menuFn=null;
 try{Object.assign(cfg,JSON.parse(localStorage.tf_cfg||'{}'))}catch{}
 const mq=matchMedia('(prefers-color-scheme:dark)');
 const dark=()=>cfg.theme=='system'?mq.matches:cfg.theme=='dark';
 function apply(){const r=document.documentElement;r.dataset.t=dark()?'dark':'light';r.style.setProperty('--a',cfg.accent);r.style.setProperty('--s',cfg.scale/100);localStorage.tf_cfg=JSON.stringify(cfg);syncUI()}
-function setCfg(p){Object.assign(cfg,p);apply();if(U)db.doc(`dayPasser/${U.uid}/meta/toolifySettings`).set(cfg).catch(()=>{})}
+function setCfg(p){Object.assign(cfg,p);apply();if(U&&db)db.doc(`dayPasser/${U.uid}/meta/toolifySettings`).set(cfg).catch(()=>{})}
 mq.onchange=apply;
 
 const CSS=`*{box-sizing:border-box;margin:0}html{font-size:calc(16px*var(--s,1));scroll-behavior:smooth}
@@ -94,24 +96,46 @@ footer{text-align:center;color:var(--mu);font-size:.85rem;padding:2rem 0 1rem}fo
 .ts{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);display:grid;gap:.4rem;z-index:80}.ts div{padding:.6rem 1.1rem;border-radius:2rem;background:var(--tx);color:var(--bg);font-weight:600;font-size:.9rem;animation:pop .25s ease}
 .md{position:fixed;inset:0;background:rgba(0,0,0,.5);display:grid;place-items:center;z-index:60;padding:1rem}.md>div{width:min(28rem,100%);padding:1.4rem;display:grid;gap:.8rem;background:var(--bg)}
 @media(max-width:640px){.brand b{display:none}nav a{padding:.3rem .55rem}.wrap{padding:.6rem}}`;
-const st=document.createElement('style');st.textContent=CSS;document.head.append(st);
+const CSS2=`
+[data-t=light]{--bg:#f6f8fb;--c:#fff;--b:#e6eaf0;--tx:#0f172a;--mu:#64748b;--sh:0 1px 2px rgba(15,23,42,.04),0 12px 30px -20px rgba(15,23,42,.2);color-scheme:light}
+[data-t=dark]{--bg:#000;--c:#0e0e10;--b:#26262b;--tx:#f4f4f5;--mu:#9a9aa6;--sh:none;color-scheme:dark}
+body{font-family:'Inter',system-ui,sans-serif}
+.glass{background:var(--c);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid var(--b);border-radius:1rem;box-shadow:var(--sh)}
+.page{min-height:100vh;display:flex;flex-direction:column}
+.wrap{flex:1;min-height:0;width:100%}
+.top{background:var(--c);border-bottom:1px solid var(--b);position:sticky;top:0;z-index:30;margin:0;padding:0;border-radius:0}
+.top .in{max-width:72rem;margin:0 auto;padding:.7rem 1rem;display:flex;align-items:center;gap:.4rem}
+.brand b{font-size:1.35rem;font-weight:700;letter-spacing:-.02em}
+.lgc{width:2rem;height:2rem;border-radius:50%;background:var(--a);color:#fff;display:grid;place-items:center;font-weight:700}
+.ic{border:0;background:none;border-radius:50%;width:2.4rem;height:2.4rem}.ic:hover{background:color-mix(in srgb,var(--tx) 7%,transparent);transform:none}
+.av{display:flex;align-items:center;gap:.35rem;border:0;background:none;cursor:pointer;color:var(--mu);padding:.1rem}
+.av span{width:2.2rem;height:2.2rem;border-radius:50%;background:#64748b;color:#fff;display:grid;place-items:center;font-weight:600}.av svg{width:.9rem}
+.avw{position:relative}.am{position:absolute;right:0;top:calc(100% + .4rem);min-width:11rem;background:var(--c);border:1px solid var(--b);border-radius:.8rem;box-shadow:0 14px 30px -12px rgba(15,23,42,.3);padding:.3rem;z-index:40}
+.am button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;padding:.55rem .75rem;border-radius:.55rem;color:var(--tx);cursor:pointer}.am button:hover{background:color-mix(in srgb,var(--tx) 6%,transparent)}
+.btn{border-radius:.75rem;font-weight:600}.btn.pri{background:var(--a);box-shadow:none}.btn.pri:hover{filter:brightness(1.08)}
+input,select{background:var(--c);border:1px solid var(--b);border-radius:.75rem}
+.seg{background:color-mix(in srgb,var(--tx) 6%,transparent);border:0;border-radius:999px;padding:.25rem}.seg button{border-radius:999px;font-weight:500;color:var(--tx)}
+.note{display:flex;gap:.6rem;align-items:center;background:color-mix(in srgb,var(--a) 10%,var(--c));border:0;border-radius:.8rem;color:var(--mu)}.note svg{width:1.1rem;color:var(--a);flex:none}
+.dr{box-shadow:-2rem 0 4rem rgba(15,23,42,.15)}
+`;
+const st=document.createElement('style');st.textContent=CSS;document.head.append(st);const st2=document.createElement('style');st2.textContent=CSS2;document.head.append(st2);
 
 function shell(page){
-document.body.innerHTML=`<div class="wrap"><header class="glass top"><a class="brand" href="${BASE}"><img src="${BASE}favicon.png" alt="" onerror="this.remove()"><b>Toolify</b></a><div class="sp"></div><button class="ic" id="tg" title="Toggle theme"></button><button class="ic" id="gear" title="Settings">${I.gear}</button><button class="ic" id="out" title="Sign out" hidden>${I.out}</button></header><main id="m"></main><footer>© <span id="copyright-year"></span> Toolify · Made by Mohak Choubey · <a href="${BASE}">Home</a></footer></div>
+document.body.innerHTML=`<div class="page"><header class="top"><div class="in"><a class="brand" href="${BASE}" style="display:flex;align-items:center;gap:.55rem"><img src="${BASE}favicon.png" alt="" style="width:2rem;height:2rem;border-radius:50%" onerror="this.outerHTML='<span class=lgc>✓</span>'"><b>Toolify</b></a><div class="sp"></div><button class="ic" id="tg" title="Toggle theme"></button><button class="ic" id="bell" title="Notifications">${I.bell}</button><div class="avw"><button class="av" id="av" title="Account"><span id="avl">U</span>${I.chev}</button><div class="am" id="am" hidden><button id="gear">${I.gear} Settings</button><button id="out" hidden>Sign out</button></div></div></div></header><div class="wrap"><main id="m"></main><footer>© <span id="copyright-year"></span> Toolify · Made by Mohak Choubey · <a href="${BASE}">Home</a></footer></div></div>
 <aside class="dr" id="dr"><div class="row"><b style="flex:1;font-size:1.2rem">Settings</b><button class="ic" id="dx">${I.x}</button></div>
 <label>Theme</label><div class="seg" id="sg">${['light','dark','system'].map(v=>`<button data-v="${v}">${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div>
-<label>Accent colour</label><div class="sw" id="sw">${['#8b5cf6','#f59e0b','#10b981','#ef4444','#3b82f6','#ec4899','#14b8a6'].map(c=>`<button data-c="${c}" style="background:${c}"></button>`).join('')}<input type="color" id="ac"></div>
+<label>Accent colour</label><div class="sw" id="sw">${['#2563eb','#f59e0b','#10b981','#ef4444','#3b82f6','#ec4899','#14b8a6'].map(c=>`<button data-c="${c}" style="background:${c}"></button>`).join('')}<input type="color" id="ac"></div>
 <label>Interface size · <span id="sv"></span></label><input type="range" id="sc" min="80" max="130" step="5">
 <button class="btn" id="rs" style="margin-top:.8rem">Reset to defaults</button></aside>
 <div class="cm" id="cm" hidden></div><div class="ts" id="ts"></div>`;
 document.getElementById('copyright-year').textContent = new Date().getFullYear();
 $('#tg').onclick=()=>setCfg({theme:dark()?'light':'dark'});
-$('#gear').onclick=e=>{e.stopPropagation();$('#dr').classList.toggle('on')};$('#dx').onclick=()=>$('#dr').classList.remove('on');
+$('#gear').onclick=e=>{e.stopPropagation();$('#am').hidden=true;$('#dr').classList.toggle('on')};$('#av').onclick=e=>{e.stopPropagation();$('#am').hidden=!$('#am').hidden};$('#bell').onclick=()=>{if('Notification' in window)Notification.requestPermission().then(r=>toast(r=='granted'?'Notifications are on':'Notifications are blocked in this browser'));else toast('Notifications not supported here')};$('#dx').onclick=()=>$('#dr').classList.remove('on');
 $('#sg').onclick=e=>{const b=e.target.closest('button');b&&setCfg({theme:b.dataset.v})};
 $('#sw').onclick=e=>{const b=e.target.closest('button');b&&setCfg({accent:b.dataset.c})};
 $('#ac').oninput=e=>setCfg({accent:e.target.value});$('#sc').oninput=e=>setCfg({scale:+e.target.value});
-$('#rs').onclick=()=>setCfg({theme:'system',accent:'#8b5cf6',scale:100});
-document.addEventListener('click',e=>{if(!e.target.closest('#dr'))$('#dr').classList.remove('on')});
+$('#rs').onclick=()=>setCfg({theme:'system',accent:'#2563eb',scale:100});
+document.addEventListener('click',e=>{if(!e.target.closest('#dr'))$('#dr').classList.remove('on');if($('#am'))$('#am').hidden=true});
 apply()}
 function syncUI(){if(!$('#dr'))return;$('#tg').innerHTML=dark()?I.sun:I.moon;$('#sg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v==cfg.theme));
 $('#sw').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.c==cfg.accent));$('#ac').value=cfg.accent;$('#sc').value=cfg.scale;$('#sv').textContent=cfg.scale+'%'}
@@ -131,21 +155,21 @@ function modal(h){const o=document.createElement('div');o.className='md';o.inner
 function Store(col,onChange){let items=[];const k=()=>`tf_${col}_${U.uid}`,ref=()=>db.collection(`dayPasser/${U.uid}/${col}`),keep=()=>localStorage[k()]=JSON.stringify(items);
 try{items=JSON.parse(localStorage[k()]||'[]')}catch{}
 return{get:()=>items,
-async put(it){const i=items.findIndex(x=>x.id==it.id);i<0?items.push(it):items[i]=it;keep();onChange(items);try{await ref().doc(it.id).set(JSON.parse(JSON.stringify(it)))}catch{toast('Saved on this device · cloud sync failed')}},
-async del(id){items=items.filter(x=>x.id!=id);keep();onChange(items);try{await ref().doc(id).delete()}catch{toast('Deleted locally · cloud sync failed')}},
-start(){onChange(items);return ref().onSnapshot(s=>{items=s.docs.map(d=>d.data());keep();onChange(items)},()=>toast('Offline · showing saved data'))}}}
+async put(it){const i=items.findIndex(x=>x.id==it.id);i<0?items.push(it):items[i]=it;keep();onChange(items);if(!db)return;try{await ref().doc(it.id).set(JSON.parse(JSON.stringify(it)))}catch{toast('Saved on this device · cloud sync failed')}},
+async del(id){items=items.filter(x=>x.id!=id);keep();onChange(items);if(!db)return;try{await ref().doc(id).delete()}catch{toast('Deleted locally · cloud sync failed')}},
+start(){onChange(items);if(!db)return;return ref().onSnapshot(s=>{items=s.docs.map(d=>d.data());keep();onChange(items)},()=>toast('Offline · showing saved data'))}}}
 
 function boot({page,open,menu,start}){
 shell(page);menuFn=menu||null;
-if(FIREBASE_CONFIG.apiKey=='PASTE'){$('#m').innerHTML='<div class="glass pad"><b>Firebase config missing</b><p class="mu">Search this file for PASTE and fill in the same firebaseConfig your login.html uses.</p></div>';return}
+if(FIREBASE_CONFIG.apiKey=='PASTE'){U={uid:'local'};const nb=document.createElement('div');nb.className='note';nb.textContent='Local mode — data is saved only in this browser. Add your Firebase config (search PASTE in this file) to sign in and sync across devices.';$('#m').before(nb);return start(U)}
 firebase.initializeApp(FIREBASE_CONFIG);auth=firebase.auth();db=firebase.firestore();
 $('#out').onclick=()=>auth.signOut();
 auth.onAuthStateChanged(async u=>{
 if(!u){if(open&&open()){$('#out').remove();return start(null)}location.href=LOGIN+'?next='+encodeURIComponent(location.pathname+location.search);return}
-U=u;$('#out').hidden=false;try{const d=await db.doc(`dayPasser/${u.uid}/meta/toolifySettings`).get();if(d.exists){Object.assign(cfg,d.data());apply()}}catch{}
+U=u;$('#out').hidden=false;$('#avl').textContent=(u.email||'U')[0].toUpperCase();try{const d=await db.doc(`dayPasser/${u.uid}/meta/toolifySettings`).get();if(d.exists){Object.assign(cfg,d.data());apply()}}catch{}
 start(u)})}
 apply();
-return{boot,$,esc,I,toast,modal,Store,get U(){return U},get db(){return db}}})();
+return{boot,$,esc,I,toast,modal,Store,showMenu,get U(){return U},get db(){return db}}})();
 
 </script>
 <script>
@@ -167,7 +191,7 @@ if(f)$('#pn').focus();wire()}
 function wire(){const ph=$('#ph'),pn=$('#pn');if(ph&&ph.isContentEditable){ph.onkeydown=e=>{if(e.key=='Enter'){e.preventDefault();ph.blur()}};ph.onblur=()=>{const l=act(),n=ph.textContent.trim()||'Untitled list';if(n!=l.name){l.name=n;save(l)}}}
 if(pn)pn.onkeydown=e=>{const t=pn.value.trim();if(e.key!='Enter'||!t)return;const l=act(),i={id:uid(),t,d:0};l.items.push(i);save(l);render();const el=document.querySelector(`[data-id="${i.id}"]`);el&&pencil(el,'ink')};
 const sh=$('#sh');if(sh)sh.onclick=()=>share(act())}
-function share(l){l.shared=true;save(l);const url=`https://mohakchoubey.github.io/toolify/list.html?id=${l.id}&utm_source=share`;
+function share(l){if(!TF.db)return toast('Sign in (Firebase config needed) to share lists');l.shared=true;save(l);const url=`https://mohakchoubey.github.io/toolify/list.html?id=${l.id}&utm_source=share`;
 const m=modal(`<h3>Share “${esc(l.name)}”</h3><p class="mu">Anyone with this link can view the list (read-only). Your edits appear on the shared copy automatically.</p><input readonly id="su" value="${url}"><div class="row"><button class="btn pri" id="cp">Copy link</button><button class="btn" id="ns">Stop sharing</button></div>`);
 m.querySelector('#su').onclick=e=>e.target.select();
 m.querySelector('#cp').onclick=()=>navigator.clipboard.writeText(url).then(()=>toast('Link copied'),()=>{m.querySelector('#su').select();toast('Press Ctrl+C to copy')});
