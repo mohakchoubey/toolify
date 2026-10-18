@@ -41,21 +41,25 @@
 .ag{padding:1.1rem 1.3rem}.ag h4{font-weight:700;font-size:1rem;margin:.1rem 0 .3rem}.ag h4:not(:first-child){margin-top:1rem}.ag .mu{margin:0}
 .ai{display:flex;gap:.6rem;padding:.45rem 0;font-size:.9rem;border-top:1px solid var(--b)}.ai i{font-style:normal;color:var(--mu);font-size:.78rem;margin-left:auto;white-space:nowrap}
 .qa{display:flex;align-items:center;gap:.9rem;padding:1rem 1.2rem;cursor:pointer;text-align:left;font:inherit;color:var(--tx);width:100%}.qa .pl{width:2.5rem;height:2.5rem;border-radius:50%;border:1px solid var(--b);display:grid;place-items:center;color:var(--a);flex:none}.qa .pl svg{width:1.1rem}.qa span:nth-child(2){flex:1}.qa small{display:block;color:var(--mu);font-size:.78rem}.qa>svg{width:1rem;transform:rotate(-90deg);color:var(--mu)}
+.fab{display:none;position:fixed;right:1rem;bottom:1rem;width:3.5rem;height:3.5rem;border-radius:50%;border:0;background:var(--a);color:#fff;box-shadow:0 12px 26px -8px var(--a);z-index:25;place-items:center;cursor:pointer}.fab svg{width:1.5rem}
+@media(max-width:60rem){.fab{display:grid}.qa{display:none}}
+@media(max-width:40rem){.hd h1{font-size:1.6rem}.hd p{font-size:.92rem;margin-bottom:1rem}.cmp{padding:.9rem}
+.rw{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}.rw .pp{grid-column:1/-1;display:flex}.rw .pp button{flex:1}.rw .add{grid-column:1/-1;justify-content:center;padding:.85rem}.fld{min-width:0}
+.t{padding:.85rem .9rem;gap:.75rem}.chk{width:1.9rem;height:1.9rem}.dots{width:2.4rem;height:2.4rem}.fl{flex-wrap:wrap}.pill button{padding:.5rem .95rem}
+.cal,.rg,.ag{padding:1rem}.g{gap:1rem}}
 </style>
 </head>
 <body>
 <script>
+/* ===== STEP 1: PASTE YOUR FIREBASE CONFIG HERE (same values as login.html) =====
+   Replace the 4 "PASTE" values (you can add more keys like storageBucket). Keep the name: firebaseConfig */
+const firebaseConfig={apiKey:"PASTE",authDomain:"PASTE",projectId:"PASTE",appId:"PASTE"};
+</script>
+<script>
 /* Toolify shared core: Firebase, auth gate, theme, settings, context menu, local+cloud store */
 const TF=(()=>{
 // >>> Paste the SAME firebaseConfig object your login.html uses <<<
- const firebaseConfig = { 
-    apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y", 
-    authDomain: "toolbox-hub-98c03.firebaseapp.com", 
-    projectId: "toolbox-hub-98c03", 
-    storageBucket: "toolbox-hub-98c03.firebasestorage.app", 
-    messagingSenderId: "321020105472", 
-    appId: "1:321020105472:web:356e7c2903def7b9d859e5" 
-  };
+const FIREBASE_CONFIG=typeof firebaseConfig!=='undefined'?firebaseConfig:{apiKey:'PASTE'};
 const BASE='./',LOGIN=BASE+'login.html';
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -117,6 +121,7 @@ input,select{background:var(--c);border:1px solid var(--b);border-radius:.75rem}
 .seg{background:color-mix(in srgb,var(--tx) 6%,transparent);border:0;border-radius:999px;padding:.25rem}.seg button{border-radius:999px;font-weight:500;color:var(--tx)}
 .note{display:flex;gap:.6rem;align-items:center;background:color-mix(in srgb,var(--a) 10%,var(--c));border:0;border-radius:.8rem;color:var(--mu)}.note svg{width:1.1rem;color:var(--a);flex:none}
 .dr{box-shadow:-2rem 0 4rem rgba(15,23,42,.15)}
+@media(max-width:640px){.brand b{display:block}.top .in{padding:.6rem .8rem}input,select{font-size:max(16px,1rem)}.btn{padding:.7rem 1rem}.wrap{padding:.9rem .8rem 5rem}}
 `;
 const st=document.createElement('style');st.textContent=CSS;document.head.append(st);const st2=document.createElement('style');st2.textContent=CSS2;document.head.append(st2);
 
@@ -161,7 +166,7 @@ start(){onChange(items);if(!db)return;return ref().onSnapshot(s=>{items=s.docs.m
 
 function boot({page,open,menu,start}){
 shell(page);menuFn=menu||null;
-if(FIREBASE_CONFIG.apiKey=='AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y'){U={uid:'local'};const nb=document.createElement('div');nb.className='note';nb.textContent='Local mode — data is saved only in this browser. Add your Firebase config (search PASTE in this file) to sign in and sync across devices.';$('#m').before(nb);return start(U)}
+if(FIREBASE_CONFIG.apiKey=='PASTE'||typeof firebase=='undefined'){U={uid:'local'};const nb=document.createElement('div');nb.className='note';nb.textContent='Local mode — data is saved only in this browser. To sync across devices, fill in firebaseConfig at the top of this file and allow Firebase in your ad-blocker / Brave shields.';$('#m').before(nb);return start(U)}
 firebase.initializeApp(FIREBASE_CONFIG);auth=firebase.auth();db=firebase.firestore();
 $('#out').onclick=()=>auth.signOut();
 auth.onAuthStateChanged(async u=>{
@@ -219,8 +224,8 @@ $('#m').innerHTML=`<div class="hd"><h1>Get things done</h1><p>Stay organized, be
 <aside style="display:grid;gap:1.2rem"><div class="glass rg"><svg viewBox="0 0 100 100"><circle class="tr" cx="50" cy="50" r="40"/><circle class="pg" id="pc" cx="50" cy="50" r="40" stroke-dasharray="251.3" stroke-dashoffset="251.3"/></svg><div><b id="pn">0%</b><p id="pt"></p></div></div>
 <div class="glass cal"><div class="ch"><button class="cb" id="cp" aria-label="Previous month">${I.cl}</button><b id="cmn"></b><button class="cb" id="cn" aria-label="Next month">${I.cr}</button></div><div class="cg" id="cg"></div><div class="cs">${I.list}<span id="cs"></span></div></div>
 <div class="glass ag" id="ag"></div>
-<button class="glass qa" id="qa"><span class="pl">${I.plus}</span><span><b>Add a task</b><small>✓ Mark as complete</small></span>${I.chev}</button></aside></div>`;
-$('#ab').onclick=add;$('#nt').onkeydown=e=>e.key=='Enter'&&add();$('#qa').onclick=()=>{window.scrollTo({top:0,behavior:'smooth'});$('#nt').focus()};
+<button class="glass qa" id="qa"><span class="pl">${I.plus}</span><span><b>Add a task</b><small>✓ Mark as complete</small></span>${I.chev}</button></aside></div><button class="fab" id="fab" aria-label="Add task">${I.plus}</button>`;
+$('#ab').onclick=add;$('#nt').onkeydown=e=>e.key=='Enter'&&add();$('#qa').onclick=$('#fab').onclick=()=>{window.scrollTo({top:0,behavior:'smooth'});$('#nt').focus()};
 $('#pp').onclick=e=>{const b=e.target.closest('button');if(!b)return;pr=+b.dataset.p;$('#pp').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x==b))};
 $('#fa').onclick=e=>{const b=e.target.closest('button');if(b){flt=b.dataset.f;render()}};
 $('#sd').onclick=()=>{sel=null;render()};
