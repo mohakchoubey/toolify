@@ -1,185 +1,138 @@
-<?xml version="2.0" encoding="UTF-8"?>
+
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Home -->
+
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/</loc>
-    <lastmod>2026-09-29</lastmod>
-  </url>
-  <!-- Essentials & productivity tools -->
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/workspace-assistant-rulebased-ai-chatbot</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/AI-Chatbot-learning-based-model</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/workspace-assistant-rulebased-ai-chatbot</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/maps-by-toolify</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/AI-Chatbot-learning-based-model</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/weather</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/maps-by-toolify</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/Word-On-Toolify/</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/weather</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/Language-translation</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/Word-On-Toolify/</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/calculator</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/Language-translation</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/trip-planner-tool-by-toolify</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/calculator</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/calendar</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/trip-planner-tool-by-toolify</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/grammar</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/calendar</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/WebRTC-messaging-site-E2EE</loc>
-    <lastmod>2026-09-29</lastmod>
-  </url>
-  <!-- Utilities -->
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/dictation-of-textr</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/grammar</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/qr</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/WebRTC-messaging-site-E2EE</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/binary-to-text-converter-by-mohak</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/dictation-of-textr</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/unit-converter</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/qr</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/speech</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/binary-to-text-converter-by-mohak</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/pdf</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/unit-converter</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/password</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/speech</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/website-previewer</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/pdf</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/time</loc>
-    <lastmod>2026-09-29</lastmod>
-  </url>
-  <!-- Games -->
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/games.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/password</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/1712.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/website-previewer</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/Neon_flap.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/time</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/flightsimulator</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/neon_district/main</loc>
-    <lastmod>2026-09-29</lastmod>
-  </url>
-  <!-- CheckMate chess -->
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/1712.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/play.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/Neon_flap.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/computer.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/flightsimulator</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/online.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/neon_district/main</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/puzzles.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/analysis.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/play.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/leaderboard.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/computer.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/games.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/online.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/players.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/puzzles.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/articles/</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/analysis.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/about.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/leaderboard.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/faq.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/games.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/contact.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/players.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/privacy.html</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/articles/</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/games/chess/terms.html</loc>
-    <lastmod>2026-09-29</lastmod>
-  </url>
-  <!-- Legal & info -->
-  <url>
-    <loc>https://mohakchoubey.github.io/toolify/privacy</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/about.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/terms</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/faq.html</loc>
   </url>
   <url>
-    <loc>https://mohakchoubey.github.io/toolify/feedback</loc>
-    <lastmod>2026-09-29</lastmod>
+    <loc>https://mohaktools.com/games/chess/contact.html</loc>
   </url>
+  <url>
+    <loc>https://mohaktools.com/games/chess/privacy.html</loc>
+  </url>
+  <url>
+    <loc>https://mohaktools.com/games/chess/terms.html</loc>
+  </url>
+  <url>
+    <loc>https://mohaktools.com/privacy</loc>
+  </url>
+  <url>
+    <loc>https://mohaktools.com/terms</loc>
+  </url>
+  <url>
+    <loc>https://mohaktools.com/feedback</loc>
+  </url>
+
 </urlset>
