@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -134,44 +135,14 @@
             </div>
         </section>
 
-        <!-- LATEST RELEASE SECTION -->
-        <section class="space-y-4">
+        <!-- LATEST ARTICLES: populated from article-name.js -->
+        <section class="space-y-4" aria-labelledby="articles-heading">
             <div class="flex items-center space-x-2">
-                <span class="bg-brand-accent text-white font-bold text-[10px] px-2.5 py-1 rounded uppercase tracking-wider pulse-badge">Latest Release</span>
-                <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider">New Article & Research Interactive Report</h2>
+                <span class="bg-brand-accent text-white font-bold text-[10px] px-2.5 py-1 rounded uppercase tracking-wider">Latest Releases</span>
+                <h2 id="articles-heading" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Articles & Research Reports</h2>
             </div>
-
-            <div class="bg-white rounded-2xl border-2 border-indigo-500/30 p-6 sm:p-8 shadow-md hover:shadow-lg transition-all space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-xl">📄</span>
-                        <span class="font-bold text-indigo-600 text-sm">Featured Intelligence Report</span>
-                    </div>
-                    <span class="text-xs text-slate-400 font-mono">September 2026</span>
-                </div>
-
-                <div class="space-y-3">
-                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
-                        Claude Sonnet 5.5: Interactive Architecture, Benchmark & Migration Analysis
-                    </h1>
-                    <p class="text-sm text-slate-600 leading-relaxed max-w-4xl">
-                        Comprehensive interactive breakdown covering Anthropic's Claude Sonnet 5.5 model continuum, 70.6% Terminal-Bench 4.0 score leap, single-turn batched tool call latency optimization, sub-agent effort curves, cybersecurity safeguards, and developer API migration guidelines.
-                    </p>
-                </div>
-
-                <!-- Call to action button -->
-                <div class="flex flex-wrap items-center gap-4 pt-2">
-                    <a href="articles/claude_sonnet_5_5_interactive_report.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-md transition-all flex items-center space-x-2">
-                        <span>🚀 Read Latest Interactive Report</span>
-                        <span>➔</span>
-                    </a>
-                    <a href="https://mohakchoubey.github.io/toolify/articles/claude_sonnet_5_5_interactive_report.html" target="_blank" class="text-xs text-slate-500 hover:text-indigo-600 font-mono underline">
-                        Open Direct URL Link
-
-
-                
-                    </a>
-                </div>
+            <div id="articles-container" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <p class="text-sm text-slate-500">Loading articles...</p>
             </div>
         </section>
 
@@ -401,6 +372,73 @@
             </div>
         </div>
     </footer>
+
+    <!-- Article data is maintained separately in article-name.js -->
+    <script src="./article-name.js"></script>
+    <script>
+        (function renderArticles() {
+            const container = document.getElementById('articles-container');
+            const articles = Array.isArray(window.TOOLIFY_ARTICLES) ? window.TOOLIFY_ARTICLES : [];
+
+            if (!articles.length) {
+                container.innerHTML = '<p class="text-sm text-slate-500">No articles are configured yet. Add entries to article-name.js.</p>';
+                return;
+            }
+
+            container.replaceChildren();
+            articles.forEach((article, index) => {
+                if (!article || !article.title || !article.url) return;
+
+                const card = document.createElement('article');
+                card.className = 'bg-white rounded-2xl border border-indigo-200 p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all space-y-5';
+
+                const top = document.createElement('div');
+                top.className = 'flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4';
+
+                const label = document.createElement('span');
+                label.className = 'font-bold text-indigo-600 text-sm';
+                label.textContent = article.label || (index === 0 ? 'Featured Article' : 'Article & Research');
+
+                const date = document.createElement('span');
+                date.className = 'text-xs text-slate-400 font-mono';
+                date.textContent = article.date || '';
+                top.append(label, date);
+
+                const body = document.createElement('div');
+                body.className = 'space-y-3';
+                const title = document.createElement('h3');
+                title.className = 'text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight';
+                title.textContent = article.title;
+                body.appendChild(title);
+
+                if (article.description) {
+                    const description = document.createElement('p');
+                    description.className = 'text-sm text-slate-600 leading-relaxed';
+                    description.textContent = article.description;
+                    body.appendChild(description);
+                }
+
+                const actions = document.createElement('div');
+                actions.className = 'flex flex-wrap items-center gap-4 pt-1';
+                const button = document.createElement('a');
+                button.href = article.url;
+                button.className = 'bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-5 py-3 rounded-xl shadow-sm transition-all inline-flex items-center gap-2';
+                button.textContent = article.buttonText || 'Read Article';
+                if (/^https?:\\/\\//i.test(article.url)) {
+                    button.target = '_blank';
+                    button.rel = 'noopener noreferrer';
+                }
+                actions.appendChild(button);
+
+                card.append(top, body, actions);
+                container.appendChild(card);
+            });
+
+            if (!container.children.length) {
+                container.innerHTML = '<p class="text-sm text-slate-500">No valid articles found in article-name.js.</p>';
+            }
+        })();
+    </script>
 
     <!-- JavaScript for Live Clock & Geolocation Weather -->
     <script>
