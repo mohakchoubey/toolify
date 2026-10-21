@@ -131,7 +131,16 @@ $('#em').onclick=e=>{const b=e.target.closest('button');if(!b)return;em=b.datase
 $('#md').onclick=e=>{const b=e.target.closest('button');if(!b)return;m=b.dataset.m;$('#md').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x==b))};
 $('#gr').onclick=e=>{const el=e.target.closest('.card'),b=e.target.closest('.x');if(!el||!b||!items.find(x=>x.id==el.dataset.id))return;if(confirm('Delete this moment?')){el.style.transition='.3s';el.style.opacity=0;el.style.transform='scale(.9)';setTimeout(()=>S.del(el.dataset.id),280)}};
 S=Store('memories',v=>{items=v;render()});S.start();
-let day=new Date().getDate();setInterval(()=>{const d=new Date().getDate();if(d!=day){day=d;render()}},60000)});
+let day = new Date().getDate();
+
+setInterval(() => {
+    const d = new Date().getDate();
+    if (d != day) {
+        day = d;
+        render();
+    }
+}, 60000);
+
 </script>
 </body>
 </html>
