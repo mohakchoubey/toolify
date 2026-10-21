@@ -52,7 +52,7 @@
 
 <!-- Application Structure Plan:
      1. Sticky Navigation Header: Toolify logo, links to user's key projects in header dropdown/nav (Toolify Hub, Portfolio, Daily Echo, Chrome Portal, Weather Tool).
-     2. Live Weather & Local Clock Header Widget: Auto-detects user browser geolocation (with IP fallback), fetches temperature and weather state via Open-Meteo, and displays ticking real-time local c[...]
+     2. Live Weather & Local Clock Header Widget: Auto-detects user browser geolocation (with IP fallback), fetches temperature and weather state via Open-Meteo, and displays ticking real-time loc[...]
      3. Latest Release Banner (Latest Update): Prominently highlights "Claude Sonnet 5.5 Interactive Architecture & Performance Report" with direct button link to `articles/claude_sonnet_5_5_interacti[...]
      4. Site Directory Grid: Categorized cards pointing directly to user's provided sites and tools (Games, Productivity & Utilities, Personal Projects & Experiments).
      5. Multi-Column Footer: Full list of user's provided links categorized cleanly.
@@ -459,55 +459,71 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 2. Geolocation & Weather Fetching
         function getUserLocation() {
             const locationEl = document.getElementById('location-name');
             const tempEl = document.getElementById('weather-temp');
             const descEl = document.getElementById('weather-desc');
             const iconEl = document.getElementById('weather-icon');
 
-            locationEl.innerHTML = '<span>Detecting location...</span>';
+            if (locationEl) locationEl.innerHTML = '<span>Detecting location...</span>';
+            if (tempEl) tempEl.textContent = '--°C';
+            if (descEl) descEl.textContent = 'Fetching weather...';
+            if (iconEl) iconEl.textContent = '🌤️';
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        fetchCityName(lat, lon);
-                        fetchWeatherData(lat, lon);
-                    },
-                    (error) => {
-                        console.warn("Geolocation denied or unavailable, using IP fallback.");
-                        fetchIpLocation();
-                    },
-                    { timeout: 7000 }
-                );
-            } else {
+            if (!navigator.geolocation) {
                 fetchIpLocation();
+                return;
             }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    fetchCityName(lat, lon);
+                    fetchWeatherData(lat, lon);
+                },
+                (error) => {
+                    console.warn('Geolocation denied or unavailable; using approximate IP fallback.');
+                    fetchIpLocation();
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 600000
+                }
+            );
         }
 
-        // Fallback Location via IP
         async function fetchIpLocation() {
             try {
-                const res = await fetch('https://ipapi.co/json/');
+                const res = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
+                if (!res.ok) throw new Error('IP lookup failed');
+
                 const data = await res.json();
-                if (data && data.latitude && data.longitude) {
-                    document.getElementById('location-name').textContent = `${data.city || 'Local Area'}, ${data.country_name || ''}`;
+                const hasCoords = data && typeof data.latitude === 'number' && typeof data.longitude === 'number';
+                const city = data.city || data.region || 'Local Area';
+                const country = data.country_name || '';
+
+                if (hasCoords) {
+                    document.getElementById('location-name').textContent = `Approx. ${city}${country ? ', ' + country : ''}`;
                     fetchWeatherData(data.latitude, data.longitude);
                 } else {
                     document.getElementById('location-name').textContent = 'Location unavailable';
+                    document.getElementById('weather-temp').textContent = '--°C';
+                    document.getElementById('weather-desc').textContent = 'Weather unavailable';
                 }
             } catch (err) {
-                document.getElementById('location-name').textContent = 'Indore, India (Default)';
-                fetchWeatherData(22.7196, 75.8577);
+                document.getElementById('location-name').textContent = 'Location unavailable';
+                document.getElementById('weather-temp').textContent = '--°C';
+                document.getElementById('weather-desc').textContent = 'Weather unavailable';
             }
         }
 
-        // Reverse Geocoding City Name
         async function fetchCityName(lat, lon) {
             try {
-                const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+                const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`, { cache: 'no-store' });
+                if (!res.ok) throw new Error('Reverse geocode failed');
+
                 const data = await res.json();
                 const locality = data.locality || data.city || data.principalSubdivision || 'Detected Location';
                 const country = data.countryName || '';
@@ -517,29 +533,30 @@
             }
         }
 
-        // Open-Meteo Weather API
         async function fetchWeatherData(lat, lon) {
             try {
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
-                const res = await fetch(url);
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
+                const res = await fetch(url, { cache: 'no-store' });
+                if (!res.ok) throw new Error('Weather request failed');
+
                 const data = await res.json();
-
-                if (data && data.current_weather) {
-                    const temp = Math.round(data.current_weather.temperature);
-                    const code = data.current_weather.weathercode;
-
-                    document.getElementById('weather-temp').textContent = `${temp}°C`;
-                    const weatherMeta = getWeatherInterpretation(code);
-                    document.getElementById('weather-desc').textContent = weatherMeta.desc;
-                    document.getElementById('weather-icon').textContent = weatherMeta.icon;
+                if (!data || !data.current_weather) {
+                    throw new Error('Weather data missing');
                 }
+
+                const temp = Math.round(data.current_weather.temperature);
+                const code = data.current_weather.weathercode;
+
+                document.getElementById('weather-temp').textContent = `${temp}°C`;
+                const weatherMeta = getWeatherInterpretation(code);
+                document.getElementById('weather-desc').textContent = weatherMeta.desc;
+                document.getElementById('weather-icon').textContent = weatherMeta.icon;
             } catch (e) {
                 document.getElementById('weather-temp').textContent = '--°C';
-                document.getElementById('weather-desc').textContent = 'Weather sync failed';
+                document.getElementById('weather-desc').textContent = 'Weather unavailable';
             }
         }
 
-        // Map WMO Weather Codes to text & icon
         function getWeatherInterpretation(code) {
             if (code === 0) return { desc: 'Clear Sky', icon: '☀️' };
             if (code >= 1 && code <= 3) return { desc: 'Partly Cloudy', icon: '🌤️' };
@@ -551,7 +568,6 @@
             return { desc: 'Pleasant', icon: '🌡️' };
         }
 
-        // Initial trigger on load
         document.addEventListener('DOMContentLoaded', getUserLocation);
     </script>
 </body>
