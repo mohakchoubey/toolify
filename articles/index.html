@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -53,8 +52,8 @@
 
 <!-- Application Structure Plan:
      1. Sticky Navigation Header: Toolify logo, links to user's key projects in header dropdown/nav (Toolify Hub, Portfolio, Daily Echo, Chrome Portal, Weather Tool).
-     2. Live Weather & Local Clock Header Widget: Auto-detects user browser geolocation (with IP fallback), fetches temperature and weather state via Open-Meteo, and displays ticking real-time local clock.
-     3. Latest Release Banner (Latest Update): Prominently highlights "Claude Sonnet 5.5 Interactive Architecture & Performance Report" with direct button link to `articles/claude_sonnet_5_5_interactive_report.html`.
+     2. Live Weather & Local Clock Header Widget: Auto-detects user browser geolocation (with IP fallback), fetches temperature and weather state via Open-Meteo, and displays ticking real-time local c[...]
+     3. Latest Release Banner (Latest Update): Prominently highlights "Claude Sonnet 5.5 Interactive Architecture & Performance Report" with direct button link to `articles/claude_sonnet_5_5_interacti[...]
      4. Site Directory Grid: Categorized cards pointing directly to user's provided sites and tools (Games, Productivity & Utilities, Personal Projects & Experiments).
      5. Multi-Column Footer: Full list of user's provided links categorized cleanly.
 -->
@@ -424,7 +423,7 @@
                 button.href = article.url;
                 button.className = 'bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-5 py-3 rounded-xl shadow-sm transition-all inline-flex items-center gap-2';
                 button.textContent = article.buttonText || 'Read Article';
-                if (/^https?:\\/\\//i.test(article.url)) {
+                if (typeof article.url === 'string' && /^https?:\/\//i.test(article.url)) {
                     button.target = '_blank';
                     button.rel = 'noopener noreferrer';
                 }
