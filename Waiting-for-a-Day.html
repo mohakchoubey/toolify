@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day Passer AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin-allow-popups" />
+<meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp" />
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a24;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.15);
+      --text: #e8e8f0;
+      --text-muted: #6b6b80;
+      --text-dim: #9999aa;
+      --accent: #7c6af7;
+      --accent-soft: rgba(124,106,247,0.15);
+      --accent-glow: rgba(124,106,247,0.3);
+      --amber: #f5a623;
+      --amber-soft: rgba(245,166,35,0.12);
+      --green: #4ade80;
+      --green-soft: rgba(74,222,128,0.12);
+      --red: #f87171;
+      --red-soft: rgba(248,113,113,0.12);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --font: 'Space Grotesk', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    [data-theme="light"] {
+      --bg: #f4f4f8;
+      --surface: #ffffff;
+      --surface2: #f0f0f6;
+      --border: rgba(0,0,0,0.08);
+      --border-hover: rgba(0,0,0,0.18);
+      --text: #111118;
+      --text-muted: #888899;
+      --text-dim: #555566;
+      --accent: #6356e8;
+      --accent-soft: rgba(99,86,232,0.1);
+      --accent-glow: rgba(99,86,232,0.2);
+      --amber: #d4890a;
+      --amber-soft: rgba(212,137,10,0.1);
+      --green: #16a34a;
+      --green-soft: rgba(22,163,74,0.1);
+      --red: #dc2626;
+      --red-soft: rgba(220,38,38,0.1);
+    }
+
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font-family: var(--font); cursor: pointer; border: none; outline: none; }
+    input, textarea, select { font-family: var(--font); outline: none; border: none; background: none; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── PAGES ── */
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: block; }
+
+    /* ══════════════════════════════
+       LANDING PAGE
+    ══════════════════════════════ */
+    #page-landing {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    #page-landing.active { display: flex; }
+
+    .landing-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(124,106,247,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 80% 80%, rgba(245,166,35,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .landing-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 560px;
+      width: 100%;
+    }
+
+    .landing-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-glow);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .landing-title {
+      font-size: clamp(2.8rem, 8vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .landing-title span {
+      background: linear-gradient(135deg, var(--accent) 0%, #a78bfa 50%, var(--amber) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .landing-sub {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      line-height: 1.7;
+      max-width: 380px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Animated countdown preview */
+    .landing-counter {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 48px;
+    }
+    .counter-num {
+      font-size: 5rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      line-height: 1;
+    }
+    .counter-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      align-self: center;
+    }
+    .counter-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+      align-self: center;
+      margin-left: 4px;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .landing-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 100px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: var(--transition);
+      box-shadow: 0 0 0 0 var(--accent-glow);
+    }
+    .btn-primary:hover {
+      background: #8b7af8;
+      box-shadow: 0 0 24px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 10px 20px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--border-hover);
+      background: var(--surface);
+    }
+
+    .landing-features {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-top: 64px;
+      flex-wrap: wrap;
+    }
+    .feat-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .feat-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* Theme toggle - top right */
+    .top-bar {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: var(--transition);
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .icon-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    /* ══════════════════════════════
+       AUTH PAGE
+    ══════════════════════════════ */
+    #page-auth {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    #page-auth.active { display: flex; }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .auth-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .auth-logo span { color: var(--accent); }
+    .auth-tagline {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+    .btn-google {
+      width: 100%;
+      padding: 13px 20px;
+      border-radius: var(--radius);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: var(--transition);
+      margin-bottom: 12px;
+    }
+    .btn-google:hover {
+      border-color: var(--border-hover);
+      background: var(--surface);
+    }
+    .btn-google svg { width: 18px; height: 18px; }
+    .auth-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 20px;
+    }
+
+    /* ══════════════════════════════
+       SETUP WIZARD
+    ══════════════════════════════ */
+    #page-setup {
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 24px;
+    }
+    #page-setup.active { display: flex; }
+
+    .setup-wrap {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .setup-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+    .setup-logo {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .setup-logo span { color: var(--accent); }
+
+    .step-indicator {
+      display: flex;
+      gap: 6px;
+    }
+    .step-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: var(--transition);
+    }
+    .step-dot.active { background: var(--accent); width: 20px; border-radius: 3px; }
+    .step-dot.done { background: var(--accent); opacity: 0.5; }
+
+    .setup-step { display: none; }
+    .setup-step.active { display: block; animation: fadeUp 0.3s ease; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-family: var(--mono);
+    }
+    .step-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .step-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .field-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .field-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: var(--transition);
+      margin-bottom: 20px;
+    }
+    .field-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .field-input::placeholder { color: var(--text-muted); }
+
+    textarea.field-input {
+      resize: vertical;
+      min-height: 100px;
+      line-height: 1.6;
+    }
+
+    .importance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .importance-btn {
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: var(--transition);
+      text-align: left;
+    }
+    .importance-btn:hover { border-color: var(--border-hover); color: var(--text); }
+    .importance-btn.selected {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .category-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .cat-btn {
+      padding: 8px 16px;
+      border-radius: 100px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .cat-btn:hover { border-color: var(--border-hover); color: var(--text); }
+    .cat-btn.selected {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .time-btn {
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .time-btn:hover { border-color: var(--border-hover); color: var(--text); }
+    .time-btn.selected {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .goals-list { margin-bottom: 16px; }
+    .goal-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    .goal-remove {
+      margin-left: auto;
+      background: none;
+      color: var(--text-muted);
+      font-size: 16px;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    .goal-remove:hover { background: var(--red-soft); color: var(--red); }
+
+    .goal-add-row {
+      display: flex;
+      gap: 8px;
+    }
+    .goal-add-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    .goal-add-input:focus { border-color: var(--accent); }
+    .goal-add-input::placeholder { color: var(--text-muted); }
+    .btn-add-goal {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .btn-add-goal:hover { background: var(--accent); color: #fff; }
+
+    .memory-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .memory-date {
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .setup-nav {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .btn-back {
+      background: var(--surface2);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 100px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .btn-back:hover { color: var(--text); border-color: var(--border-hover); }
+    .btn-next {
+      flex: 1;
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 100px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .btn-next:hover { background: #8b7af8; box-shadow: 0 4px 20px var(--accent-glow); }
+    .btn-next:disabled { opacity: 0.4; pointer-events: none; }
+
+    /* ══════════════════════════════
+       GENERATING PAGE
+    ══════════════════════════════ */
+    #page-generating {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 24px;
+    }
+    #page-generating.active { display: flex; }
+
+    .gen-content { max-width: 360px; }
+    .gen-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .gen-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .gen-status {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      min-height: 20px;
+    }
+
+    /* ══════════════════════════════
+       DASHBOARD
+    ══════════════════════════════ */
+    #page-dashboard {
+      display: none;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+    #page-dashboard.active { display: block; }
+
+    /* Nav */
+    .app-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      z-index: 50;
+      padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 4px;
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      font-weight: 500;
+      transition: var(--transition);
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    .nav-item.active { color: var(--accent); }
+    .nav-item svg { width: 20px; height: 20px; }
+
+    .dash-content { padding: 0; }
+
+    /* Header strip */
+    .dash-header {
+      padding: 20px 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .dash-logo {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .dash-logo span { color: var(--accent); }
+    .dash-header-actions { display: flex; gap: 6px; }
+
+    /* Countdown hero */
+    .countdown-hero {
+      margin: 0 20px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .countdown-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% -10%, var(--accent-soft), transparent 70%);
+      pointer-events: none;
+    }
+    .cd-eyebrow {
+      font-size: 0.7rem;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .cd-number {
+      font-size: clamp(4rem, 15vw, 6rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-dim) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+    .cd-unit {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .cd-date {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .cd-title {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+    .cd-bar-wrap {
+      background: var(--surface2);
+      border-radius: 100px;
+      height: 4px;
+      overflow: hidden;
+    }
+    .cd-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #a78bfa);
+      border-radius: 100px;
+      transition: width 1s ease;
+    }
+    .cd-day-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      margin-top: 8px;
+    }
+
+    /* Today's focus */
+    .section-header {
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+    .section-action {
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: 500;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    /* Task cards */
+    .tasks-wrap { padding: 0 20px; }
+    .task-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 10px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .task-card:hover { border-color: var(--border-hover); }
+    .task-card.completed {
+      opacity: 0.55;
+      border-color: var(--green);
+    }
+    .task-card.completed::after {
+      content: '✓';
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      color: var(--green);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .task-card.skipped { opacity: 0.4; }
+
+    .task-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .task-emoji { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .task-category {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-family: var(--mono);
+      margin-bottom: 2px;
+    }
+    .task-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+    .task-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      line-height: 1.6;
+      padding-left: 30px;
+    }
+    .task-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-left: 30px;
+    }
+    .task-time {
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      background: var(--surface2);
+      padding: 3px 8px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+    }
+    .task-actions { margin-left: auto; display: flex; gap: 6px; }
+    .btn-task {
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .btn-complete {
+      background: var(--green-soft);
+      color: var(--green);
+      border: 1px solid rgba(74,222,128,0.3);
+    }
+    .btn-complete:hover { background: var(--green); color: #000; }
+    .btn-skip {
+      background: var(--surface2);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-skip:hover { color: var(--text); }
+
+    /* Quick action */
+    .quick-section { padding: 16px 20px; }
+    .btn-bored {
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: var(--amber-soft);
+      border: 1px solid rgba(245,166,35,0.3);
+      color: var(--amber);
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-bored:hover { background: var(--amber); color: #000; }
+
+    /* Loading tasks skeleton */
+    .task-skeleton {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 10px;
+    }
+    .skel-line {
+      background: var(--surface2);
+      border-radius: 4px;
+      height: 12px;
+      margin-bottom: 8px;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+    .skel-line.short { width: 40%; }
+    .skel-line.med { width: 65%; }
+    @keyframes shimmer {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* ══════════════════════════════
+       MEMORY PAGE (tab)
+    ══════════════════════════════ */
+    .memory-page-content { padding: 20px; }
+    .memory-page-header {
+      margin-bottom: 24px;
+    }
+    .memory-page-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .memory-page-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* Add memory */
+    .add-memory-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+    .add-memory-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: var(--mono);
+      margin-bottom: 10px;
+    }
+    .add-memory-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: 0.9rem;
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      transition: var(--transition);
+    }
+    .add-memory-input:focus { border-color: var(--accent); }
+    .add-memory-input::placeholder { color: var(--text-muted); }
+    .mood-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .mood-btn {
+      padding: 5px 12px;
+      border-radius: 100px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .mood-btn.selected {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .btn-save-memory {
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .btn-save-memory:hover { background: #8b7af8; }
+
+    /* Timeline */
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 8px;
+      bottom: 8px;
+      width: 1px;
+      background: var(--border);
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .timeline-dot {
+      position: absolute;
+      left: -24px;
+      top: 6px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--accent);
+    }
+    .timeline-dot.start { background: var(--accent); }
+    .timeline-dot.target { background: var(--amber); border-color: var(--amber); }
+    .timeline-date {
+      font-size: 0.7rem;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .timeline-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+    .timeline-mood {
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+    .timeline-text {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ══════════════════════════════
+       SETTINGS PAGE (tab)
+    ══════════════════════════════ */
+    .settings-content { padding: 20px; }
+    .settings-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+
+    .settings-section {
+      margin-bottom: 28px;
+    }
+    .settings-section-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row-label { font-size: 0.9rem; font-weight: 500; }
+    .settings-row-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Toggle */
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      cursor: pointer;
+    }
+    .toggle input { display: none; }
+    .toggle-track {
+      width: 100%;
+      height: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      transition: var(--transition);
+    }
+    .toggle input:checked + .toggle-track { background: var(--accent); border-color: var(--accent); }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      transition: var(--transition);
+      pointer-events: none;
+    }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
+
+    /* Model selector */
+    .model-select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: var(--mono);
+      cursor: pointer;
+      transition: var(--transition);
+      appearance: none;
+      -webkit-appearance: none;
+      min-width: 180px;
+    }
+    .model-select:focus { border-color: var(--accent); }
+
+    .response-btns { display: flex; gap: 6px; }
+    .resp-btn {
+      padding: 7px 14px;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .resp-btn.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* User card */
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .user-name { font-size: 0.95rem; font-weight: 600; }
+    .user-email { font-size: 0.78rem; color: var(--text-muted); }
+    .btn-signout {
+      margin-left: auto;
+      padding: 7px 14px;
+      border-radius: 100px;
+      background: var(--red-soft);
+      color: var(--red);
+      border: 1px solid rgba(248,113,113,0.3);
+      font-size: 0.78rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .btn-signout:hover { background: var(--red); color: #fff; }
+
+    /* Journey info */
+    .journey-info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .journey-info-title {
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    .journey-info-value {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .btn-danger {
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--radius);
+      background: var(--red-soft);
+      color: var(--red);
+      border: 1px solid rgba(248,113,113,0.3);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: var(--transition);
+      margin-top: 8px;
+    }
+    .btn-danger:hover { background: var(--red); color: #fff; }
+
+    /* ══════════════════════════════
+       PROGRESS TAB
+    ══════════════════════════════ */
+    .progress-content { padding: 20px; }
+    .progress-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .progress-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+    .progress-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .progress-card-name { font-size: 0.9rem; font-weight: 600; }
+    .progress-card-pct {
+      font-size: 0.82rem;
+      font-family: var(--mono);
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .progress-bar {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent), #a78bfa);
+      transition: width 0.8s ease;
+    }
+    .progress-bar-fill.amber { background: linear-gradient(90deg, var(--amber), #fbbf24); }
+    .progress-bar-fill.green { background: linear-gradient(90deg, var(--green), #86efac); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* ══════════════════════════════
+       TOAST
+    ══════════════════════════════ */
+    #toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ══════════════════════════════
+       MODAL
+    ══════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 150;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
+      padding: 28px 20px max(28px, env(safe-area-inset-bottom));
+      width: 100%;
+      max-width: 500px;
+      transform: translateY(30px);
+      transition: transform 0.3s ease;
+    }
+    .modal-overlay.open .modal-card { transform: translateY(0); }
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+    .modal-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* ══════════════════════════════
+       JOURNEY COMPLETE
+    ══════════════════════════════ */
+    #page-complete {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      text-align: center;
+    }
+    #page-complete.active { display: flex; }
+    .complete-content { max-width: 400px; }
+    .complete-emoji { font-size: 3rem; margin-bottom: 20px; }
+    .complete-title {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .complete-date {
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-family: var(--mono);
+      margin-bottom: 24px;
+    }
+    .complete-stats {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .complete-stat {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .complete-stat:last-child { border-bottom: none; }
+    .complete-stat-check { color: var(--green); font-size: 1rem; }
+
+    /* ══════════════════════════════
+       UTIL
+    ══════════════════════════════ */
+    .hidden { display: none !important; }
+
+    @media (max-width: 480px) {
+      .importance-grid { grid-template-columns: 1fr 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR (theme toggle, always visible) -->
+<div class="top-bar" id="topBar">
+  <button class="icon-btn" id="themeToggle" title="Toggle theme">🌙</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: LANDING
+═══════════════════════════════════════ -->
+<div id="page-landing" class="page active">
+  <div class="landing-bg"></div>
+  <div class="landing-content">
+    <div class="landing-badge">✦ AI-powered</div>
+    <h1 class="landing-title">Day Passer<br><span>AI</span></h1>
+    <p class="landing-sub">Don't just wait for the day.<br>Prepare for it.</p>
+
+    <div class="landing-counter">
+      <span class="counter-num" id="landingDays">--</span>
+      <div>
+        <div class="counter-label">days</div>
+      </div>
+      <div class="counter-dot"></div>
+    </div>
+
+    <div class="landing-cta">
+      <button class="btn-primary" onclick="goToAuth()">Start Your Journey</button>
+      <button class="btn-ghost" onclick="goToAuth()">Sign in with Google</button>
+    </div>
+
+    <div class="landing-features">
+      <div class="feat-item"><div class="feat-dot"></div>Personalized AI tasks</div>
+      <div class="feat-item"><div class="feat-dot"></div>Memory vault</div>
+      <div class="feat-item"><div class="feat-dot"></div>Live countdown</div>
+      <div class="feat-item"><div class="feat-dot"></div>Progress tracking</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: AUTH
+═══════════════════════════════════════ -->
+<div id="page-auth" class="page">
+  <div class="auth-card">
+    <div class="auth-logo">Day Passer <span>AI</span></div>
+    <div class="auth-tagline">Sign in to start or continue your journey</div>
+
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="auth-note">By signing in, your journey syncs across devices via Firebase.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: SETUP WIZARD
+═══════════════════════════════════════ -->
+<div id="page-setup" class="page">
+  <div class="setup-wrap">
+    <div class="setup-header">
+      <div class="setup-logo">Day Passer <span>AI</span></div>
+      <div class="step-indicator" id="stepIndicator">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+    </div>
+
+    <!-- Step 1: Target -->
+    <div class="setup-step active" data-step="1">
+      <div class="step-label">Step 1 of 6</div>
+      <h2 class="step-title">What are you waiting for?</h2>
+      <p class="step-desc">Tell us about the day you're counting down to.</p>
+
+      <label class="field-label">What is this day?</label>
+      <input type="text" class="field-input" id="s-title" placeholder="e.g. School trip, Exam results, Holiday..." />
+
+      <label class="field-label">Target date</label>
+      <input type="date" class="field-input" id="s-date" />
+
+      <label class="field-label">How important is this day?</label>
+      <div class="importance-grid">
+        <button class="importance-btn" data-val="just-waiting" onclick="selectImportance(this)">Just waiting</button>
+        <button class="importance-btn" data-val="important" onclick="selectImportance(this)">Important</button>
+        <button class="importance-btn" data-val="very-important" onclick="selectImportance(this)">Very important</button>
+        <button class="importance-btn" data-val="life-changing" onclick="selectImportance(this)">Life-changing</button>
+      </div>
+
+      <div class="setup-nav">
+        <button class="btn-next" onclick="nextStep()" id="step1Next">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Category -->
+    <div class="setup-step" data-step="2">
+      <div class="step-label">Step 2 of 6</div>
+      <h2 class="step-title">What is this journey about?</h2>
+      <p class="step-desc">Choose everything that applies. This shapes the tasks AI creates for you.</p>
+
+      <div class="category-grid" id="categoryGrid">
+        <button class="cat-btn" data-cat="Student" onclick="toggleCat(this)">🎓 Student</button>
+        <button class="cat-btn" data-cat="Education" onclick="toggleCat(this)">📚 Education</button>
+        <button class="cat-btn" data-cat="Work" onclick="toggleCat(this)">💼 Work</button>
+        <button class="cat-btn" data-cat="Health" onclick="toggleCat(this)">🧘 Health</button>
+        <button class="cat-btn" data-cat="Fitness" onclick="toggleCat(this)">💪 Fitness</button>
+        <button class="cat-btn" data-cat="Coding" onclick="toggleCat(this)">💻 Coding</button>
+        <button class="cat-btn" data-cat="Creativity" onclick="toggleCat(this)">🎨 Creativity</button>
+        <button class="cat-btn" data-cat="Personal Growth" onclick="toggleCat(this)">🌱 Personal Growth</button>
+        <button class="cat-btn" data-cat="Other" onclick="toggleCat(this)">✦ Other</button>
+      </div>
+
+      <div class="setup-nav">
+        <button class="btn-back" onclick="prevStep()">← Back</button>
+        <button class="btn-next" onclick="nextStep()">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Situation -->
+    <div class="setup-step" data-step="3">
+      <div class="step-label">Step 3 of 6</div>
+      <h2 class="step-title">Your current situation</h2>
+      <p class="step-desc">Tell Day Passer what's happening in your life right now. The more context, the better the plan.</p>
+
+      <label class="field-label">What's going on right now?</label>
+      <textarea class="field-input" id="s-situation" rows="4" placeholder="e.g. I'm a student preparing for exams. I also work on coding projects after school..."></textarea>
+
+      <label class="field-label">How much free time do you usually have?</label>
+      <div class="time-grid">
+        <button class="time-btn" data-time="< 30 min" onclick="selectTime(this)">Under 30 min</button>
+        <button class="time-btn" data-time="30–60 min" onclick="selectTime(this)">30–60 min</button>
+        <button class="time-btn" data-time="1–2 hours" onclick="selectTime(this)">1–2 hours</button>
+        <button class="time-btn" data-time="2+ hours" onclick="selectTime(this)">2+ hours</button>
+        <button class="time-btn" data-time="Varies" onclick="selectTime(this)" style="grid-column: span 2;">It changes daily</button>
+      </div>
+
+      <div class="setup-nav">
+        <button class="btn-back" onclick="prevStep()">← Back</button>
+        <button class="btn-next" onclick="nextStep()">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Goals -->
+    <div class="setup-step" data-step="4">
+      <div class="step-label">Step 4 of 6</div>
+      <h2 class="step-title">What do you want to accomplish?</h2>
+      <p class="step-desc">Add 1–3 goals you want to make progress on before your day arrives.</p>
+
+      <div class="goals-list" id="goalsList"></div>
+      <div class="goal-add-row">
+        <input type="text" class="goal-add-input" id="goalInput" placeholder="Add a goal..." />
+        <button class="btn-add-goal" onclick="addGoal()">+ Add</button>
+      </div>
+
+      <div class="setup-nav" style="margin-top: 20px;">
+        <button class="btn-back" onclick="prevStep()">← Back</button>
+        <button class="btn-next" onclick="nextStep()">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 5: Starting Memory -->
+    <div class="setup-step" data-step="5">
+      <div class="step-label">Step 5 of 6</div>
+      <h2 class="step-title">Save this moment</h2>
+      <p class="step-desc">Before your journey begins, write something you want to remember. This becomes the first entry in your Memory Vault.</p>
+
+      <div class="memory-card">
+        <div class="memory-date" id="memoryDateLabel"></div>
+        <textarea class="field-input" id="s-memory" rows="4" placeholder="Today I started Day Passer because..." style="margin-bottom: 0; border: none; background: none; padding: 0;"></textarea>
+      </div>
+
+      <div class="setup-nav">
+        <button class="btn-back" onclick="prevStep()">← Back</button>
+        <button class="btn-next" onclick="nextStep()">Save & Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 6: Available time confirm -->
+    <div class="setup-step" data-step="6">
+      <div class="step-label">Step 6 of 6</div>
+      <h2 class="step-title">Ready to begin</h2>
+      <p class="step-desc">Here's what Day Passer AI knows about your journey. Tap <strong>Create Journey</strong> to generate your personalized plan.</p>
+
+      <div class="journey-info-card">
+        <div class="journey-info-title">Waiting for</div>
+        <div class="journey-info-value" id="review-title">—</div>
+      </div>
+      <div class="journey-info-card">
+        <div class="journey-info-title">Target date</div>
+        <div class="journey-info-value" id="review-date">—</div>
+      </div>
+      <div class="journey-info-card">
+        <div class="journey-info-title">Categories</div>
+        <div class="journey-info-value" id="review-cats">—</div>
+      </div>
+      <div class="journey-info-card">
+        <div class="journey-info-title">Goals</div>
+        <div class="journey-info-value" id="review-goals">—</div>
+      </div>
+
+      <div class="setup-nav">
+        <button class="btn-back" onclick="prevStep()">← Back</button>
+        <button class="btn-next" onclick="createJourney()">✦ Create Journey</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: GENERATING
+═══════════════════════════════════════ -->
+<div id="page-generating" class="page">
+  <div class="gen-content">
+    <div class="gen-spinner"></div>
+    <div class="gen-title">Creating your journey...</div>
+    <div class="gen-status" id="genStatus">Understanding your goals...</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: DASHBOARD (main app)
+═══════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+
+  <!-- TOP -->
+  <div class="dash-header">
+    <div class="dash-logo">Day Passer <span>AI</span></div>
+    <div class="dash-header-actions">
+      <button class="icon-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </div>
+
+  <!-- Countdown Hero -->
+  <div class="countdown-hero">
+    <div class="cd-eyebrow">Countdown</div>
+    <div class="cd-number" id="cdDays">--</div>
+    <div class="cd-unit">days left</div>
+    <div class="cd-date" id="cdDate">--</div>
+    <div class="cd-title" id="cdTitle">--</div>
+    <div class="cd-bar-wrap">
+      <div class="cd-bar-fill" id="cdBar" style="width: 0%"></div>
+    </div>
+    <div class="cd-day-label" id="cdDayLabel">Day -- of --</div>
+  </div>
+
+  <!-- TAB CONTENT AREAS -->
+  <div id="tab-today">
+    <div class="section-header">
+      <span class="section-title">Today's tasks</span>
+      <button class="section-action" onclick="regenerateTasks()">↺ Regenerate</button>
+    </div>
+
+    <div class="tasks-wrap" id="tasksWrap">
+      <div class="task-skeleton"><div class="skel-line short"></div><div class="skel-line med"></div><div class="skel-line"></div></div>
+      <div class="task-skeleton"><div class="skel-line short"></div><div class="skel-line med"></div></div>
+    </div>
+
+    <div class="quick-section">
+      <button class="btn-bored" onclick="boredMode()">⚡ I'm Bored — Give me something quick</button>
+    </div>
+  </div>
+
+  <div id="tab-memories" class="hidden">
+    <div class="memory-page-content">
+      <div class="memory-page-header">
+        <div class="memory-page-title">Memory Vault</div>
+        <div class="memory-page-sub" id="memoryCount">0 memories</div>
+      </div>
+
+      <!-- Add memory -->
+      <div class="add-memory-card">
+        <div class="add-memory-label">Add today's memory</div>
+        <textarea class="add-memory-input" id="newMemoryText" placeholder="What happened today?"></textarea>
+        <div class="mood-row">
+          <button class="mood-btn" data-mood="great" onclick="selectMood(this)">🌟 Great</button>
+          <button class="mood-btn" data-mood="good" onclick="selectMood(this)">😊 Good</button>
+          <button class="mood-btn" data-mood="normal" onclick="selectMood(this)">😐 Normal</button>
+          <button class="mood-btn" data-mood="difficult" onclick="selectMood(this)">😔 Difficult</button>
+        </div>
+        <button class="btn-save-memory" onclick="saveMemory()">Save Memory</button>
+      </div>
+
+      <!-- Timeline -->
+      <div class="timeline" id="memoryTimeline">
+        <div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.85rem;">No memories yet</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-progress" class="hidden">
+    <div class="progress-content">
+      <div class="progress-title">Progress</div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="statCompleted">0</div>
+          <div class="stat-label">Tasks completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statMemories">0</div>
+          <div class="stat-label">Memories saved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statDays">0</div>
+          <div class="stat-label">Days active</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statStreak">0</div>
+          <div class="stat-label">Day streak</div>
+        </div>
+      </div>
+
+      <div style="font-size:0.72rem;font-family:var(--mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">Goal progress</div>
+      <div id="goalProgressWrap"></div>
+    </div>
+  </div>
+
+  <div id="tab-settings" class="hidden">
+    <div class="settings-content">
+      <div class="settings-title">Settings</div>
+
+      <!-- User -->
+      <div class="user-card" id="userCard">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <div>
+          <div class="user-name" id="userName">—</div>
+          <div class="user-email" id="userEmail">—</div>
+        </div>
+        <button class="btn-signout" onclick="signOut()">Sign out</button>
+      </div>
+
+      <!-- Appearance -->
+      <div class="settings-section">
+        <div class="settings-section-label">Appearance</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Dark mode</div>
+            <div class="settings-row-sub">Toggle light / dark theme</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="darkModeToggle" onchange="toggleTheme()" checked />
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- AI -->
+      <div class="settings-section">
+        <div class="settings-section-label">AI Settings</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Model</div>
+            <div class="settings-row-sub">LLM used for task generation</div>
+          </div>
+          <select class="model-select" id="modelSelect" onchange="saveSettings()">
+            <option value="llama-3.3-70b-versatile" selected>Llama 3.3 70B</option>
+            <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fast)</option>
+            <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+            <option value="gemma2-9b-it">Gemma 2 9B</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Response style</div>
+            <div class="settings-row-sub">How detailed AI tasks are</div>
+          </div>
+          <div class="response-btns">
+            <button class="resp-btn active" id="respShort" onclick="setResponseStyle('short')">Short</button>
+            <button class="resp-btn" id="respDetailed" onclick="setResponseStyle('detailed')">Detailed</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Journey -->
+      <div class="settings-section">
+        <div class="settings-section-label">Journey</div>
+        <div class="journey-info-card">
+          <div class="journey-info-title">Current journey</div>
+          <div class="journey-info-value" id="settingsJourneyTitle">—</div>
+        </div>
+        <div class="journey-info-card">
+          <div class="journey-info-title">Target date</div>
+          <div class="journey-info-value" id="settingsJourneyDate">—</div>
+        </div>
+        <button class="btn-danger" onclick="confirmResetJourney()">🗑 Reset journey & start over</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="app-nav">
+    <button class="nav-item active" onclick="switchTab('today', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Today
+    </button>
+    <button class="nav-item" onclick="switchTab('memories', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      Memories
+    </button>
+    <button class="nav-item" onclick="switchTab('progress', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+      Progress
+    </button>
+    <button class="nav-item" onclick="switchTab('settings', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+      Settings
+    </button>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: JOURNEY COMPLETE
+═══════════════════════════════════════ -->
+<div id="page-complete" class="page">
+  <div class="complete-content">
+    <div class="complete-emoji">🎉</div>
+    <div class="complete-title">Today is the day.</div>
+    <div class="complete-date" id="completeDateLabel"></div>
+    <div class="complete-stats" id="completeStats"></div>
+    <button class="btn-primary" onclick="startNewJourney()">Start Another Journey</button>
+  </div>
+</div>
+
+<!-- BORED MODAL -->
+<div class="modal-overlay" id="boredModal">
+  <div class="modal-card">
+    <div class="modal-title">⚡ Quick Challenge</div>
+    <div class="modal-sub" id="boredText">Generating something for you...</div>
+    <button class="btn-primary" style="width:100%" onclick="closeModal('boredModal')">Got it!</button>
+  </div>
+</div>
+
+<!-- FIREBASE + APP SCRIPTS -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup,
+    onAuthStateChanged, signOut as fbSignOut
+  } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+  import {
+    getFirestore, doc, getDoc, setDoc, updateDoc,
+    collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc
+  } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+  // ── CONFIG — replace with your Firebase project config ──
+const firebaseConfig = {
+  apiKey: "AIzaSyAoj4yHcaRW4wdOPA7SrZhGQZqAobHDdB0",
+  authDomain: "toolbox-hub-98c03.firebaseapp.com",
+  databaseURL: "https://toolbox-hub-98c03-default-rtdb.firebaseio.com",
+  projectId: "toolbox-hub-98c03",
+  storageBucket: "toolbox-hub-98c03.firebasestorage.app",
+  messagingSenderId: "321020105472",
+  appId: "1:321020105472:web:698ba3bf9dfe75add859e5"
+};
+
+  // ── Cloudflare Worker URL (your Groq proxy) ──
+  const WORKER_URL = "https://day-counter-ai.mohakchoubey.workers.dev/";
+
+  // ── Init ──
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  // ── State ──
+  let currentUser = null;
+  let journey = null;
+  let tasks = [];
+  let memories = [];
+  let settings = { model: 'llama-3.3-70b-versatile', responseStyle: 'short', theme: 'dark' };
+  let setupData = { title: '', date: '', importance: '', categories: [], situation: '', time: '', goals: [], memory: '' };
+  let currentStep = 1;
+  const TOTAL_STEPS = 6;
+
+  // ── Expose to window for onclick handlers ──
+  window.goToAuth = goToAuth;
+  window.signInWithGoogle = signInWithGoogle;
+  window.signOut = doSignOut;
+  window.nextStep = nextStep;
+  window.prevStep = prevStep;
+  window.selectImportance = selectImportance;
+  window.toggleCat = toggleCat;
+  window.selectTime = selectTime;
+  window.addGoal = addGoal;
+  window.createJourney = createJourney;
+  window.switchTab = switchTab;
+  window.toggleTheme = toggleTheme;
+  window.saveSettings = saveSettings;
+  window.setResponseStyle = setResponseStyle;
+  window.regenerateTasks = regenerateTasks;
+  window.boredMode = boredMode;
+  window.closeModal = closeModal;
+  window.saveMemory = saveMemory;
+  window.selectMood = selectMood;
+  window.confirmResetJourney = confirmResetJourney;
+  window.startNewJourney = startNewJourney;
+
+  // ════════════════════════════════
+  // AUTH
+  // ════════════════════════════════
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser = user;
+      await loadUserData();
+    } else {
+      currentUser = null;
+      showPage('landing');
+    }
+  });
+
+  function goToAuth() { showPage('auth'); }
+
+  async function signInWithGoogle() {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (e) {
+      toast('Sign in failed. Try again.');
+    }
+  }
+
+  async function doSignOut() {
+    await fbSignOut(auth);
+    journey = null; tasks = []; memories = [];
+    showPage('landing');
+  }
+
+  // ════════════════════════════════
+  // LOAD USER DATA
+  // ════════════════════════════════
+  async function loadUserData() {
+    // Load settings
+    const settingsDoc = await getDoc(doc(db, 'dayPasser', currentUser.uid, 'meta', 'settings'));
+    if (settingsDoc.exists()) {
+      settings = { ...settings, ...settingsDoc.data() };
+      applySettings();
+    }
+
+    // Load journey
+    const journeyDoc = await getDoc(doc(db, 'dayPasser', currentUser.uid, 'meta', 'journey'));
+    if (journeyDoc.exists()) {
+      journey = journeyDoc.data();
+      await loadTasks();
+      await loadMemories();
+      showDashboard();
+    } else {
+      showPage('setup');
+      document.getElementById('memoryDateLabel').textContent = formatDate(new Date());
+    }
+  }
+
+  async function loadTasks() {
+    const today = todayStr();
+    const tasksDoc = await getDoc(doc(db, 'dayPasser', currentUser.uid, 'tasks', today));
+    if (tasksDoc.exists()) {
+      tasks = tasksDoc.data().tasks || [];
+    } else {
+      tasks = [];
+    }
+  }
+
+  async function loadMemories() {
+    const q = query(collection(db, 'dayPasser', currentUser.uid, 'memories'), orderBy('createdAt', 'asc'));
+    const snap = await getDocs(q);
+    memories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+
+  // ════════════════════════════════
+  // SETUP WIZARD
+  // ════════════════════════════════
+  function selectImportance(btn) {
+    document.querySelectorAll('.importance-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    setupData.importance = btn.dataset.val;
+  }
+
+  function toggleCat(btn) {
+    btn.classList.toggle('selected');
+    const cat = btn.dataset.cat;
+    if (btn.classList.contains('selected')) {
+      if (!setupData.categories.includes(cat)) setupData.categories.push(cat);
+    } else {
+      setupData.categories = setupData.categories.filter(c => c !== cat);
+    }
+  }
+
+  function selectTime(btn) {
+    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    setupData.time = btn.dataset.time;
+  }
+
+  function addGoal() {
+    const input = document.getElementById('goalInput');
+    const val = input.value.trim();
+    if (!val) return;
+    if (setupData.goals.length >= 5) { toast('Max 5 goals'); return; }
+    setupData.goals.push(val);
+    input.value = '';
+    renderGoalsList();
+  }
+
+  function renderGoalsList() {
+    const list = document.getElementById('goalsList');
+    list.innerHTML = setupData.goals.map((g, i) => `
+      <div class="goal-item">
+        <span style="font-size:0.7rem;font-family:var(--mono);color:var(--accent);margin-right:4px;">${i+1}</span>
+        ${g}
+        <button class="goal-remove" onclick="removeGoal(${i})">×</button>
+      </div>
+    `).join('');
+  }
+  window.removeGoal = function(i) {
+    setupData.goals.splice(i, 1);
+    renderGoalsList();
+  };
+
+  document.getElementById('goalInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addGoal();
+  });
+
+  function nextStep() {
+    // Validate
+    if (currentStep === 1) {
+      setupData.title = document.getElementById('s-title').value.trim();
+      setupData.date = document.getElementById('s-date').value;
+      if (!setupData.title) { toast('Please enter what you\'re waiting for'); return; }
+      if (!setupData.date) { toast('Please pick a target date'); return; }
+      const targetDate = new Date(setupData.date);
+      if (targetDate <= new Date()) { toast('Target date must be in the future'); return; }
+    }
+    if (currentStep === 3) {
+      setupData.situation = document.getElementById('s-situation').value.trim();
+    }
+    if (currentStep === 5) {
+      setupData.memory = document.getElementById('s-memory').value.trim();
+    }
+    if (currentStep === 6) return; // handled by createJourney
+
+    if (currentStep < TOTAL_STEPS) {
+      currentStep++;
+      updateStepUI();
+      if (currentStep === 6) populateReview();
+    }
+  }
+
+  function prevStep() {
+    if (currentStep > 1) {
+      currentStep--;
+      updateStepUI();
+    }
+  }
+
+  function updateStepUI() {
+    document.querySelectorAll('.setup-step').forEach(s => s.classList.remove('active'));
+    document.querySelector(`.setup-step[data-step="${currentStep}"]`).classList.add('active');
+
+    const dots = document.querySelectorAll('.step-dot');
+    dots.forEach((d, i) => {
+      d.classList.remove('active', 'done');
+      if (i + 1 === currentStep) d.classList.add('active');
+      else if (i + 1 < currentStep) d.classList.add('done');
+    });
+  }
+
+  function populateReview() {
+    document.getElementById('review-title').textContent = setupData.title || '—';
+    document.getElementById('review-date').textContent = formatDate(new Date(setupData.date + 'T12:00:00'));
+    document.getElementById('review-cats').textContent = setupData.categories.length ? setupData.categories.join(', ') : 'None selected';
+    document.getElementById('review-goals').textContent = setupData.goals.length ? setupData.goals.join(' · ') : 'No goals added';
+  }
+
+  // ════════════════════════════════
+  // CREATE JOURNEY
+  // ════════════════════════════════
+  async function createJourney() {
+    showPage('generating');
+    const statuses = [
+      'Understanding your goals...',
+      'Building your plan...',
+      'Preparing first tasks...',
+      'Almost ready...'
+    ];
+    let si = 0;
+    const statusEl = document.getElementById('genStatus');
+    const statusInterval = setInterval(() => {
+      si = (si + 1) % statuses.length;
+      statusEl.textContent = statuses[si];
+    }, 1800);
+
+    journey = {
+      title: setupData.title,
+      targetDate: setupData.date,
+      importance: setupData.importance,
+      categories: setupData.categories,
+      situation: setupData.situation,
+      availableTime: setupData.time,
+      goals: setupData.goals.map((g, i) => ({ text: g, progress: 0, priority: i === 0 ? 'high' : i === 1 ? 'medium' : 'low' })),
+      createdAt: new Date().toISOString(),
+      startDay: todayStr()
+    };
+
+    try {
+      // Save journey to Firestore
+      await setDoc(doc(db, 'dayPasser', currentUser.uid, 'meta', 'journey'), journey);
+
+      // Save starting memory
+      if (setupData.memory) {
+        await addDoc(collection(db, 'dayPasser', currentUser.uid, 'memories'), {
+          text: setupData.memory,
+          mood: 'start',
+          date: todayStr(),
+          isStart: true,
+          createdAt: serverTimestamp()
+        });
+      }
+
+      // Generate first tasks via AI
+      await generateTasks();
+
+      clearInterval(statusInterval);
+      await loadMemories();
+      showDashboard();
+    } catch (e) {
+      clearInterval(statusInterval);
+      console.error(e);
+      toast('Something went wrong. Check your connection.');
+      showPage('setup');
+    }
+  }
+
+  // ════════════════════════════════
+  // AI — TASK GENERATION
+  // ════════════════════════════════
+  async function generateTasks() {
+    const daysLeft = getDaysLeft();
+    const completedRecent = tasks.filter(t => t.status === 'completed').map(t => t.name);
+
+    const prompt = `You are Day Passer AI. Generate personalized daily tasks for a user.
+
+User context:
+- Waiting for: "${journey.title}"
+- Target date: ${journey.targetDate}
+- Days remaining: ${daysLeft}
+- Categories: ${journey.categories.join(', ')}
+- Situation: ${journey.situation || 'Not provided'}
+- Available time: ${journey.availableTime || 'Unknown'}
+- Goals: ${journey.goals.map(g => g.text).join(', ')}
+- Recently completed: ${completedRecent.join(', ') || 'None yet'}
+
+Rules:
+- Generate exactly 3 tasks
+- ${settings.responseStyle === 'short' ? 'Keep descriptions SHORT (1 sentence max)' : 'Write helpful descriptions (2-3 sentences)'}
+- Tasks must be realistic for the available time
+- Don't repeat recently completed tasks
+- Match categories to user's interests
+- Each task needs: emoji, category, name, description, duration (minutes)
+
+Respond ONLY with valid JSON, no markdown, no explanation:
+{
+  "tasks": [
+    {
+      "emoji": "📚",
+      "category": "Study",
+      "name": "Task name here",
+      "description": "Brief description",
+      "duration": 25,
+      "status": "pending"
+    }
+  ]
+}`;
+
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: settings.model,
+        max_tokens: 600,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '';
+
+    try {
+      const clean = text.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+      tasks = parsed.tasks.map((t, i) => ({ ...t, id: `task_${Date.now()}_${i}`, status: 'pending' }));
+    } catch {
+      // Fallback tasks if AI fails
+      tasks = [
+        { id: 'fb1', emoji: '📝', category: 'Planning', name: 'Plan your day', description: 'Write down your top 3 priorities for today.', duration: 10, status: 'pending' },
+        { id: 'fb2', emoji: '🎯', category: 'Focus', name: 'Work toward your goal', description: 'Spend time on your most important goal.', duration: 30, status: 'pending' },
+        { id: 'fb3', emoji: '💡', category: 'Reflect', name: 'Evening reflection', description: 'Write one thing you learned today.', duration: 5, status: 'pending' }
+      ];
+    }
+
+    // Save to Firestore
+    await setDoc(doc(db, 'dayPasser', currentUser.uid, 'tasks', todayStr()), {
+      tasks,
+      generatedAt: serverTimestamp()
+    });
+  }
+
+  async function regenerateTasks() {
+    toast('Regenerating tasks...');
+    renderTaskSkeletons();
+    await generateTasks();
+    renderTasks();
+    toast('Tasks refreshed!');
+  }
+
+  // ════════════════════════════════
+  // DASHBOARD
+  // ════════════════════════════════
+  function showDashboard() {
+    if (!journey) return;
+
+    // Check if journey is complete
+    const daysLeft = getDaysLeft();
+    if (daysLeft <= 0) {
+      showJourneyComplete();
+      return;
+    }
+
+    showPage('dashboard');
+    updateCountdown();
+    renderTasks();
+    renderMemoryTimeline();
+    renderProgress();
+    updateUserCard();
+    updateSettingsInfo();
+
+    // Hide top bar theme btn (dashboard has its own)
+    document.getElementById('topBar').style.display = 'none';
+  }
+
+  function updateCountdown() {
+    if (!journey) return;
+    const daysLeft = getDaysLeft();
+    const totalDays = getTotalDays();
+    const daysPassed = totalDays - daysLeft;
+    const pct = totalDays > 0 ? (daysPassed / totalDays) * 100 : 0;
+
+    document.getElementById('cdDays').textContent = daysLeft;
+    document.getElementById('cdDate').textContent = formatDate(new Date(journey.targetDate + 'T12:00:00'));
+    document.getElementById('cdTitle').textContent = `"${journey.title}"`;
+    document.getElementById('cdBar').style.width = `${Math.min(pct, 100)}%`;
+    document.getElementById('cdDayLabel').textContent = `Day ${daysPassed + 1} of ${totalDays}`;
+
+    // Also update landing page counter (for when user is on landing)
+    const landEl = document.getElementById('landingDays');
+    if (landEl) landEl.textContent = daysLeft;
+  }
+
+  // ════════════════════════════════
+  // TASKS RENDERING
+  // ════════════════════════════════
+  function renderTaskSkeletons() {
+    document.getElementById('tasksWrap').innerHTML = `
+      <div class="task-skeleton"><div class="skel-line short"></div><div class="skel-line med"></div><div class="skel-line"></div></div>
+      <div class="task-skeleton"><div class="skel-line short"></div><div class="skel-line med"></div></div>
+    `;
+  }
+
+  function renderTasks() {
+    const wrap = document.getElementById('tasksWrap');
+    if (!tasks.length) {
+      wrap.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text-muted);font-size:0.88rem;">No tasks for today. Tap regenerate!</div>`;
+      return;
+    }
+
+    wrap.innerHTML = tasks.map(task => `
+      <div class="task-card ${task.status}" id="tc-${task.id}">
+        <div class="task-top">
+          <div class="task-emoji">${task.emoji}</div>
+          <div>
+            <div class="task-category">${task.category}</div>
+            <div class="task-name">${task.name}</div>
+          </div>
+        </div>
+        <div class="task-desc">${task.description}</div>
+        <div class="task-footer">
+          <span class="task-time">⏱ ${task.duration} min</span>
+          <div class="task-actions">
+            ${task.status === 'pending' ? `
+              <button class="btn-task btn-skip" onclick="updateTask('${task.id}', 'skipped')">Skip</button>
+              <button class="btn-task btn-complete" onclick="updateTask('${task.id}', 'completed')">✓ Done</button>
+            ` : task.status === 'completed' ? `<span style="font-size:0.75rem;color:var(--green);font-weight:600;">Completed</span>` :
+              `<span style="font-size:0.75rem;color:var(--text-muted);">Skipped</span>`
+            }
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  window.updateTask = async function(taskId, status) {
+    tasks = tasks.map(t => t.id === taskId ? { ...t, status } : t);
+    await setDoc(doc(db, 'dayPasser', currentUser.uid, 'tasks', todayStr()), { tasks, updatedAt: serverTimestamp() });
+    renderTasks();
+    updateProgress();
+    if (status === 'completed') toast('✓ Task completed!');
+  };
+
+  // ════════════════════════════════
+  // BORED MODE
+  // ════════════════════════════════
+  async function boredMode() {
+    openModal('boredModal');
+    document.getElementById('boredText').textContent = 'Finding something quick for you...';
+
+    const prompt = `User is bored and wants a quick activity. Context: they're waiting for "${journey.title}", interested in ${journey.categories.join(', ')}. Suggest ONE creative 5-15 minute activity. Be specific and fun. Keep it under 40 words.`;
+
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: settings.model,
+          max_tokens: 150,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content || 'Try a 10-minute walk outside and observe 5 things you haven\'t noticed before.';
+      document.getElementById('boredText').textContent = text;
+    } catch {
+      document.getElementById('boredText').textContent = 'Write down 3 things you\'re looking forward to after your target day arrives. Then do a 5-minute stretch.';
+    }
+  }
+
+  // ════════════════════════════════
+  // MEMORIES
+  // ════════════════════════════════
+  let selectedMood = 'good';
+
+  function selectMood(btn) {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedMood = btn.dataset.mood;
+  }
+
+  async function saveMemory() {
+    const text = document.getElementById('newMemoryText').value.trim();
+    if (!text) { toast('Write something first!'); return; }
+
+    const memDoc = {
+      text,
+      mood: selectedMood,
+      date: todayStr(),
+      createdAt: serverTimestamp()
+    };
+
+    await addDoc(collection(db, 'dayPasser', currentUser.uid, 'memories'), memDoc);
+    document.getElementById('newMemoryText').value = '';
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+    toast('Memory saved ✦');
+    await loadMemories();
+    renderMemoryTimeline();
+    updateProgress();
+  }
+
+  function renderMemoryTimeline() {
+    const tl = document.getElementById('memoryTimeline');
+    document.getElementById('memoryCount').textContent = `${memories.length} ${memories.length === 1 ? 'memory' : 'memories'}`;
+
+    if (!memories.length) {
+      tl.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:0.85rem;">No memories yet — add one above!</div>`;
+      return;
+    }
+
+    tl.innerHTML = [...memories].reverse().map((m, i) => `
+      <div class="timeline-item">
+        <div class="timeline-dot ${m.isStart ? 'start' : ''}"></div>
+        <div class="timeline-date">${formatDateShort(m.date)}</div>
+        <div class="timeline-content">
+          ${m.mood ? `<div class="timeline-mood">${moodLabel(m.mood)}</div>` : ''}
+          <div class="timeline-text">${m.text}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function moodLabel(mood) {
+    const map = { start: '✦ Journey start', great: '🌟 Great day', good: '😊 Good day', normal: '😐 Normal', difficult: '😔 Difficult' };
+    return map[mood] || mood;
+  }
+
+  // ════════════════════════════════
+  // PROGRESS
+  // ════════════════════════════════
+  function renderProgress() {
+    updateProgress();
+
+    if (!journey?.goals) return;
+    const wrap = document.getElementById('goalProgressWrap');
+    const colors = ['', 'amber', 'green'];
+    wrap.innerHTML = journey.goals.map((g, i) => `
+      <div class="progress-card">
+        <div class="progress-card-header">
+          <div class="progress-card-name">${g.text}</div>
+          <div class="progress-card-pct">${g.progress || 0}%</div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill ${colors[i] || ''}" style="width:${g.progress || 0}%"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function updateProgress() {
+    const completed = tasks.filter(t => t.status === 'completed').length;
+    document.getElementById('statCompleted').textContent = completed;
+    document.getElementById('statMemories').textContent = memories.length;
+
+    if (journey) {
+      const totalDays = getTotalDays();
+      const daysLeft = getDaysLeft();
+      document.getElementById('statDays').textContent = totalDays - daysLeft;
+    }
+    document.getElementById('statStreak').textContent = memories.length; // simplified streak
+  }
+
+  // ════════════════════════════════
+  // SETTINGS
+  // ════════════════════════════════
+  function applySettings() {
+    document.documentElement.setAttribute('data-theme', settings.theme || 'dark');
+    const isDark = settings.theme !== 'light';
+    const toggle = document.getElementById('darkModeToggle');
+    if (toggle) toggle.checked = isDark;
+    document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
+
+    const modelSel = document.getElementById('modelSelect');
+    if (modelSel) modelSel.value = settings.model || 'llama-3.3-70b-versatile';
+
+    document.getElementById('respShort')?.classList.toggle('active', settings.responseStyle === 'short');
+    document.getElementById('respDetailed')?.classList.toggle('active', settings.responseStyle === 'detailed');
+  }
+
+  function toggleTheme() {
+    settings.theme = settings.theme === 'dark' ? 'light' : 'dark';
+    applySettings();
+    saveSettings();
+  }
+
+  function setResponseStyle(style) {
+    settings.responseStyle = style;
+    applySettings();
+    saveSettings();
+  }
+
+  async function saveSettings() {
+    settings.model = document.getElementById('modelSelect')?.value || settings.model;
+    applySettings();
+    if (currentUser) {
+      await setDoc(doc(db, 'dayPasser', currentUser.uid, 'meta', 'settings'), settings);
+    }
+  }
+
+  function updateUserCard() {
+    if (!currentUser) return;
+    const name = currentUser.displayName || 'User';
+    const email = currentUser.email || '';
+    const photo = currentUser.photoURL;
+
+    document.getElementById('userName').textContent = name;
+    document.getElementById('userEmail').textContent = email;
+    const avatar = document.getElementById('userAvatar');
+    if (photo) {
+      avatar.innerHTML = `<img src="${photo}" alt="${name}" />`;
+    } else {
+      avatar.textContent = name[0].toUpperCase();
+    }
+  }
+
+  function updateSettingsInfo() {
+    if (!journey) return;
+    document.getElementById('settingsJourneyTitle').textContent = journey.title || '—';
+    document.getElementById('settingsJourneyDate').textContent = journey.targetDate ? formatDate(new Date(journey.targetDate + 'T12:00:00')) : '—';
+  }
+
+  async function confirmResetJourney() {
+    if (!confirm('Reset your entire journey? This cannot be undone.')) return;
+    await deleteDoc(doc(db, 'dayPasser', currentUser.uid, 'meta', 'journey'));
+    journey = null; tasks = []; memories = [];
+    showPage('setup');
+    currentStep = 1;
+    updateStepUI();
+    document.getElementById('topBar').style.display = '';
+  }
+
+  function startNewJourney() {
+    journey = null; tasks = []; memories = [];
+    currentStep = 1;
+    setupData = { title: '', date: '', importance: '', categories: [], situation: '', time: '', goals: [], memory: '' };
+    showPage('setup');
+    updateStepUI();
+    document.getElementById('topBar').style.display = '';
+  }
+
+  // ════════════════════════════════
+  // JOURNEY COMPLETE
+  // ════════════════════════════════
+  function showJourneyComplete() {
+    showPage('complete');
+    const totalDays = getTotalDays();
+    const completed = tasks.filter(t => t.status === 'completed').length;
+
+    document.getElementById('completeDateLabel').textContent = formatDate(new Date(journey.targetDate + 'T12:00:00'));
+    document.getElementById('completeStats').innerHTML = `
+      <div class="complete-stat"><span class="complete-stat-check">✓</span> ${completed} tasks completed</div>
+      <div class="complete-stat"><span class="complete-stat-check">✓</span> ${memories.length} memories saved</div>
+      <div class="complete-stat"><span class="complete-stat-check">✓</span> ${journey.goals?.length || 0} goals worked on</div>
+      <div class="complete-stat"><span class="complete-stat-check">✓</span> ${totalDays} days completed</div>
+    `;
+  }
+
+  // ════════════════════════════════
+  // TABS
+  // ════════════════════════════════
+  function switchTab(tab, btn) {
+    ['today', 'memories', 'progress', 'settings'].forEach(t => {
+      document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+    });
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    btn.classList.add('active');
+
+    if (tab === 'memories') renderMemoryTimeline();
+    if (tab === 'progress') renderProgress();
+    if (tab === 'settings') { updateUserCard(); updateSettingsInfo(); }
+  }
+
+  // ════════════════════════════════
+  // MODALS
+  // ════════════════════════════════
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  // Close on backdrop click
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+  });
+
+  // ════════════════════════════════
+  // PAGES
+  // ════════════════════════════════
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(`page-${id}`).classList.add('active');
+  }
+
+  // ════════════════════════════════
+  // UTILS
+  // ════════════════════════════════
+  function todayStr() {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  function getDaysLeft() {
+    if (!journey?.targetDate) return 0;
+    const target = new Date(journey.targetDate + 'T23:59:59');
+    const now = new Date();
+    const diff = target - now;
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  }
+
+  function getTotalDays() {
+    if (!journey?.createdAt || !journey?.targetDate) return 0;
+    const start = new Date(journey.createdAt);
+    const target = new Date(journey.targetDate + 'T23:59:59');
+    return Math.max(1, Math.ceil((target - start) / (1000 * 60 * 60 * 24)));
+  }
+
+  function formatDate(date) {
+    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function formatDateShort(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr + 'T12:00:00');
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }).toUpperCase();
+  }
+
+  // ════════════════════════════════
+  // TOAST
+  // ════════════════════════════════
+  let toastTimer;
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+  }
+
+  // ════════════════════════════════
+  // LANDING COUNTER (random count down to animate feel)
+  // ════════════════════════════════
+  let landingN = 17;
+  setInterval(() => {
+    // Just animates number on landing for visual effect
+    const el = document.getElementById('landingDays');
+    if (el && document.getElementById('page-landing').classList.contains('active')) {
+      el.textContent = landingN;
+    }
+  }, 100);
+
+  // Theme toggle from landing
+  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+</script>
+</body>
+</html>
