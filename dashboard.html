@@ -283,7 +283,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar" aria-label="Main navigation">
-    <a href="https://mohakchoubey.github.io/toolify/" class="brand">
+    <a href="https://mohaktools.com/" class="brand">
       <span class="brand-logo"><img src="logo.png" alt="" class="logo-img" onerror="this.replaceWith(document.createTextNode('🧰'))"></span>
       <span class="brand-text">toolify</span>
       <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">✕</button>
@@ -296,8 +296,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
       <div class="nav-label">Sections</div>
       <a href="#essentials" class="nav-item" data-section="essentials"><span class="nav-ico">⚡</span> Essentials <span class="go">→</span></a>
-      <a href="https://mohakchoubey.github.io/toolify/games/chess/" class="nav-item"><span class="nav-ico">🧠</span> Chess <span class="go">↗</span></a>
-      <a href="https://mohakchoubey.github.io/toolify/articles/" class="nav-item"><span class="nav-ico">📰</span> Articles by Toolify <span class="go">↗</span></a>
+      <a href="https://mohaktools.com/games/chess/" class="nav-item"><span class="nav-ico">🧠</span> Chess <span class="go">↗</span></a>
+      <a href="https://mohaktools.com/articles/" class="nav-item"><span class="nav-ico">📰</span> Articles by Toolify <span class="go">↗</span></a>
       <a href="#productivity" class="nav-item" data-section="productivity"><span class="nav-ico">📈</span> Productivity <span class="go">→</span></a>
       <a href="#utilities" class="nav-item" data-section="utilities"><span class="nav-ico">🔧</span> Utilities <span class="go">→</span></a>
       <a href="#time" class="nav-item" data-section="time"><span class="nav-ico">⏱️</span> Time &amp; Clock <span class="go">→</span></a>
@@ -401,12 +401,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <footer class="footer">
       <div class="footer-in">
         <div class="footer-links">
-          <a href="https://mohakchoubey.github.io/toolify/privacy">Privacy Policy</a>
-          <a href="https://mohakchoubey.github.io/toolify/terms">Terms &amp; Conditions</a>
-          <a href="https://mohakchoubey.github.io/toolify/feedback">Feedback</a>
+          <a href="https://mohaktools.com/privacy">Privacy Policy</a>
+          <a href="https://mohaktools.com/terms">Terms &amp; Conditions</a>
+          <a href="https://mohaktools.com/feedback">Feedback</a>
           <a href="https://mohakchoubey.github.io/">About Developer</a>
           <a href="https://mohakchoubey.github.io/mohaktube">YouTube ▶</a>
-          <a href="https://mohakchoubey.github.io/toolify/articles/">Articles by Toolify</a>
+          <a href="https://mohaktools.com/articles/">Articles by Toolify</a>
         </div>
         <div class="footer-credit">Developed with ❤️ by <a href="https://github.com/mohakchoubey">Mohak</a> © 2026</div>
       </div>
@@ -428,38 +428,38 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   const SECTION_LABELS = { essentials:"Essentials", productivity:"Productivity", utilities:"Utilities", time:"Time & Clock" };
   const tools = [
 
-    { s:'essentials', icon:'🤖', name:'Assistant Chatbot', url:'https://mohakchoubey.github.io/toolify/workspace-assistant-rulebased-ai-chatbot?utm_source=dashboard', badge:null },
-    { s:'productivity', icon:'https://mohakdev1220.github.io/chromeportal/logo.png', name:'Chromeportal - save links', url:'https://mohakdev1220.github.io/chromeportal/?utm_source=https://mohakchoubey.github.io/toolify/', badge:'new' },
-    { s:'essentials', icon:'֎', name:'AI chatbot', url:'https://mohakchoubey.github.io/toolify/AI-chatbot/?utm_source=dashboard', badge: 'new'},
-        { s:'essentials', icon:'📰', name:'Toolify News', url:'https://mohakchoubey.github.io/toolify/toolify-news//?utm_source=dashboard', badge: 'new'},
-    { s:'essentials', icon:'🗺️', name:'Maps by Toolify', url:'https://mohakchoubey.github.io/toolify/maps-by-toolify?utm_source=dashboard', badge: '❎' },
-    { s:'essentials', icon:'☀️', name:'Weather', url:'https://mohakchoubey.github.io/toolify/weather?utm_source=dashboard', badge:null },
-    { s:'essentials', icon:'📄', name:'Notepad', url:'https://mohakchoubey.github.io/toolify/Word-On-Toolify/?utm_source=dashboard', badge:null },
-    { s:'productivity', icon:'💬🌐', name:'Translate languages', url:'https://mohakchoubey.github.io/toolify/Language-translation?utm_source=dashboard', badge:null },
-    { s:'productivity', icon:'🧮', name:'Calculator', url:'https://mohakchoubey.github.io/toolify/calculator?utm_source=dashboard', badge:null },
-     { s:'productivity', icon:'🔗', name:'Your Link Dashboard', url:'https://mohakchoubey.github.io/toolify/my_space/?utm_source=dashboard', badge:'new' },
-    { s:'productivity', icon:'💸', name:'Finance Calculations', url:'https://mohakdev1220.github.io/finance/?utm_source=https://mohakchoubey.github.io/toolify/', badge:null },
-    { s:'productivity', icon:'🧳', name:'Trip Planner', url:'https://mohakchoubey.github.io/toolify/trip-planner-tool-by-toolify?utm_source=dashboard', badge:null },
-    { s:'productivity', icon:'🚴', name:'Activities Tracker', url:'https://mohakdev1220.github.io/gatividhiya/?utm_source=https://mohakchoubey.github.io/toolify/', badge:null },
-    { s:'productivity', icon:'📅', name:'Calendar', url:'https://mohakchoubey.github.io/toolify/calendar?utm_source=dashboard', badge:null },
-    { s:'productivity', icon:'✍️', name:'Paragraph Editor', url:'https://mohakchoubey.github.io/toolify/grammar?utm_source=dashboard', badge:null },
-    { s:'productivity', icon:'https://mohakchoubey.github.io/toolify/assets/messaging.webp', name:'P2P messaging', url:'https://mohakchoubey.github.io/toolify/WebRTC-messaging-site-E2EE?utm_source=dashboard', badge:null },
-    { s:'productivity', icon:'📝', name:'Notes Saver', url:'https://mohakdev1220.github.io/dailyecho/?utm_source=https://mohakchoubey.github.io/toolify/', badge:null },
-    { s:'productivity', icon:'🔍', name:'Yt homepage bypass', url:'https://mohakdev1220.github.io/youtube-search/?utm_source=https://mohakchoubey.github.io/toolify/', badge:null },
-    { s:'utilities', icon:'🔉', name:'Dictation of text', url:'https://mohakchoubey.github.io/toolify/dictation-of-textr?utm_source=dashboard', badge:'new' },
-    { s:'utilities', icon:'🔍', name:'QR Maker', url:'https://mohakchoubey.github.io/toolify/qr?utm_source=dashboard', badge:null },
-    { s:'utilities', icon:'0️⃣', name:'Binary Converter', url:'https://mohakchoubey.github.io/toolify/binary-to-text-converter-by-mohak?utm_source=dashboard', badge:null },
-    { s:'utilities', icon:'📏', name:'Unit Converter', url:'https://mohakchoubey.github.io/toolify/unit-converter?utm_source=dashboard', badge:null },
-    { s:'utilities', icon:'🗣️', name:'Speech', url:'https://mohakchoubey.github.io/toolify/speech?utm_source=dashboard', badge:null },
-    { s:'utilities', icon:'📄', name:'PDF Maker', url:'https://mohakchoubey.github.io/toolify/pdf?utm_source=dashboard', badge:null },
-    { s:'utilities', icon:'🔒', name:'Password Gen', url:'https://mohakchoubey.github.io/toolify/password?utm_source=dashboard', badge:null },
-    { s:'utilities', icon:'🎮', name:'Games', url:'https://mohakchoubey.github.io/toolify/games.html?utm_source=dashboard', badge:null },
-    { s:'utilities', icon:'https://mohakchoubey.github.io/toolify/websites-preview.webp', name:'Website previewer', url:'https://mohakchoubey.github.io/toolify/website-previewer?utm_source=dashboard', badge:null },
-    { s:'time', icon:'🕓', name:'Clock', url:'https://mohakchoubey.github.io/toolify/time?utm_source=dashboard', badge:null },
-    { s:'time', icon:'🌍', name:'World Clock', url:'https://mohakchoubey.github.io/toolify/time#worldclock-section?utm_source=dashboard', badge:null },
-    { s:'time', icon:'⌛', name:'Timer', url:'https://mohakchoubey.github.io/toolify/time#timer-section?utm_source=dashboard', badge:null },
-    { s:'time', icon:'⏱️', name:'Stopwatch', url:'https://mohakchoubey.github.io/toolify/time#stopwatch-section?utm_source=dashboard', badge:null },
-    { s:'time', icon:'⏰', name:'Alarm', url:'https://mohakchoubey.github.io/toolify/time#alarm-section?utm_source=dashboard', badge:null },
+    { s:'essentials', icon:'🤖', name:'Assistant Chatbot', url:'https://mohaktools.com/workspace-assistant-rulebased-ai-chatbot?utm_source=dashboard', badge:null },
+    { s:'productivity', icon:'https://mohakdev1220.github.io/chromeportal/logo.png', name:'Chromeportal - save links', url:'https://mohakdev1220.github.io/chromeportal/?utm_source=https://mohaktools.com/', badge:'new' },
+    { s:'essentials', icon:'֎', name:'AI chatbot', url:'https://mohaktools.com/AI-chatbot/?utm_source=dashboard', badge: 'new'},
+        { s:'essentials', icon:'📰', name:'Toolify News', url:'https://mohaktools.com/toolify-news//?utm_source=dashboard', badge: 'new'},
+    { s:'essentials', icon:'🗺️', name:'Maps by Toolify', url:'https://mohaktools.com/maps-by-toolify?utm_source=dashboard', badge: '❎' },
+    { s:'essentials', icon:'☀️', name:'Weather', url:'https://mohaktools.com/weather?utm_source=dashboard', badge:null },
+    { s:'essentials', icon:'📄', name:'Notepad', url:'https://mohaktools.com/Word-On-Toolify/?utm_source=dashboard', badge:null },
+    { s:'productivity', icon:'💬🌐', name:'Translate languages', url:'https://mohaktools.com/Language-translation?utm_source=dashboard', badge:null },
+    { s:'productivity', icon:'🧮', name:'Calculator', url:'https://mohaktools.com/calculator?utm_source=dashboard', badge:null },
+     { s:'productivity', icon:'🔗', name:'Your Link Dashboard', url:'https://mohaktools.com/my_space/?utm_source=dashboard', badge:'new' },
+    { s:'productivity', icon:'💸', name:'Finance Calculations', url:'https://mohakdev1220.github.io/finance/?utm_source=https://mohaktools.com/', badge:null },
+    { s:'productivity', icon:'🧳', name:'Trip Planner', url:'https://mohaktools.com/trip-planner-tool-by-toolify?utm_source=dashboard', badge:null },
+    { s:'productivity', icon:'🚴', name:'Activities Tracker', url:'https://mohakdev1220.github.io/gatividhiya/?utm_source=https://mohaktools.com/', badge:null },
+    { s:'productivity', icon:'📅', name:'Calendar', url:'https://mohaktools.com/calendar?utm_source=dashboard', badge:null },
+    { s:'productivity', icon:'✍️', name:'Paragraph Editor', url:'https://mohaktools.com/grammar?utm_source=dashboard', badge:null },
+    { s:'productivity', icon:'https://mohaktools.com/assets/messaging.webp', name:'P2P messaging', url:'https://mohaktools.com/WebRTC-messaging-site-E2EE?utm_source=dashboard', badge:null },
+    { s:'productivity', icon:'📝', name:'Notes Saver', url:'https://mohakdev1220.github.io/dailyecho/?utm_source=https://mohaktools.com/', badge:null },
+    { s:'productivity', icon:'🔍', name:'Yt homepage bypass', url:'https://mohakdev1220.github.io/youtube-search/?utm_source=https://mohaktools.com/', badge:null },
+    { s:'utilities', icon:'🔉', name:'Dictation of text', url:'https://mohaktools.com/dictation-of-textr?utm_source=dashboard', badge:'new' },
+    { s:'utilities', icon:'🔍', name:'QR Maker', url:'https://mohaktools.com/qr?utm_source=dashboard', badge:null },
+    { s:'utilities', icon:'0️⃣', name:'Binary Converter', url:'https://mohaktools.com/binary-to-text-converter-by-mohak?utm_source=dashboard', badge:null },
+    { s:'utilities', icon:'📏', name:'Unit Converter', url:'https://mohaktools.com/unit-converter?utm_source=dashboard', badge:null },
+    { s:'utilities', icon:'🗣️', name:'Speech', url:'https://mohaktools.com/speech?utm_source=dashboard', badge:null },
+    { s:'utilities', icon:'📄', name:'PDF Maker', url:'https://mohaktools.com/pdf?utm_source=dashboard', badge:null },
+    { s:'utilities', icon:'🔒', name:'Password Gen', url:'https://mohaktools.com/password?utm_source=dashboard', badge:null },
+    { s:'utilities', icon:'🎮', name:'Games', url:'https://mohaktools.com/games.html?utm_source=dashboard', badge:null },
+    { s:'utilities', icon:'https://mohaktools.com/websites-preview.webp', name:'Website previewer', url:'https://mohaktools.com/website-previewer?utm_source=dashboard', badge:null },
+    { s:'time', icon:'🕓', name:'Clock', url:'https://mohaktools.com/time?utm_source=dashboard', badge:null },
+    { s:'time', icon:'🌍', name:'World Clock', url:'https://mohaktools.com/time#worldclock-section?utm_source=dashboard', badge:null },
+    { s:'time', icon:'⌛', name:'Timer', url:'https://mohaktools.com/time#timer-section?utm_source=dashboard', badge:null },
+    { s:'time', icon:'⏱️', name:'Stopwatch', url:'https://mohaktools.com/time#stopwatch-section?utm_source=dashboard', badge:null },
+    { s:'time', icon:'⏰', name:'Alarm', url:'https://mohaktools.com/time#alarm-section?utm_source=dashboard', badge:null },
   ];
   $('#statTools').textContent = tools.length;
 
